@@ -43,22 +43,35 @@ export const actions: Actions = {
 		const { name, email, password, role } = form.data;
 
 		try {
-			await db.transaction(async (tx) => {
-				const newCustomer = await auth.api.createUser({
-					body: {
-						email,
-						password,
-						name,
-						role: role === 1 ? 'admin' : 'user'
-					}
-				});
-				await tx
-					.update(user)
-					.set({
-						roleId: 1
-					})
-					.where(eq(user.id, newCustomer?.user.id));
+			const newCustomer = await auth.api.createUser({
+				body: {
+					email,
+					password,
+					name,
+					role: role === 1 ? 'admin' : 'user'
+				}
 			});
+			if (newCustomer) {
+				await db.transaction(async (tx) => {
+					await tx
+						.update(user)
+						.set({
+							roleId: role
+						})
+						.where(eq(user.id, newCustomer?.user.id));
+				});
+			} else {
+				return message(
+					form,
+					{
+						type: 'error',
+						text: 'Registration Failed'
+					},
+					{
+						status: 500
+					}
+				);
+			}
 
 			return message(form, {
 				type: 'success',

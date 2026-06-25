@@ -1,45 +1,48 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { SunIcon, MoonIcon } from '@lucide/svelte';
 	import PortfolioHero from '$lib/components/portfolio/portfolio-hero.svelte';
 	import PortfolioFilters from '$lib/components/portfolio/portfolio-filters.svelte';
 	import PortfolioGrid from '$lib/components/portfolio/portfolio-grid.svelte';
 
+	// Upgraded explicit type alignment to match the Golla Drizzle SQLite schema
 	type PortfolioItem = {
-		id: number;
+		id: string | number;
 		title: string;
 		slug: string;
+		category: string;
 		description: string | null;
+		isFeatured: boolean;
 		featuredImage: string | null;
-		eventType: string | null;
-		date: string | null;
-		client: string | null;
+		completedAt: string | null;
+		clientName: string | null;
 		location: string | null;
+		excerpt: string | null;
+		content: string | null;
 	};
 
-	// Set app hook
-
-	// Filter state
+	// Svelte 5 reactive filtering matrix configurations
 	let searchQuery = $state('');
-	let selectedEventType = $state<string | null>(null);
+	let selectedCategory = $state<string | null>(null);
+
 	let { data } = $props();
-	// Filtered items
+
+	// Derived filtration pipeline using Svelte 5 Runes
 	const filteredItems = $derived.by(() => {
 		let items: PortfolioItem[] = data?.portfolioItems ?? [];
 
-		// Filter by event type
-		if (selectedEventType) {
-			items = items.filter((item) => item.eventType === selectedEventType);
+		// Filter by Architectural Category Allocation
+		if (selectedCategory) {
+			items = items.filter((item) => item.category === selectedCategory);
 		}
 
-		// Filter by search query
+		// Search optimization vector matching structural strings
 		if (searchQuery.trim()) {
 			const query = searchQuery.toLowerCase().trim();
 			items = items.filter(
 				(item) =>
 					item.title.toLowerCase().includes(query) ||
+					item.excerpt?.toLowerCase().includes(query) ||
 					item.description?.toLowerCase().includes(query) ||
-					item.client?.toLowerCase().includes(query) ||
+					item.clientName?.toLowerCase().includes(query) ||
 					item.location?.toLowerCase().includes(query)
 			);
 		}
@@ -51,57 +54,68 @@
 </script>
 
 <svelte:head>
-	<title>Our Portfolio | Past Events & Experiences by Yebehir Ventures</title>
-	<meta name="title" content="Our Portfolio | Past Events & Experiences by Yebehir Ventures" />
+	<!-- Studio SEO Metadata Blocks -->
+	<title>Studio Portfolio | Golla Design Group Architecture</title>
+	<meta name="title" content="Studio Portfolio | Golla Design Group Architecture" />
 	<meta
 		name="description"
-		content="Explore our gallery of corporate events, brand activations, and lifestyle experiences executed at 4 Kilo Plaza and across Addis Ababa."
+		content="Explore our completed spatial portfolio, luxury room concepts, and photorealistic architectural visualizations executed across Addis Ababa."
 	/>
 
-	<!-- Open Graph -->
+	<!-- Open Graph / Social Engine Parameters -->
 	<meta property="og:type" content="website" />
-	<meta property="og:url" content="/events" />
-	<meta property="og:title" content="Yebehir Ventures Portfolio | See Our Work" />
+	<meta property="og:url" content="/portfolio" />
+	<meta
+		property="og:title"
+		content="Golla Design Group Portfolio | Architectural Blueprint Archives"
+	/>
 	<meta
 		property="og:description"
-		content="From high-energy brand activations to premium corporate gatherings. See how we create experiences."
+		content="From boutique commercial structural layouts to master planned residential interiors. Walk through our spatial project archive."
 	/>
-	<meta property="og:image" content="https://yebehir.com/logo.jpg" />
+	<meta property="og:image" content="/golla1.webp" />
 
-	<!-- Twitter -->
+	<!-- Twitter Metric Frames -->
 	<meta property="twitter:card" content="summary_large_image" />
-	<meta property="twitter:title" content="Yebehir Ventures | Event Portfolio" />
-	<meta property="twitter:image" content="/logo.jpg" />
+	<meta property="twitter:title" content="Golla Design Group | Project Portfolio" />
+	<meta property="twitter:image" content="/golla1.webp" />
 
-	<link rel="canonical" href="/events" />
+	<link rel="canonical" href="/portfolio" />
 </svelte:head>
 
-<div class="min-h-dvh bg-background text-foreground">
-	<!-- Header -->
-
-	<!-- Hero Section -->
+<div class="min-h-dvh bg-background text-foreground transition-colors duration-200">
+	<!-- Hero Presentation Block -->
 	<PortfolioHero />
 
-	<!-- Main Content -->
-	<main class="mx-auto mt-10 max-w-7xl px-4 pb-20">
-		<!-- Filters -->
-		<div class="mb-10">
+	<!-- Core Architectural Content Filter Grid Area -->
+	<main class="mx-auto mt-6 max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
+		<!-- Portfolio Interface Control Layout -->
+		<div class="mb-12">
 			<PortfolioFilters
 				portfolioItems={data?.portfolioItems}
 				bind:searchQuery
-				bind:selectedEventType
+				bind:selectedEventType={selectedCategory}
+				placeholder="Search blueprints, client codes, or locations..."
 			/>
 		</div>
 
-		<!-- Results count -->
-		<div class="mb-6 text-center">
-			<p class="text-muted-foreground">
-				Showing <span class="font-semibold text-foreground">{resultsCount}</span>
-				{resultsCount === 1 ? 'event' : 'events'}
+		<!-- Real-time Metrics Readout Counter -->
+		<div class="mb-8 text-center">
+			<p class="text-xs font-bold tracking-widest text-muted-foreground/70 uppercase">
+				Displaying <span class="font-black text-foreground">{resultsCount}</span>
+				{resultsCount === 1 ? 'architectural case' : 'architectural cases'}
 			</p>
 		</div>
 
-		<!-- Portfolio Grid -->
-		<PortfolioGrid items={filteredItems} />
+		<!-- Dynamic Spatial Layout Rendering Deck -->
+		{#if resultsCount > 0}
+			<PortfolioGrid items={filteredItems} />
+		{:else}
+			<div class="rounded-2xl border border-dashed border-border/60 bg-muted/20 py-16 text-center">
+				<p class="text-sm font-semibold text-muted-foreground">
+					No projects match your current filter constraints.
+				</p>
+			</div>
+		{/if}
 	</main>
 </div>

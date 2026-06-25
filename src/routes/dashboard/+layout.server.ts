@@ -1,10 +1,5 @@
-import { db } from '$lib/server/db';
-import { user } from '$lib/server/db/schema';
-import { error, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
-
-import {} from '$lib/server/db/schema';
-import { eq, count, gte } from 'drizzle-orm';
 
 export const load: LayoutServerLoad = async ({ locals }) => {
 	if (!locals.user) {

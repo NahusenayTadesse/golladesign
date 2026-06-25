@@ -2,12 +2,15 @@ export type PortfolioItem = {
 	id: number;
 	title: string;
 	slug: string;
+	category: string;
 	description: string | null;
+	isFeatured: boolean;
 	featuredImage: string | null;
-	eventType: string | null;
-	date: string | null;
-	client: string | null;
+	completedAt: string | null;
+	clientName: string | null;
 	location: string | null;
+	excerpt: string | null;
+	content: string | null;
 };
 
 export type BlogItem = {

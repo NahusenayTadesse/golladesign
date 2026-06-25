@@ -226,57 +226,6 @@ export const user = sqliteTable('user', {
 	...timestamps()
 });
 
-export const venueBooking = sqliteTable('venue_booking', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	venueId: integer('venue_id').notNull(),
-	guestCount: integer('guest_count'),
-	description: text(),
-	status: text({ length: 50 }).default('pending'),
-	...timestamps()
-});
-
-export const venueDetails = sqliteTable('venue_details', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	name: text({ length: 255 }).default('4 Kilo Plaza'),
-	description: text(),
-	capacity: integer(),
-	bookingPolicy: text('booking_policy'),
-	isActive: integer('is_active').default(1).notNull(),
-	featuredImage: text({ length: 255 }),
-	location: text({ length: 255 }),
-	enableLottery: integer('enable_lottery').default(0).notNull(),
-	...auditFields(),
-	...timestamps(),
-	...softDelete()
-});
-
-export const venueFeatures = sqliteTable('venue_features', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	name: text({ length: 255 }),
-	description: text(),
-	venueId: integer('venue_id').notNull()
-});
-
-export const venueLottery = sqliteTable('venue_lottery', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	venueId: integer('venue_id').notNull(),
-	name: text({ length: 255 }),
-	phone: text({ length: 20 }),
-	email: text({ length: 255 }),
-	...timestamps()
-});
-
-export const venueImages = sqliteTable('venue_images', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	venueId: integer('venue_id').notNull(),
-	imageUrl: text('image_url', { length: 255 }).notNull(),
-	isFeatured: integer('is_featured').default(0),
-	isActive: integer('is_active').default(1).notNull(),
-	...auditFields(),
-	...timestamps(),
-	...softDelete()
-});
-
 export const venueVideos = sqliteTable('venue_videos', {
 	id: integer().primaryKey({ autoIncrement: true }),
 	venueId: integer('venue_id').notNull(),
@@ -301,6 +250,52 @@ export const teamMembers = sqliteTable('teamMembers', {
 	position: text({ length: 255 }),
 	message: text().notNull(),
 	avatar: text({ length: 255 }),
+	isActive: integer('is_active').default(1).notNull(),
+	...auditFields(),
+	...timestamps(),
+	...softDelete()
+});
+
+export const projectCategories = sqliteTable('project_categories', {
+	id: integer().primaryKey({ autoIncrement: true }),
+	name: text('name').notNull().unique(),
+	description: text('description')
+});
+export const projects = sqliteTable('projects', {
+	id: integer().primaryKey({ autoIncrement: true }),
+	title: text('title').notNull(),
+	slug: text('slug').notNull().unique(),
+	categoryId: integer('category_id').references(() => projectCategories.id, {
+		onDelete: 'set null'
+	}),
+	excerpt: text('excerpt').notNull(),
+	content: text('content').notNull(),
+	clientName: text('client_name'),
+	location: text('location'),
+	featuredImage: text('featured_image').notNull(),
+	blueprintUrl: text('blueprint_url'),
+	isFeatured: integer('is_featured', { mode: 'boolean' }).default(false).notNull(),
+	status: text('status', { enum: ['draft', 'published', 'archived'] })
+		.default('draft')
+		.notNull(),
+	completedAt: integer('completed_at', { mode: 'timestamp' })
+});
+
+export const projectImages = sqliteTable('project_images', {
+	id: integer().primaryKey({ autoIncrement: true }),
+	projectId: integer('project_id').notNull(),
+	imageUrl: text('image_url', { length: 255 }).notNull(),
+	isFeatured: integer('is_featured').default(0),
+	isActive: integer('is_active').default(1).notNull(),
+	...auditFields(),
+	...timestamps(),
+	...softDelete()
+});
+
+export const projectVideos = sqliteTable('project_videos', {
+	id: integer().primaryKey({ autoIncrement: true }),
+	projectId: integer('project_id').notNull(),
+	videoUrl: text('video_url', { length: 255 }).notNull(),
 	isActive: integer('is_active').default(1).notNull(),
 	...auditFields(),
 	...timestamps(),

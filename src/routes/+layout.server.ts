@@ -8,7 +8,6 @@ import {
 	blog,
 	blogCategories,
 	gallery,
-	venueDetails,
 	teamMembers
 } from '$lib/server/db/schema';
 import type { LayoutServerLoad } from './$types';
@@ -30,7 +29,7 @@ export const load: LayoutServerLoad = async () => {
 
 	// Then, get services
 	const servicesItems = await db.select().from(services);
-	const venueList = await db.select().from(venueDetails);
+
 	const teamList = await db
 		.select({
 			id: teamMembers.id,
@@ -59,7 +58,6 @@ export const load: LayoutServerLoad = async () => {
 		blogItems,
 		testimonialList,
 		teamMembers: teamList,
-		imagesList,
-		venueList
+		imagesList
 	};
 };

@@ -35,14 +35,11 @@
 				href="/"
 				class="flex items-center gap-2 font-black tracking-widest text-foreground transition-opacity hover:opacity-90"
 			>
-				<!-- Minimalistic Vector Brand Indicator -->
-				<CompassIcon class="size-6 text-primary" />
-				<div class="flex flex-col leading-none">
-					<span class="text-lg font-black tracking-wider">GOLLA</span>
-					<span class="text-[9px] font-light tracking-[0.25em] text-muted-foreground uppercase"
-						>Design Group</span
-					>
-				</div>
+				<img
+					src="/logoForWhite.webp"
+					class="block h-8 object-contain text-center invert dark:invert-0"
+					alt="Logo"
+				/>
 			</a>
 		</div>
 
@@ -71,7 +68,7 @@
 		<div class="flex flex-row items-center gap-4">
 			<div class="hidden flex-row items-center justify-end gap-3 lg:flex">
 				<DarkMode />
-				<Button href="/contact" size="sm" class="group gap-2">
+				<Button href="/contact-us" size="sm" class="group gap-2">
 					Consult Studio
 					<ArrowRight class="size-4 transition-transform duration-300 group-hover:translate-x-1" />
 				</Button>

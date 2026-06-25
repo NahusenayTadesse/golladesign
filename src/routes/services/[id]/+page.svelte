@@ -1,159 +1,189 @@
 <script lang="ts">
 	import { fade, fly } from 'svelte/transition';
 	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
-	import { ArrowLeftIcon, CalendarIcon, MapPinIcon, UserIcon, SparklesIcon } from '@lucide/svelte';
+	import { ArrowLeftIcon, CompassIcon, LayersIcon, ArrowRightIcon } from '@lucide/svelte';
+	import Gallery from '$lib/components/gallery.svelte';
+
 	type Service = {
-		id: number;
+		id: string | number;
 		name: string;
+		slug: string;
 		featuredImage: string | null;
 		description: string | null;
+		longDescription: string | null;
 	};
-	import Gallery from '$lib/components/gallery.svelte';
-	const { data } = $props();
 
-	const item: Service = $derived(data?.portfolioItems);
-	const service: Service = $derived(data?.portfolioItems);
+	let { data } = $props();
+
+	// Resolved unified service entity binding from runtime page loading
+	const service: Service = $derived(data?.service);
 
 	const imageUrl = $derived(
-		service.featuredImage ? `/files/${service.featuredImage}` : `/logo.jpg`
+		service?.featuredImage ? `/files/${service.featuredImage}` : `/logo.jpg`
 	);
 
-	// SEO optimization: Even if the URL uses ID, we keep the content brand-focused
-	const pageTitle = `${service.name} | Yebehir Ventures`;
+	const pageTitle = $derived(`${service?.name || 'Studio Pillar'} | Golla Design Group`);
 </script>
 
 <svelte:head>
-	<!-- Primary Meta Tags -->
+	<!-- Primary Structural Meta Tags -->
 	<title>{pageTitle}</title>
 	<meta name="title" content={pageTitle} />
 	<meta
 		name="description"
-		content={service.description ||
-			`Professional ${service.name} services in Addis Ababa by Yebehir Ventures. We deliver premium results ahead of the curve.`}
+		content={service?.description ||
+			`Professional ${service?.name} consulting across Addis Ababa by Golla Design Group. We shape enduring human spatial narratives.`}
 	/>
 
-	<!-- Open Graph / Facebook -->
+	<!-- Open Graph / Social Matrices -->
 	<meta property="og:type" content="website" />
-	<meta property="og:url" content="/services/${service.id}" />
+	<meta property="og:url" content="https://golladesign.com/services/${service?.slug}" />
 	<meta property="og:title" content={pageTitle} />
-	<meta property="og:description" content={service.description} />
+	<meta property="og:description" content={service?.description} />
 	<meta property="og:image" content={imageUrl} />
 
-	<!-- Twitter -->
+	<!-- Twitter Engine Specs -->
 	<meta property="twitter:card" content="summary_large_image" />
-	<meta property="twitter:url" content="/services/${service.id}" />
+	<meta property="twitter:url" content="https://golladesign.com/services/${service?.slug}" />
 	<meta property="twitter:title" content={pageTitle} />
-	<meta property="twitter:description" content={service.description} />
+	<meta property="twitter:description" content={service?.description} />
 	<meta property="twitter:image" content={imageUrl} />
 
-	<!-- Canonical URL to prevent duplicate content if query params are added -->
-	<link rel="canonical" href="/services/${service.id}" />
+	<link rel="canonical" href="https://golladesign.com/services/${service?.slug}" />
 
-	<!-- Local Business / Service Schema -->
-	{@html `<script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Service",
-      "serviceType": "${service.name}",
-      "provider": {
-        "@type": "LocalBusiness",
-        "name": "Yebehir Ventures",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Addis Ababa",
-          "addressCountry": "ET"
-        }
-      },
-      "description": "${service.description?.replace(/"/g, '\\"')}",
-      "image": "${imageUrl}"
-    }
-  </script>`}
+	<!-- Local Architectural Practice Schema Injection -->
+	{#if service}
+		{@html `<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "Service",
+				"serviceType": "${service.name}",
+				"provider": {
+					"@type": "ArchitecturalBusiness",
+					"name": "Golla Design Group",
+					"image": "https://golladesign.com/logo.png",
+					"address": {
+						"@type": "PostalAddress",
+						"addressLocality": "Addis Ababa",
+						"addressCountry": "ET"
+					}
+				},
+				"description": "${service.description?.replace(/"/g, '\\"') || ''}",
+				"image": "${imageUrl}"
+			}
+		</script>`}
+	{/if}
 </svelte:head>
 
-<div class="min-h-dvh" in:fade={{ duration: 300 }}>
-	<!-- Hero Image Section -->
-	<div class="relative h-[50vh] overflow-hidden lg:h-[60vh]">
-		<img src={`/files/${item.featuredImage}`} alt={item.name} class="h-full w-full object-cover" />
+<div class="min-h-dvh bg-background text-foreground" in:fade={{ duration: 250 }}>
+	<!-- Studio Cover Banner Matrix -->
+	<div class="relative h-[45vh] overflow-hidden border-b border-border/40 lg:h-[55vh]">
+		<!-- Technical Layout Underlay Grid Background -->
 		<div
-			class="absolute inset-0 bg-linear-to-t from-background via-background/40 to-transparent"
+			class="absolute inset-0 z-10 bg-[linear-gradient(to_right,rgba(128,128,128,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(128,128,128,0.03)_1px,transparent_1px)] bg-[size:32px_32px]"
 		></div>
 
-		<!-- Back Button -->
-		<div class="absolute top-6 left-6 z-10" in:fly={{ x: -20, duration: 400, delay: 200 }}>
+		<img
+			src={service?.featuredImage ? `/files/${service.featuredImage}` : '/fallback-blueprint.webp'}
+			alt={service?.name}
+			class="h-full w-full object-cover grayscale-25"
+		/>
+		<div
+			class="absolute inset-0 z-10 bg-gradient-to-t from-background via-background/50 to-transparent"
+		></div>
+
+		<!-- Back-jump Control Navigation -->
+		<div class="absolute top-6 left-6 z-20" in:fly={{ x: -15, duration: 400, delay: 100 }}>
 			<Button
-				variant="secondary"
+				variant="outline"
 				size="sm"
-				class="shadow-lg-lg rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
+				class="h-9 rounded-xl border-border/60 bg-background/80 px-4 text-xs font-bold tracking-wider uppercase shadow-xs backdrop-blur-md"
 				href="/services"
 			>
-				<ArrowLeftIcon class="mr-2 size-4" />
-				Back to Services
+				<ArrowLeftIcon class="mr-2 size-3.5" />
+				All Services
 			</Button>
 		</div>
-
-		<!-- Event Type Badge -->
 	</div>
 
-	<!-- Content Section -->
-	<div class="relative -mt-20 lg:-mt-32">
-		<div class="mx-auto max-w-4xl px-4 lg:px-8">
+	<!-- Main Content Shell Layout -->
+	<div class="relative z-20 -mt-24 lg:-mt-36">
+		<div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
 			<div
-				class="shadow-lg-xl rounded-2xl border bg-card p-6 lg:p-10"
-				in:fly={{ y: 40, duration: 500, delay: 100 }}
+				class="rounded-2xl border border-border/60 bg-card p-6 shadow-xl shadow-muted/20 md:p-10"
+				in:fly={{ y: 30, duration: 450 }}
 			>
-				<!-- Title -->
-				<h1 class="mb-4 text-3xl font-bold tracking-tight text-foreground lg:text-4xl">
-					{item.name}
+				<!-- Service Branding Pillar -->
+				<h1 class="text-3xl font-black tracking-tight text-foreground uppercase lg:text-4xl">
+					{service?.name}
 				</h1>
 
-				<!-- Meta Information -->
+				<Separator class="my-6 bg-border/50" />
 
-				<Separator class="my-6" />
-
-				<!-- Description -->
-				{#if item.description}
-					<div class="flex flex-col gap-4">
-						<div class="flex items-center gap-2">
-							<SparklesIcon
-								class="size-5
-							"
-							/>
-							<h2 class="text-lg font-semibold text-foreground">About This Service</h2>
+				<!-- Service Summary Callout Paragraph -->
+				{#if service?.description}
+					<div class="flex flex-col gap-3">
+						<div
+							class="flex items-center gap-2 text-xs font-black tracking-widest text-primary uppercase"
+						>
+							<CompassIcon class="size-4 stroke-[1.75]" />
+							Consultation Frame
 						</div>
-						<p class="text-base leading-relaxed text-muted-foreground lg:text-lg">
-							{item.description}
+						<p class="text-base leading-relaxed font-medium text-muted-foreground sm:text-lg">
+							{service.description}
 						</p>
 					</div>
 				{/if}
 
-				<!-- Additional Details Section -->
-				<article class="mt-8 rounded-xl border border-border/50 bg-muted/50 p-6">
-					{@html item.longDescription}
+				<!-- Structural Long Content & Schematic Modules -->
+				{#if service?.longDescription || data?.images?.length}
+					<article class="mt-8 space-y-8 rounded-xl border border-border/50 bg-muted/20 p-6">
+						{#if service?.longDescription}
+							<div
+								class="prose prose-neutral dark:prose-invert max-w-none text-sm leading-relaxed text-muted-foreground/90"
+							>
+								{@html service.longDescription}
+							</div>
+						{/if}
 
-					{#if data?.images}
-						<Gallery bento images={data.images} title={item.name} />
-					{/if}
-				</article>
+						<!-- Contextual Capabilities Work Gallery Embedding -->
+						{#if data?.images?.length}
+							<div class="space-y-3 border-t border-border/40 pt-4">
+								<div
+									class="flex items-center gap-2 text-[10px] font-black tracking-widest text-muted-foreground/70 uppercase"
+								>
+									<LayersIcon class="size-3.5" />
+									Related Studio Reference Executions
+								</div>
+								<Gallery bento images={data.images} title={service?.name} />
+							</div>
+						{/if}
+					</article>
+				{/if}
 
-				<!-- CTA Section -->
+				<!-- Interactive Brief Strategy Call To Actions -->
 				<div class="mt-8 flex flex-col gap-3 sm:flex-row">
-					<Button class="flex-1 rounded-full" href="/contact-us" size="lg"
-						>Contact Us About This Service</Button
+					<Button
+						class="h-12 flex-1 gap-1.5 rounded-xl text-xs font-black tracking-widest uppercase"
+						href="/contact"
+						size="lg"
 					>
-					<Button variant="outline" class="flex-1 rounded-full" size="lg" href="/services"
-						>View More Services</Button
+						Request Structural Proposal <ArrowRightIcon class="size-3.5" />
+					</Button>
+					<Button
+						variant="outline"
+						class="h-12 flex-1 rounded-xl border-border/60 text-xs font-black tracking-widest uppercase"
+						size="lg"
+						href="/services"
 					>
+						Review Practice Portfolio
+					</Button>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<!-- Spacer -->
-	<div class="h-20"></div>
+	<!-- Layout Frame Baseline Padding -->
+	<div class="h-24"></div>
 </div>
-
-<!-- ... existing code ... -->
-
-<!-- Gallery Section -->

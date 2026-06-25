@@ -1,1 +1,0 @@
-ALTER TABLE `venue_details` ADD `enable_lottery` integer DEFAULT 0 NOT NULL;

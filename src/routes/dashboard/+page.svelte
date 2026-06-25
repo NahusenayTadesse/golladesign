@@ -28,36 +28,35 @@
 		},
 		{
 			title: 'Operations',
-			description: 'Events, Venues, and Services',
+			description: 'Projects',
 			color: 'border-l-emerald-500',
 			span: 'md:col-span-2',
 			links: [
-				{ name: 'Events', href: '/events', icon: Calendar },
-				{ name: 'Venues', href: '/venues', icon: MapPin },
+				{ name: 'Projects', href: '/projects', icon: MapPin },
 				{ name: 'Services', href: '/services', icon: Briefcase }
 			]
 		},
 		{
 			title: 'Sales & CRM',
-			description: 'Orders, Quotes, and Inquiries',
+			description: 'Inquiries',
 			color: 'border-l-rose-500',
-			links: [
-				{ name: 'Quotes', href: '/quotes', icon: Quote },
-				{ name: 'Messages', href: '/messages', icon: MessageSquare }
-			]
+			links: [{ name: 'Messages', href: '/messages', icon: MessageSquare }]
 		},
 		{
 			title: 'User Management',
 			description: 'Manage system access and permissions',
 			color: 'border-l-blue-500',
-			links: [{ name: 'Users', href: '/admin-panel/users', icon: Users }]
+			links: [
+				{ name: 'Users', href: '/admin-panel/users', icon: Users },
+				{ name: 'Roles', href: '/admin-panel/roles', icon: ShieldCheck }
+			]
 		}
 	];
 </script>
 
 <svelte:head>
-	<title>Dashboard - Yebehir</title>
-	<meta name="description" content="Dashboard for Yebehir" />
+	<title>Dashboard - golla designs</title>
+	<meta name="description" content="Dashboard for Golla Designs" />
 </svelte:head>
 
 <div class="grid grid-cols-1 gap-6 p-6 md:grid-cols-2 lg:grid-cols-1">

@@ -3,7 +3,7 @@
 		Users,
 		UserRoundCog,
 		LayoutDashboard,
-		MapPin,
+		ShieldCheck,
 		TrendingUp,
 		Plus,
 		Sheet,
@@ -27,22 +27,6 @@
 		{ title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
 
 		{
-			title: 'Quote Requests',
-			url: '/dashboard/quotes',
-			icon: Quote
-		},
-
-		{
-			title: 'Events & Portfolio',
-			url: '/dashboard/events',
-			icon: Briefcase,
-			items: [
-				{ title: 'All Portfolio Items', url: '/dashboard/events', icon: Sheet },
-				{ title: 'Add Event', url: '/dashboard/events/add-event', icon: Plus }
-			]
-		},
-
-		{
 			title: 'Blogs',
 			url: '/dashboard/blog',
 			icon: Book,
@@ -51,14 +35,13 @@
 				{ title: 'View All Blogs', url: '/dashboard/blog', icon: Sheet }
 			]
 		},
-
 		{
-			title: 'Venue Management',
-			url: '/dashboard/venues',
-			icon: MapPin,
+			title: 'Projects',
+			url: '/dashboard/projects',
+			icon: Briefcase,
 			items: [
-				{ title: 'Add New Venue', url: '/dashboard/venues/add-venue', icon: Plus },
-				{ title: 'View All Venues', url: '/dashboard/venues', icon: Sheet }
+				{ title: 'Add New Project', url: '/dashboard/projects/add-project', icon: Plus },
+				{ title: 'View All Projects', url: '/dashboard/projects', icon: Sheet }
 			]
 		},
 
@@ -108,7 +91,10 @@
 			title: 'Admin Panel',
 			url: '/dashboard/admin-panel',
 			icon: UserRoundCog,
-			items: [{ title: 'Users', url: '/dashboard/admin-panel/users', icon: Users }]
+			items: [
+				{ title: 'Users', url: '/dashboard/admin-panel/users', icon: Users },
+				{ title: 'Roles', url: '/dashboard/admin-panel/roles', icon: ShieldCheck }
+			]
 		}
 	];
 
@@ -122,7 +108,7 @@
 </script>
 
 <Sidebar.Root collapsible="offcanvas" {...restProps}>
-	<Sidebar.Content class="z-9999! h-full overflow-y-scroll pt-4 [scrollbar-width:thin]">
+	<Sidebar.Content class="z-9999! h-full [scrollbar-width:thin] overflow-y-scroll pt-4">
 		<Sidebar.Group>
 			<Sidebar.GroupLabel>
 				<a
@@ -133,11 +119,9 @@
 				>
 					<img
 						src="/logoForWhite.webp"
-						class="block h-16 w-16 object-contain dark:hidden"
+						class="block h-32 w-32 object-contain text-center invert dark:invert-0"
 						alt="Logo"
 					/>
-					<img src="/logo.webp" class="hidden h-16 w-16 object-contain dark:block" alt="Logo" />
-					<h4 class="text-center text-[16px]! font-bold">Yebehir Ventures</h4>
 				</a>
 			</Sidebar.GroupLabel>
 

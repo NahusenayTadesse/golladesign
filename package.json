@@ -1,8 +1,11 @@
 {
-	"name": "yebehir",
+	"name": "golla",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
+	"overrides": {
+		"typebox": "1.1.6"
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -60,7 +63,7 @@
 		"typescript-eslint": "^8.59.0",
 		"vite": "^7.3.2",
 		"vite-plugin-devtools-json": "^1.0.0",
-		"zod": "^4.3.6"
+		"zod": "^4.4.3"
 	},
 	"dependencies": {
 		"@friendofsvelte/tipex": "^0.1.1",

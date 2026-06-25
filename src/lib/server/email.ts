@@ -26,55 +26,6 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
 	});
 };
 
-const generateOrderTable = (items) => {
-	const rows = items
-		.map((item) => {
-			let variation = '';
-			let price = 0;
-
-			// Case 1: price exists explicitly
-			if (typeof item.price === 'number') {
-				price = item.price;
-				variation = item.amount;
-			}
-			// Case 2: amount = "price variation"
-			else if (typeof item.amount === 'string') {
-				const parts = item.amount.split(' ');
-				price = Number(parts[0]) || 0;
-				variation = parts.slice(1).join(' ') || '';
-			}
-
-			return `
-                 <tr style="border-bottom: 1px solid #eee;">
-                     <td style="padding: 10px; text-align: left;">
-                         Product #${item.product} ${variation ? `(${variation})` : ''}
-                     </td>
-                     <td style="padding: 10px; text-align: center;">
-                         ${item.quantity}
-                     </td>
-                     <td style="padding: 10px; text-align: right;">
-                         ${price} ETB
-                     </td>
-                 </tr>
-             `;
-		})
-		.join('');
-	return `
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px; font-family: sans-serif;">
-            <thead>
-                <tr style="background-color: #2596be; color: white;">
-                    <th style="padding: 10px; text-align: left;">Item</th>
-                    <th style="padding: 10px; text-align: center;">Qty</th>
-                    <th style="padding: 10px; text-align: right;">Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${rows}
-            </tbody>
-        </table>
-    `;
-};
-
 // --- ADMIN NOTIFICATION TEMPLATE ---
 export const adminContactTemplate = (data: {
 	name: string;
@@ -83,39 +34,54 @@ export const adminContactTemplate = (data: {
 	subject: string;
 	contactMessage?: string;
 }) => ({
-	subject: `📩 Yebehir Lead: ${data.subject}`,
+	subject: `🏛️ Golla Design Lead: ${data.subject}`,
 	html: `
-        <div style="font-family: sans-serif; color: #091B38; max-width: 600px; margin: auto; border: 1px solid #F2E1D1; border-radius: 8px; overflow: hidden;">
-            <!-- Header -->
-            <div style="background-color: #091B38; padding: 25px; text-align: center;">
-                <h2 style="color: #F2E1D1; margin: 0; font-size: 20px; letter-spacing: 1px;">New Website Inquiry</h2>
+        <div style="font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #171717; max-width: 600px; margin: auto; border: 1px solid #e5e5e5; border-radius: 12px; overflow: hidden; background-color: #fafafa;">
+            <!-- Studio Minimal Header -->
+            <div style="background-color: #171717; padding: 30px; text-align: left;">
+                <span style="color: #ffffff; font-size: 11px; font-weight: 900; tracking-widest: 0.2em; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 4px;">Studio CRM Registry</span>
+                <h2 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 900; text-transform: uppercase; tracking-tight: -0.025em;">New Project Brief</h2>
             </div>
 
-            <!-- Body -->
-            <div style="padding: 30px; background-color: #ffffff;">
-                <p style="margin-bottom: 10px;"><strong>Client Name:</strong> ${data.name}</p>
-                <p style="margin-bottom: 10px;"><strong>Email:</strong> ${data.email}</p>
-                <p style="margin-bottom: 10px;"><strong>Phone:</strong> ${data.phoneNumber}</p>
-                <p style="margin-bottom: 20px;"><strong>Interested In:</strong> ${data.subject}</p>
+            <!-- Specifications Body -->
+            <div style="padding: 35px 30px; background-color: #ffffff;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    <tr style="border-b: 1px solid #f0f0f0;">
+                        <td style="padding: 10px 0; color: #566557; width: 120px; font-weight: 500;">Client Entity:</td>
+                        <td style="padding: 10px 0; color: #171717; font-weight: 700;">${data.name}</td>
+                    </tr>
+                    <tr style="border-b: 1px solid #f0f0f0;">
+                        <td style="padding: 10px 0; color: #566557; font-weight: 500;">Email Address:</td>
+                        <td style="padding: 10px 0; color: #171717; font-weight: 700;"><a href="mailto:${data.email}" style="color: #171717; text-decoration: underline;">${data.email}</a></td>
+                    </tr>
+                    <tr style="border-b: 1px solid #f0f0f0;">
+                        <td style="padding: 10px 0; color: #566557; font-weight: 500;">Phone Line:</td>
+                        <td style="padding: 10px 0; color: #171717; font-weight: 700;">${data.phoneNumber}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px 0; color: #566557; font-weight: 500;">Project Scope:</td>
+                        <td style="padding: 10px 0; color: #171717; font-weight: 700; text-transform: uppercase; font-size: 13px; tracking-wide: 0.05em;">${data.subject}</td>
+                    </tr>
+                </table>
 
-                <div style="margin-top: 20px; border-top: 1px solid #F2E1D1; padding-top: 20px;">
-                    <strong style="color: #091B38;">Message Details:</strong>
-                    <div style="background: #fdfaf7; padding: 20px; margin-top: 10px; border-radius: 4px; border-left: 4px solid #F2E1D1; line-height: 1.6;">
-                        ${data.contactMessage || '<i>No message provided</i>'}
+                <div style="margin-top: 25px; border-top: 1px solid #e5e5e5; padding-top: 25px;">
+                    <strong style="color: #171717; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 10px;">Design Brief Details:</strong>
+                    <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #171717; line-height: 1.6; font-size: 14px; color: #404040;">
+                        ${data.contactMessage || '<i>No specific brief criteria or text submitted.</i>'}
                     </div>
                 </div>
 
-                <div style="margin-top: 30px; text-align: center;">
+                <div style="margin-top: 35px; text-align: center;">
                     <a href="mailto:${data.email}"
-                       style="background: #091B38; color: #F2E1D1; padding: 12px 25px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">
-                       Reply to Customer
+                       style="background: #171717; color: #ffffff; padding: 14px 30px; text-decoration: none; border-radius: 8px; font-size: 12px; font-weight: 900; uppercase; letter-spacing: 1px; display: inline-block; text-transform: uppercase;">
+                        Open Correspondence Channel
                     </a>
                 </div>
             </div>
 
-            <!-- Footer -->
-            <div style="background: #F2E1D1; padding: 15px; text-align: center; font-size: 11px; color: #091B38; font-weight: bold;">
-                YEBEHIR VENTURES | INTERNAL NOTIFICATION
+            <!-- Footer Meta -->
+            <div style="background: #f5f5f5; padding: 20px; text-align: center; font-size: 10px; color: #a3a3a3; font-weight: 700; letter-spacing: 1.5px; border-top: 1px solid #e5e5e5;">
+                GOLLA DESIGN GROUP | SECURE INTAKE ENGINE
             </div>
         </div>
     `
@@ -123,48 +89,48 @@ export const adminContactTemplate = (data: {
 
 // --- CUSTOMER CONFIRMATION TEMPLATE ---
 export const customerContactTemplate = (name: string, subject: string) => ({
-	subject: `We've Received Your Inquiry - Yebehir Ventures`,
+	subject: `Project Brief Logged - Golla Design Group`,
 	html: `
-        <div style="max-width: 600px; margin: auto; font-family: sans-serif; border: 1px solid #F2E1D1; border-radius: 8px; overflow: hidden;">
+        <div style="max-width: 600px; margin: auto; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; border: 1px solid #e5e5e5; border-radius: 12px; overflow: hidden; background-color: #ffffff;">
             <!-- Header -->
-            <div style="background-color: #091B38; padding: 30px; text-align: center;">
-                <img src="https://yebehir.com/logo.png"
-                     alt="Yebehir Ventures Logo"
-                     width="140"
-                     style="display: block; margin: 0 auto 15px;">
-                <h1 style="color: #F2E1D1; margin: 0; font-size: 18px; letter-spacing: 2px; text-transform: uppercase;">
-                    Inquiry Received
+            <div style="background-color: #ffffff; padding: 40px 30px 20px 30px; text-align: left; border-b: 1px solid #f5f5f5;">
+                <img src="https://golladesign.com/logo.png"
+                     alt="Golla Design Group"
+                     width="160"
+                     style="display: block; margin-bottom: 20px; filter: grayscale(100%);">
+                <span style="color: #566557; font-size: 11px; font-weight: 700; uppercase; letter-spacing: 2px; text-transform: uppercase; display: block;">Studio Receipt</span>
+                <h1 style="color: #171717; margin: 0; font-size: 24px; font-weight: 900; tracking-tight: -0.03em; text-transform: uppercase;">
+                    Brief Transmission Verified
                 </h1>
             </div>
 
             <!-- Body -->
-            <div style="padding: 40px 30px; color: #333; background-color: #ffffff; line-height: 1.6;">
-                <p>Hi <strong>${name}</strong>,</p>
+            <div style="padding: 20px 30px 40px 30px; color: #404040; background-color: #ffffff; line-height: 1.6; font-size: 15px;">
+                <p>Hello <strong>${name}</strong>,</p>
 
                 <p>
-                    Thank you for reaching out to <strong>Yebehir Ventures</strong>.
-                    We have successfully received your inquiry regarding:
+                    Thank you for contacting the design studio at <strong>Golla Design Group</strong>. We have successfully cataloged your project blueprint consultation request for the following design track:
                 </p>
 
-                <p style="font-weight: bold; color: #091B38; margin: 15px 0; padding: 10px; background: #fdfaf7; border-radius: 4px; text-align: center;">
+                <p style="font-weight: 800; color: #171717; margin: 20px 0; padding: 15px; background: #f5f5f5; border-radius: 8px; text-align: center; border: 1px solid #e5e5e5; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">
                     "${subject}"
                 </p>
 
                 <p>
-                    Our team is currently reviewing your request. Whether you're looking to book <strong>4 Kilo Plaza</strong>, plan a corporate event, or explore partnership opportunities, we'll get back to you shortly to discuss how we can bring your vision to life.
+                    An architect or spatial coordinator from our team is reviewing your structural parameters and project description. We balance human flow, material integrity, and volumetric aesthetics, and will contact you directly to schedule an initial design layout review.
                 </p>
 
-                <p style="margin-top: 30px;">
-                    Best regards,<br/>
-                    <strong style="color: #091B38;">Yebehir Ventures Team</strong><br/>
-                    <span style="font-size: 12px; color: #666;">Ahead of the curve</span>
+                <p style="margin-top: 40px; border-top: 1px solid #f5f5f5; padding-top: 25px;">
+                    Sincerely,<br/>
+                    <strong style="color: #171717; font-weight: 800; text-transform: uppercase; font-size: 13px; tracking-wide: 0.05em;">Golla Design Group</strong><br/>
+                    <span style="font-size: 12px; color: #566557; font-style: italic;">Enduring Space & Narrative</span>
                 </p>
             </div>
 
-            <!-- Footer -->
-            <div style="background: #F2E1D1; padding: 20px; text-align: center; color: #091B38; font-size: 11px;">
-                <strong>Yebehir Ventures</strong><br/>
-                Events | Venue | Sales<br/>
+            <!-- Footer Details -->
+            <div style="background: #171717; padding: 25px 30px; text-align: left; color: #a3a3a3; font-size: 11px; line-height: 1.5;">
+                <strong style="color: #ffffff; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 4px;">Golla Design Group</strong>
+                Architecture | Interior Design | 3D Visualization<br/>
                 Addis Ababa, Ethiopia
             </div>
         </div>

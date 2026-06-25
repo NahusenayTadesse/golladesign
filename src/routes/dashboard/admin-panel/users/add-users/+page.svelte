@@ -3,8 +3,6 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { zod4Client } from 'sveltekit-superforms/adapters';
-	import { add } from './schema';
 	import { superForm } from 'sveltekit-superforms/client';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
@@ -19,9 +17,7 @@
 				return new Promise((resolve) => {
 					resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
 				});
-			},
-
-			validators: zod4Client(add)
+			}
 		}
 	);
 
