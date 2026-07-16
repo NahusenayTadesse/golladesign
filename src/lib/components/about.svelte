@@ -44,10 +44,8 @@
 			<h2 class="text-4xl font-black tracking-tight uppercase sm:text-5xl">About Golla Design</h2>
 			<div class="h-1 w-12 rounded-full bg-primary"></div>
 			<p class="mx-auto max-w-3xl text-lg leading-relaxed text-muted-foreground">
-				Golla Design Group is a premium architecture and interior visualization studio based in
-				Addis Ababa, Ethiopia. We specialize in producing sophisticated structural spaces, high-end
-				interior finishes, and custom luxury furniture consultation designed perfectly around your
-				lifestyle.
+				Golla Design is a creative studio based in Addis Ababa, Ethiopia, specializing in
+				architecture, interior design, construction, and event management.
 			</p>
 		</div>
 
@@ -57,11 +55,11 @@
 			<div transition:fly={{ y: 20, duration: 600, delay: 100 }} class="lg:col-span-2">
 				<Card
 					style="background-image: url('/golla (2).webp')"
-					class="group relative flex h-full min-h-[400px] flex-col justify-end overflow-hidden border-border/40 bg-cover bg-center p-8 text-white shadow-xl"
+					class="group relative flex h-full min-h-100 flex-col justify-end overflow-hidden border-border/40 bg-cover bg-center p-8 text-white shadow-xl"
 				>
 					<!-- Gradient overlay using theme shades instead of absolute alphas -->
 					<div
-						class="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/20 transition-opacity duration-500 group-hover:via-background/75"
+						class="absolute inset-0 bg-linear-to-t from-background via-background/80 to-background/20 transition-opacity duration-500 group-hover:via-background/75"
 					></div>
 
 					<div class="relative z-10 space-y-4">
@@ -75,15 +73,21 @@
 						</CardHeader>
 						<CardContent class="flex max-w-xl flex-col gap-4 p-0 text-muted-foreground">
 							<p class="text-sm leading-relaxed sm:text-base">
-								We believe great design goes beyond aesthetics. Golla Design seamlessly integrates
-								space planning, bespoke interior architecture, and industrial craftsmanship to
-								transform both residential and commercial spaces across East Africa.
+								Since 2022, we have been transforming ideas into exceptional spaces, structures, and
+								experiences through innovative design, quality craftsmanship, and thoughtful
+								execution.
 							</p>
 							<p class="text-sm leading-relaxed sm:text-base">
-								Our approach is minimalist, high-end, and collaborative. By controlling every layer
-								of design—from initial architectural rendering to the structural finishing steps and
-								final custom furniture positioning—we make spaces feel undeniably complete and
-								exceptionally cozy.
+								We bring together architecture, interior design, construction, and event management
+								under one vision: creating meaningful solutions that combine creativity,
+								functionality, and excellence.
+							</p>
+
+							<p class="text-sm leading-relaxed sm:text-base">
+								From private residences and commercial developments to bespoke interiors and
+								large-scale events, we turn ideas into realities that inspire, perform, and endure.
+								From private residences and commercial developments to bespoke interiors and
+								large-scale events, we turn ideas into realities that inspire, perform, and endure.
 							</p>
 						</CardContent>
 					</div>

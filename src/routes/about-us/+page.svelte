@@ -120,7 +120,7 @@
 <!-- Premium Hero Banner Section -->
 <section
 	class="relative overflow-hidden border-b border-border/40 bg-cover bg-center px-4 py-24 text-white sm:py-36"
-	style="background-image: url('/about-hero.webp')"
+	style="background-image: url('/golla1.webp')"
 >
 	<!-- Adaptive dynamic mask layer matching theme background strategies -->
 	<div class="absolute inset-0 bg-background/90 backdrop-blur-xs dark:bg-background/95"></div>
@@ -139,7 +139,7 @@
 		</h1>
 
 		<p class="mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-			Golla Design Group is a premium architecture and interior visualization studio based in Addis
+			Golla Design is a premium architecture and interior visualization studio based in Addis
 			Ababa, Ethiopia. We specialize in complex architectural blueprints, structural space
 			conversions, and high-end artisanal furniture installation. We help clients manifest cohesive,
 			minimalist environments that balance ultimate utility with a cozy atmosphere.
@@ -190,7 +190,7 @@
 			<div class="relative">
 				<div class="aspect-square overflow-hidden rounded-2xl border border-border/60 bg-muted/20">
 					<img
-						src="/studio-growth.webp"
+						src="/golla2.webp"
 						alt="Golla Studio Production Design"
 						class="h-full w-full object-cover"
 					/>

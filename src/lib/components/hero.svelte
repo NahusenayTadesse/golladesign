@@ -21,7 +21,7 @@
 <section class="relative flex min-h-screen w-full items-center bg-background text-foreground antialiased selection:bg-foreground selection:text-background">
 	
 	<!-- Fine Boundary Architecture Grid (Extremely faint structural lines) -->
-	<div class="pointer-events-none absolute inset-y-0 left-1/2 w-[1px] bg-border/20 hidden lg:block" aria-hidden="true"></div>
+	<div class="pointer-events-none absolute inset-y-0 left-1/2 w-1 bg-border/20 hidden lg:block" aria-hidden="true"></div>
 
 	<!-- Background Image Slot (Occupies the right structural hemisphere) -->
 	<div class="absolute inset-y-0 right-0 z-0 hidden w-1/2 overflow-hidden bg-muted lg:block">
@@ -46,11 +46,11 @@
 					<!-- Studio Identity Framework -->
 					<div in:fly={{ y: 15, duration: 900, easing: cubicOut }} class="space-y-3">
 						<span class="block font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
-							Golla Design Group
+							Golla Design
 						</span>
 						<h1 class="text-4xl font-light tracking-tight sm:text-5xl xl:text-6xl uppercase leading-[1.1]">
-							Architectural <br />
-							<span class="font-normal text-muted-foreground/60">& Interior Systems.</span>
+							Every Space tells a story <br />
+							<span class="font-normal text-muted-foreground/60">let Us Write Yours</span>
 						</h1>
 					</div>
 
@@ -59,7 +59,7 @@
 						<p class="text-base text-muted-foreground leading-relaxed tracking-wide font-light">
 							An architectural and design-build practice based in Addis Ababa. We formulate quiet, intentional spaces, tactile bespoke materials, and luxury spatial solutions tailored completely around physical interaction.
 						</p>
-					</div>
+					</div>	
 
 					<!-- Intent Action & Index Tracker Row -->
 					<div in:fly={{ y: 15, duration: 900, delay: 400, easing: cubicOut }} class="flex flex-col sm:flex-row sm:items-center justify-between gap-8 pt-4 border-t border-border/40">
