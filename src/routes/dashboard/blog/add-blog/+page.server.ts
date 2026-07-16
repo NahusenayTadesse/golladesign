@@ -28,7 +28,7 @@ export const load: PageServerLoad = async () => {
 	};
 };
 
-import { saveUploadedFile } from '$lib/server/upload.js';
+import { saveUploadedFile, uploadGallery } from '$lib/server/upload.js';
 
 export const actions: Actions = {
 	addBlog: async ({ request, cookies, locals }) => {
@@ -43,8 +43,6 @@ export const actions: Actions = {
 		const featuredImage = await saveUploadedFile(image);
 		const galleryImages = await uploadGallery(gallery);
 		const result = await db.transaction(async (tx) => {
-			// 1. Upload images first (usually done before the DB transaction starts
-			// to avoid keeping a DB connection open during slow network I/O)
 
 			let newSlug: string;
 
@@ -112,22 +110,22 @@ export const actions: Actions = {
 	}
 };
 
-const uploadGallery = async (gallery: File[] | undefined) => {
-	try {
-		// 1. Map each file to the upload promise
-		const uploadPromises = gallery.map(async (file) => {
-			const address = await saveUploadedFile(file);
-			return address; // This is the string returned by your function
-		});
+// const uploadGallery = async (gallery: File[] | undefined) => {
+// 	try {
+// 		// 1. Map each file to the upload promise
+// 		const uploadPromises = gallery.map(async (file) => {
+// 			const address = await saveUploadedFile(file);
+// 			return address; // This is the string returned by your function
+// 		});
 
-		// 2. Wait for all uploads to complete and store results in an array
-		const uploadedAddresses: string[] = await Promise.all(uploadPromises);
+// 		// 2. Wait for all uploads to complete and store results in an array
+// 		const uploadedAddresses: string[] = await Promise.all(uploadPromises);
 
-		console.log('All files uploaded:', uploadedAddresses);
+// 		console.log('All files uploaded:', uploadedAddresses);
 
-		return uploadedAddresses;
-	} catch (error) {
-		console.error('Error uploading gallery:', error);
-		throw error;
-	}
-};
+// 		return uploadedAddresses;
+// 	} catch (error) {
+// 		console.error('Error uploading gallery:', error);
+// 		throw error;
+// 	}
+// };

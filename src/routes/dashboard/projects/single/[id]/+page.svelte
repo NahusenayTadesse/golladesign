@@ -67,6 +67,8 @@
 	import ViewOnSite from '$lib/components/ViewOnSite.svelte';
 
 	// $form.date = data?.product?.createdAt?.toLocaleString('en-CA');
+
+	
 </script>
 
 <svelte:head>
@@ -115,9 +117,9 @@
 			</article>
 
 			<article class="max-auto mx-auto w-full max-w-4xl px-6 py-12">
-				<div class="rounded-2xl border border-slate-100 p-8 shadow-sm md:p-12">
+				<div class="rounded-2xl border  p-8 shadow-sm md:p-12">
 					<!-- Section Header -->
-					<h2 class="mb-6 border-b border-slate-100 pb-4 text-3xl font-bold tracking-tight">
+					<h2 class="mb-6 border-b bpb-4 text-3xl font-bold tracking-tight">
 						Content
 					</h2>
 
@@ -125,7 +127,7 @@
 					<div
 						class="prose prose-slate prose-headings:text-slate-800 prose-p:leading-relaxed prose-li:my-1 max-w-none"
 					>
-						{@html data?.product?.content}
+						<RichTextEditor disabled value={data?.product?.content} />
 					</div>
 				</div>
 			</article>
@@ -266,8 +268,8 @@
 
 <div class="mx-auto my-12 px-4 sm:px-6 lg:px-4">
 	{#if data?.product?.title}
-		<div class="mb-6 border-b border-gray-100 pb-4">
-			<nav class="mb-2 text-xs font-medium tracking-wider text-gray-400 uppercase">
+		<div class="mb-6 border-b pb-4">
+			<nav class="mb-2 text-xs font-medium tracking-wideruppercase">
 				Gallery Images
 			</nav>
 			<h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
@@ -277,14 +279,14 @@
 	{/if}
 
 	<div
-		class="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl transition-shadow hover:shadow-2xl"
+		class="overflow-hidden rounded-3xl border shadow-xl transition-shadow hover:shadow-2xl"
 	>
 		<div class="p-3 sm:p-6">
 			<Button onclick={() => (editGallery = !editGallery)} class="mb-4">
 				{#if !editGallery}
 					<Pencil class="h-4 w-4" />
 					Edit
-				{:else}
+				{:else}w
 					<ArrowLeft class="h-4 w-4" />
 
 					Back

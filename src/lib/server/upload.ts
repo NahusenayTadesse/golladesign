@@ -35,3 +35,31 @@ export async function saveUploadedFile(file: File | undefined): Promise<string> 
 }
 
 import { invalidateStatCache } from '$lib/server/fileCache';
+
+
+export const uploadGallery = async (gallery: File[] | undefined) => {
+
+	console.log(gallery)
+    // 1. Guard against undefined or null
+    if (!gallery || !Array.isArray(gallery)) {
+        return [];
+    }
+
+    try {
+        // 2. Filter out empty files (size === 0 or missing name) before mapping
+        const validFiles = gallery.filter(file => file && file.size > 0);
+        
+        if (validFiles.length === 0) return [];
+
+        const uploadPromises = validFiles.map(async (file) => {
+            const address = await saveUploadedFile(file);
+            return address; 
+        });
+
+        const uploadedAddresses: string[] = await Promise.all(uploadPromises);
+        return uploadedAddresses;
+    } catch (error) {
+        console.error('Error uploading gallery:', error);
+        throw error;
+    }
+};

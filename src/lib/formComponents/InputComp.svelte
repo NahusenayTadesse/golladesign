@@ -31,6 +31,21 @@
 		images = $bindable(),
 		className = ''
 	} = $props();
+
+
+	function flattenErrors(err: unknown): string[] {
+		if (!err) return [];
+		if (typeof err === 'string') return [err];
+		if (Array.isArray(err)) {
+			return err.flatMap((e) => (typeof e === 'string' ? e : flattenErrors(e)));
+		}
+		if (typeof err === 'object') {
+			return Object.values(err).flatMap((v) => flattenErrors(v));
+		}
+		return [String(err)];
+	}
+
+	let fieldErrors = $derived(flattenErrors($errors[name]));
 </script>
 
 <div class="flex w-full max-w-full flex-col justify-start gap-2 p-1">
@@ -74,7 +89,7 @@
 		/>
 	{/if}
 
-	{#if $errors[name]}
+	<!-- {#if $errors[name]}
 		{#if $errors[name]._errors}
 			{#each $errors[name]._errors as error}
 				<p class="flex items-center gap-2 text-red-500"><CircleAlert /> {error}</p>
@@ -82,5 +97,11 @@
 		{:else}
 			<p class="text-red-500">{$errors[name]}</p>
 		{/if}
-	{/if}
+	{/if} -->
+
+{#if fieldErrors.length}
+	{#each fieldErrors as error}
+		<p class="flex items-center gap-2 text-red-500"><CircleAlert /> {error}</p>
+	{/each}
+{/if}
 </div>
