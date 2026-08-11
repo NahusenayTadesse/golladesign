@@ -44,7 +44,7 @@
 			<Button
 				variant="ghost"
 				size="icon"
-				class="absolute top-1/2 right-1.5 size-7 -translate-y-1/2 rounded-lg"
+				class="absolute top-1/2 right-1.5 size-9 -translate-y-1/2 rounded-lg"
 				onclick={() => (searchQuery = '')}
 			>
 				<XIcon class="size-3.5" />
@@ -57,7 +57,7 @@
 		<Button
 			variant={selectedEventType === null ? 'default' : 'outline'}
 			size="sm"
-			class="h-8 rounded-xl px-4 py-1.5 text-xs font-bold tracking-wider uppercase"
+			class="h-10 rounded-xl px-4 text-xs font-bold tracking-wider uppercase"
 			onclick={() => (selectedEventType = null)}
 		>
 			All Projects
@@ -67,7 +67,7 @@
 			<Button
 				variant={selectedEventType === category ? 'default' : 'outline'}
 				size="sm"
-				class="h-8 rounded-xl border-border/60 px-4 py-1.5 text-xs font-bold tracking-wider uppercase"
+				class="h-10 rounded-xl border-border/60 px-4 text-xs font-bold tracking-wider uppercase"
 				onclick={() => (selectedEventType = selectedEventType === category ? null : category)}
 			>
 				{category}
@@ -78,7 +78,7 @@
 			<Button
 				variant="ghost"
 				size="sm"
-				class="h-8 rounded-xl px-3 text-xs font-semibold text-muted-foreground hover:text-foreground"
+				class="h-10 rounded-xl px-3 text-xs font-semibold text-muted-foreground hover:text-foreground"
 				onclick={clearFilters}
 			>
 				<XIcon class="mr-1 size-3.5" />

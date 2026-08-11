@@ -7,22 +7,22 @@
 	let { children } = $props();
 </script>
 
-<div class="mb-8 flex flex-row items-center justify-start gap-2">
+<div class="mb-6 flex flex-row flex-wrap items-center justify-start gap-2">
 	<Button
 		href="/dashboard/projects"
 		variant={page.url.pathname === '/dashboard/projects' ? 'default' : 'outline'}
-		><Sheet /> Projects</Button
+		class="h-11"><Sheet /> Projects</Button
 	>
 
 	<Button
 		href="/dashboard/projects/category"
 		variant={page.url.pathname === '/dashboard/projects/category' ? 'default' : 'outline'}
-		><Sheet /> Categories</Button
+		class="h-11"><Sheet /> Categories</Button
 	>
 	<Button
 		href="/dashboard/projects/add-project"
 		variant={page.url.pathname === '/dashboard/projects/add-project' ? 'default' : 'outline'}
-		><Plus /> Add New Project</Button
+		class="h-11"><Plus /> Add New Project</Button
 	>
 </div>
 

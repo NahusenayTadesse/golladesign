@@ -63,6 +63,22 @@
 			close();
 		}
 	};
+
+	/* Swipe navigation — touch users expect to drag between images rather than
+	   hunt for the arrows. */
+	let touchStartX = 0;
+	const SWIPE_THRESHOLD = 50;
+
+	const handleTouchStart = (e: TouchEvent) => {
+		touchStartX = e.changedTouches[0].screenX;
+	};
+
+	const handleTouchEnd = (e: TouchEvent) => {
+		const delta = e.changedTouches[0].screenX - touchStartX;
+		if (Math.abs(delta) < SWIPE_THRESHOLD) return;
+		if (delta < 0) next();
+		else prev();
+	};
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -82,7 +98,7 @@
 		<Button
 			variant="ghost"
 			size="icon"
-			class="absolute top-4 right-4 z-10 text-white hover:bg-white/20 hover:text-white"
+			class="absolute top-4 right-4 z-10 size-11 rounded-full bg-black/40 text-white hover:bg-white/20 hover:text-white"
 			onclick={close}
 		>
 			<XIcon class="size-6" />
@@ -101,7 +117,7 @@
 			<Button
 				variant="ghost"
 				size="icon"
-				class="absolute top-1/2 left-4 z-10 size-12 -translate-y-1/2 rounded-full text-white hover:bg-white/20 hover:text-white"
+				class="absolute top-1/2 left-2 z-10 size-12 -translate-y-1/2 rounded-full bg-black/40 text-white hover:bg-white/20 hover:text-white sm:left-4"
 				onclick={prev}
 			>
 				<ChevronLeftIcon class="size-8" />
@@ -114,7 +130,7 @@
 			<Button
 				variant="ghost"
 				size="icon"
-				class="absolute top-1/2 right-4 z-10 size-12 -translate-y-1/2 rounded-full text-white hover:bg-white/20 hover:text-white"
+				class="absolute top-1/2 right-2 z-10 size-12 -translate-y-1/2 rounded-full bg-black/40 text-white hover:bg-white/20 hover:text-white sm:right-4"
 				onclick={next}
 			>
 				<ChevronRightIcon class="size-8" />
@@ -123,7 +139,11 @@
 		{/if}
 
 		<!-- Image container -->
-		<div class="flex max-h-[85vh] max-w-[90vw] items-center justify-center">
+		<div
+			class="flex max-h-[85vh] max-w-[90vw] touch-pan-y items-center justify-center"
+			ontouchstart={handleTouchStart}
+			ontouchend={handleTouchEnd}
+		>
 			{#key currentIndex}
 				<img
 					src="/files/{currentImage}"
@@ -137,12 +157,14 @@
 		<!-- Thumbnail strip -->
 		{#if images.length > 1}
 			<div
-				class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-2 rounded-lg bg-black/50 p-2"
+				class="absolute bottom-4 left-1/2 z-10 no-scrollbar flex max-w-[92vw] -translate-x-1/2 gap-2 overflow-x-auto rounded-lg bg-black/50 p-2"
 			>
 				{#each images as image, index (index)}
 					<button
+						type="button"
 						class={[
-							'size-12 overflow-hidden rounded-md border-2 transition-all duration-200',
+							'shrink-0',
+							'size-12 touch-manipulation overflow-hidden rounded-md border-2 transition-all duration-200 active:scale-90',
 							index === currentIndex
 								? 'border-white opacity-100'
 								: 'border-transparent opacity-50 hover:opacity-80'

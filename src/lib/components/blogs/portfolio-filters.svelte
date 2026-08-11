@@ -41,7 +41,7 @@
 			<Button
 				variant="ghost"
 				size="icon"
-				class="absolute top-1/2 right-2 size-8 -translate-y-1/2 rounded-full"
+				class="absolute top-1/2 right-2 size-9 -translate-y-1/2 rounded-full"
 				onclick={() => (searchQuery = '')}
 			>
 				<XIcon class="size-4" />
@@ -54,14 +54,14 @@
 		<Button
 			variant={selectedEventType === null ? 'default' : 'outline'}
 			size="sm"
-			class="rounded-full"
+			class="h-10 rounded-full px-4"
 			onclick={() => (selectedEventType = null)}>All Blogs</Button
 		>
 		{#each eventTypes as eventType}
 			<Button
 				variant={selectedEventType === eventType ? 'default' : 'outline'}
 				size="sm"
-				class="rounded-full"
+				class="h-10 rounded-full px-4"
 				onclick={() => (selectedEventType = selectedEventType === eventType ? null : eventType)}
 			>
 				{eventType}
@@ -71,7 +71,7 @@
 			<Button
 				variant="ghost"
 				size="sm"
-				class="rounded-full text-muted-foreground hover:text-foreground"
+				class="h-10 rounded-full px-4 text-muted-foreground hover:text-foreground"
 				onclick={clearFilters}
 			>
 				<XIcon class="mr-1 size-4" />

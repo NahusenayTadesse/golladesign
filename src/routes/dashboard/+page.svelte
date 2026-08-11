@@ -11,6 +11,7 @@
 		ShoppingBag,
 		Quote,
 		Briefcase,
+		Contact,
 		MapPin,
 		Plus
 	} from '@lucide/svelte';
@@ -18,12 +19,13 @@
 	const navigation = [
 		{
 			title: 'Content',
-			description: 'Blogs and client testimonials',
+			description: 'Blogs, testimonials, partners and team',
 			color: 'border-l-amber-500',
 			links: [
 				{ name: 'Blog', href: '/blog', icon: Newspaper },
 				{ name: 'Testimonials', href: '/testimonials', icon: Quote },
-				{ name: 'Partner Logos', href: '/logos', icon: Image }
+				{ name: 'Partner Logos', href: '/logos', icon: Image },
+				{ name: 'Team Members', href: '/team', icon: Contact }
 			]
 		},
 		{

@@ -8,6 +8,7 @@ import {
 	blog,
 	blogCategories,
 	gallery,
+	serviceGallery,
 	teamMembers
 } from '$lib/server/db/schema';
 import type { LayoutServerLoad } from './$types';
@@ -27,8 +28,20 @@ export const load: LayoutServerLoad = async () => {
 		})
 		.from(testimonials);
 
-	// Then, get services
-	const servicesItems = await db.select().from(services);
+	// Then, get services along with their gallery images, so cards can advertise
+	// how many extra photos sit behind each service.
+	const serviceRows = await db.select().from(services);
+	const serviceImages = await db
+		.select({ serviceId: serviceGallery.serviceId, imageUrl: serviceGallery.imageUrl })
+		.from(serviceGallery);
+
+	const servicesItems = serviceRows.map((service) => ({
+		...service,
+		galleryImages: serviceImages
+			.filter((img) => img.serviceId === service.id)
+			.map((img) => img.imageUrl)
+			.filter((url): url is string => Boolean(url))
+	}));
 
 	const teamList = await db
 		.select({

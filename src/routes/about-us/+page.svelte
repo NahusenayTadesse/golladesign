@@ -16,12 +16,8 @@
 	import FeaturesSection from '$lib/components/features-section.svelte';
 	import IndustriesSection from '$lib/components/industries-section.svelte';
 	import VisionMission from '$lib/components/vision-mission.svelte';
-	import {
-		IconBrandFacebook,
-		IconBrandLinkedin,
-		IconBrandInstagram,
-		IconBrandTiktok
-	} from '@tabler/icons-svelte';
+	import SocialLinks from '$lib/components/social-links.svelte';
+	import { contactInfo } from '$lib/site';
 	import FAQ from '$lib/components/faq.svelte';
 	import Slider from '$lib/components/slider.svelte';
 	import Testimonial from '$lib/components/testimonial.svelte';
@@ -29,29 +25,6 @@
 	import TeamCarousel from '$lib/components/teams/team-caro.svelte';
 
 	let { data } = $props();
-
-	const socialLinks = [
-		{
-			name: 'Facebook',
-			url: 'https://www.facebook.com/golladesign',
-			icon: IconBrandFacebook
-		},
-		{
-			name: 'Instagram',
-			url: 'https://www.instagram.com/golladesign',
-			icon: IconBrandInstagram
-		},
-		{
-			name: 'TikTok',
-			url: 'https://www.tiktok.com/@golladesign',
-			icon: IconBrandTiktok
-		},
-		{
-			name: 'LinkedIn',
-			url: 'https://www.linkedin.com/company/golladesign',
-			icon: IconBrandLinkedin
-		}
-	];
 
 	// Streamlined Architecture Studio Pillars
 	const units = [
@@ -129,7 +102,7 @@
 		<div
 			class="inline-block rounded-full border border-border/50 bg-secondary px-4 py-1.5 text-xs font-bold tracking-widest text-primary uppercase"
 		>
-			Beautiful &amp; Useful
+			Designed to Inspire. Built to Last.
 		</div>
 
 		<h1
@@ -139,14 +112,14 @@
 		</h1>
 
 		<p class="mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-			Golla Design is a premium architecture and interior visualization studio based in Addis
-			Ababa, Ethiopia. We specialize in complex architectural blueprints, structural space
-			conversions, and high-end artisanal furniture installation. We help clients manifest cohesive,
-			minimalist environments that balance ultimate utility with a cozy atmosphere.
+			Golla Design is a premium architecture and interior visualization studio based in Addis Ababa,
+			Ethiopia. We specialize in complex architectural blueprints, structural space conversions, and
+			high-end artisanal furniture installation. We help clients manifest cohesive, minimalist
+			environments that balance ultimate utility with a cozy atmosphere.
 		</p>
 
 		<div class="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
-			<Button size="lg" href="/contact" class="group w-full gap-2 sm:w-auto">
+			<Button size="lg" href="/contact-us" class="group w-full gap-2 sm:w-auto">
 				Consult Studio
 				<ArrowRightIcon class="size-4 transition-transform group-hover:translate-x-1" />
 			</Button>
@@ -166,19 +139,7 @@
 			<p class="text-xs font-medium tracking-wide text-muted-foreground uppercase">
 				Follow our design timeline
 			</p>
-			<div class="flex gap-2">
-				{#each socialLinks as social (social.name)}
-					<a
-						href={social.url}
-						target="_blank"
-						rel="noopener noreferrer"
-						title={social.name}
-						class="flex size-10 items-center justify-center rounded-xl border border-border/60 bg-background/40 text-muted-foreground transition-all hover:border-primary hover:bg-secondary hover:text-primary"
-					>
-						<social.icon class="size-5" />
-					</a>
-				{/each}
-			</div>
+			<SocialLinks />
 		</div>
 	</div>
 </section>
@@ -519,12 +480,12 @@
 			</div>
 
 			<div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-				<Button href="/contact" size="lg" class="group w-full gap-2 sm:w-auto">
+				<Button href="/contact-us" size="lg" class="group w-full gap-2 sm:w-auto">
 					Get Your Estimate
 					<ArrowRightIcon class="size-4 transition-transform group-hover:translate-x-1" />
 				</Button>
 				<Button
-					href="tel:+251930109760"
+					href={contactInfo.phones[0].href}
 					size="lg"
 					variant="outline"
 					class="w-full border-border/60 bg-background/50 text-foreground sm:w-auto"

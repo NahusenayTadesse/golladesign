@@ -9,8 +9,8 @@
 	import TeamCard from './team-card.svelte';
 	type TeamMember = {
 		name: string;
-		position: string;
-		avatar: string;
+		position: string | null;
+		avatar: string | null;
 		description: string;
 	};
 
@@ -61,10 +61,12 @@
 				{/each}
 			</CarouselContent>
 			<CarouselPrevious
-				class="-left-4 border-border bg-background/80 backdrop-blur-sm transition-colors hover:bg-primary hover:text-primary-foreground lg:-left-12"
+				size="icon-lg"
+				class="-left-2 border-border bg-background/90 shadow-sm backdrop-blur-sm transition-colors hover:bg-primary hover:text-primary-foreground lg:-left-12"
 			/>
 			<CarouselNext
-				class="-right-4 border-border bg-background/80 backdrop-blur-sm transition-colors hover:bg-primary hover:text-primary-foreground lg:-right-12"
+				size="icon-lg"
+				class="-right-2 border-border bg-background/90 shadow-sm backdrop-blur-sm transition-colors hover:bg-primary hover:text-primary-foreground lg:-right-12"
 			/>
 		</Carousel>
 	</div>

@@ -188,7 +188,7 @@
 
 				<!-- Strategic CTA Interaction Segment -->
 				<div class="mt-10 flex flex-col gap-3 border-t border-border/40 pt-8 sm:flex-row">
-					<Button class="flex-1 rounded-xl" href="/contact" size="lg">
+					<Button class="flex-1 rounded-xl" href="/contact-us" size="lg">
 						Discuss This Design Framework
 					</Button>
 					<Button

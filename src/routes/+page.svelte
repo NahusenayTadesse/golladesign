@@ -9,6 +9,7 @@
 
 	import Testimonial from '$lib/components/testimonial.svelte';
 	import Slider from '$lib/components/slider.svelte';
+	import TeamCarousel from '$lib/components/teams/team-caro.svelte';
 
 	let { data } = $props();
 </script>
@@ -52,12 +53,9 @@
 	<!-- Canonical URL -->
 	<link rel="canonical" href="https://golladesign.com/" />
 
-	<!-- Favicon / Theming -->
-	<link rel="icon" type="image/png" href="/logo.jpg" />
+	<!-- Theming (favicon is declared once in the root layout) -->
 	<meta name="theme-color" content="#ffffff" />
 </svelte:head>
-
-
 
 <Hero />
 <About />
@@ -97,10 +95,12 @@
 
 				<!-- Styled Navigation Navigation using semantic borders -->
 				<Carousel.Previous
-					class="hidden border-border/60 bg-background text-foreground hover:bg-secondary hover:text-secondary-foreground md:flex"
+					size="icon-lg"
+					class="border-border/60 bg-background text-foreground shadow-sm hover:bg-secondary hover:text-secondary-foreground"
 				/>
 				<Carousel.Next
-					class="hidden border-border/60 bg-background text-foreground hover:bg-secondary hover:text-secondary-foreground md:flex"
+					size="icon-lg"
+					class="border-border/60 bg-background text-foreground shadow-sm hover:bg-secondary hover:text-secondary-foreground"
 				/>
 			</Carousel.Root>
 		</div>
@@ -135,13 +135,25 @@
 				</Carousel.Content>
 
 				<Carousel.Previous
-					class="hidden border-border/60 bg-background text-foreground hover:bg-secondary hover:text-secondary-foreground md:flex"
+					size="icon-lg"
+					class="border-border/60 bg-background text-foreground shadow-sm hover:bg-secondary hover:text-secondary-foreground"
 				/>
 				<Carousel.Next
-					class="hidden border-border/60 bg-background text-foreground hover:bg-secondary hover:text-secondary-foreground md:flex"
+					size="icon-lg"
+					class="border-border/60 bg-background text-foreground shadow-sm hover:bg-secondary hover:text-secondary-foreground"
 				/>
 			</Carousel.Root>
 		</div>
+	</section>
+{/if}
+
+{#if data?.teamMembers?.length}
+	<section id="team" class="border-t border-border/40 bg-background py-16">
+		<TeamCarousel
+			members={data.teamMembers}
+			title="Meet Our Team"
+			subtitle="The architects, craftspeople, and event designers who bring every Golla Design project to life."
+		/>
 	</section>
 {/if}
 

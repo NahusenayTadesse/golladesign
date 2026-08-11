@@ -5,9 +5,14 @@
 		name: string;
 		featuredImage: string | null;
 		description: string | null;
+		galleryImages?: string[];
 	};
 
-	const { services, title = 'Our Services', subtitle }: Props = $props();
+	const {
+		services,
+		title = 'Our Services',
+		subtitle = 'Browse the photos on each card, then open a service to see its full gallery.'
+	}: Props = $props();
 
 	type Props = {
 		services: Service[];

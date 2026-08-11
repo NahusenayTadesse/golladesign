@@ -7,16 +7,16 @@
 	let { children } = $props();
 </script>
 
-<div class="mb-8 flex flex-row items-center justify-start gap-2">
+<div class="mb-6 flex flex-row flex-wrap items-center justify-start gap-2">
 	<Button
 		href="/dashboard/services"
 		variant={page.url.pathname === '/dashboard/services' ? 'default' : 'outline'}
-		><Sheet /> Services</Button
+		class="h-11"><Sheet /> Services</Button
 	>
 	<Button
 		href="/dashboard/services/add-service"
 		variant={page.url.pathname === '/dashboard/services/add-service' ? 'default' : 'outline'}
-		><Plus /> Add Services</Button
+		class="h-11"><Plus /> Add Services</Button
 	>
 </div>
 

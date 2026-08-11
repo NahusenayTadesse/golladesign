@@ -6,7 +6,7 @@
 		CardHeader,
 		CardTitle
 	} from '$lib/components/ui/card';
-	import { CompassIcon, LayersIcon, ArmchairIcon, SparklesIcon } from '@lucide/svelte';
+	import { CompassIcon, LayersIcon, ArmchairIcon, PartyPopperIcon } from '@lucide/svelte';
 	import { fly } from 'svelte/transition';
 
 	// Refined core pillars for an architectural & interior design studio
@@ -27,9 +27,10 @@
 			description: 'Custom luxury furniture making and specialized lighting consulting.'
 		},
 		{
-			icon: SparklesIcon,
-			label: 'Tailored Lifestyles',
-			description: 'Crafting spaces that perfectly balance beauty, utility, and coziness.'
+			icon: PartyPopperIcon,
+			label: 'Event Design',
+			description:
+				'End-to-end concept, staging, and styling for launches, weddings, and corporate events.'
 		}
 	];
 </script>
@@ -65,10 +66,10 @@
 					<div class="relative z-10 space-y-4">
 						<CardHeader class="space-y-1 p-0">
 							<CardTitle class="text-4xl font-black tracking-tight text-foreground">
-								Beautiful &amp; Useful
+								Where Ideas Take Shape
 							</CardTitle>
 							<CardDescription class="text-lg font-medium tracking-wide text-primary">
-								Tailored directly to your environment
+								Designed to Inspire. Built to Last.
 							</CardDescription>
 						</CardHeader>
 						<CardContent class="flex max-w-xl flex-col gap-4 p-0 text-muted-foreground">

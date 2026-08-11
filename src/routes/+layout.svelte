@@ -15,13 +15,15 @@
 		if (!('Notification' in window)) return; // Safari iOS etc.
 
 		if (Notification.permission === 'granted') {
-			new Notification(title, { body, icon: '/logo.png' });
+			new Notification(title, { body, icon: siteLogos.raster });
 		} else if (Notification.permission !== 'denied') {
 			const perm = await Notification.requestPermission();
 
-			if (perm === 'granted') new Notification(title, { body, icon: '/logo.png' });
+			if (perm === 'granted') new Notification(title, { body, icon: siteLogos.raster });
 		}
 	}
+
+	import { siteLogos } from '$lib/site';
 
 	import Header from '$lib/components/header.svelte';
 	import Footer from '$lib/components/footer.svelte';
@@ -55,7 +57,7 @@
 	});
 </script>
 
-<svelte:head><link rel="icon" href="/logoWhite.png" /></svelte:head>
+<svelte:head><link rel="icon" href={siteLogos.raster} /></svelte:head>
 <ModeWatcher />
 <Toaster position="bottom-right" richColors closeButton />
 <ProgressBar color="#F2E1D1" zIndex={1000} />

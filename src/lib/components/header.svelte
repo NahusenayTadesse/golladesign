@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { ArrowRight, MenuIcon, XIcon, CompassIcon } from '@lucide/svelte';
+	import { ArrowRight, MenuIcon, XIcon } from '@lucide/svelte';
 	import DarkMode from './DarkMode.svelte';
 	import { page } from '$app/state';
+	import { siteLogos } from '$lib/site';
 
 	import { Sheet, SheetContent, SheetTrigger } from '$lib/components/ui/sheet';
 	import { Button } from '$lib/components/ui/button';
@@ -33,25 +34,30 @@
 		<div class="flex shrink-0 items-center gap-3">
 			<a
 				href="/"
-				class="flex items-center gap-2 font-black tracking-widest text-foreground transition-opacity hover:opacity-90"
+				aria-label="Golla Design Group — home"
+				class="flex items-center gap-2.5 transition-opacity hover:opacity-90 active:opacity-75"
 			>
 				<img
-					src="/logoForWhite.webp"
-					class="block h-8 object-contain text-center invert dark:invert-0"
-					alt="Logo"
+					src={siteLogos.mark}
+					class="block h-9 w-auto object-contain brightness-[0.4] contrast-125 dark:brightness-100 dark:contrast-100"
+					alt="Golla Design Group"
 				/>
+				<span
+					class="hidden text-[10px] font-black tracking-[0.3em] text-muted-foreground uppercase sm:block"
+				>
+					Design
+				</span>
 			</a>
 		</div>
 
 		<!-- Minimalist Desktop Navigation Menu -->
-		<nav class="hidden items-center gap-1 md:flex">
+		<nav class="hidden items-center gap-1 lg:flex">
 			{#each menuItems as item (item.href)}
 				<Button
 					variant={page.url.pathname === item.href ? 'secondary' : 'ghost'}
-					size="sm"
 					href={item.href}
 					onclick={handleMenuClick}
-					class="relative font-medium tracking-wide transition-colors duration-200"
+					class="relative h-10 px-3 text-sm font-medium tracking-wide transition-colors duration-200"
 				>
 					{item.label}
 					{#if page.url.pathname === item.href}
@@ -68,21 +74,22 @@
 		<div class="flex flex-row items-center gap-4">
 			<div class="hidden flex-row items-center justify-end gap-3 lg:flex">
 				<DarkMode />
-				<Button href="/contact-us" size="sm" class="group gap-2">
+				<Button href="/contact-us" size="lg" class="group gap-2">
 					Consult Studio
 					<ArrowRight class="size-4 transition-transform duration-300 group-hover:translate-x-1" />
 				</Button>
 			</div>
 
 			<!-- Elegant Responsive Mobile Interface -->
-			<div class="flex items-center gap-2 md:hidden">
+			<div class="flex items-center gap-2 lg:hidden">
 				<DarkMode />
 				<Sheet bind:open={isOpen}>
 					<SheetTrigger>
 						{#snippet child({ props: triggerProps })}
 							<Button
 								variant="outline"
-								size="icon"
+								size="icon-lg"
+								aria-label={isOpen ? 'Close menu' : 'Open menu'}
 								class="border-border/60 bg-background/50"
 								{...triggerProps}
 							>
@@ -99,9 +106,15 @@
 						class="flex w-72 flex-col border-l border-border/60 bg-background p-0"
 					>
 						<!-- Secondary Studio Branding header inside the mobile tray -->
-						<div class="flex items-center gap-2 border-b border-border/40 p-6">
-							<CompassIcon class="size-5 text-primary" />
-							<span class="text-sm font-black tracking-widest text-foreground">GOLLA DESIGN</span>
+						<div class="flex items-center gap-2.5 border-b border-border/40 p-6">
+							<img
+								src={siteLogos.mark}
+								alt="Golla Design Group"
+								class="h-7 w-auto object-contain brightness-[0.4] contrast-125 dark:brightness-100 dark:contrast-100"
+							/>
+							<span class="text-[10px] font-black tracking-[0.3em] text-muted-foreground uppercase">
+								Design
+							</span>
 						</div>
 
 						<nav class="flex flex-1 flex-col gap-1 p-4">
@@ -109,7 +122,7 @@
 								<Button
 									variant={page.url.pathname === item.href ? 'secondary' : 'ghost'}
 									href={item.href}
-									class="w-full justify-start gap-3 rounded-xl px-4 py-6 text-base font-medium transition-all"
+									class="h-12 w-full justify-start gap-3 rounded-xl px-4 text-base font-medium transition-all"
 									onclick={handleMenuClick}
 								>
 									{item.label}
@@ -118,7 +131,12 @@
 						</nav>
 
 						<div class="border-t border-border/40 bg-muted/20 p-4">
-							<Button href="/contact" class="w-full justify-center gap-2" onclick={handleMenuClick}>
+							<Button
+								href="/contact-us"
+								size="lg"
+								class="w-full justify-center gap-2"
+								onclick={handleMenuClick}
+							>
 								Consult Studio
 								<ArrowRight class="size-4" />
 							</Button>

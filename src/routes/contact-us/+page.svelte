@@ -9,65 +9,50 @@
 	} from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 
-	import { MailIcon, SendIcon, PhoneIcon, CompassIcon } from '@lucide/svelte';
+	import { MailIcon, SendIcon, PhoneIcon, CompassIcon, MapPinIcon } from '@lucide/svelte';
 
 	import { superForm } from 'sveltekit-superforms/client';
 	import { toast } from 'svelte-sonner';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import {
-		IconBrandFacebook,
-		IconBrandInstagram,
-		IconBrandTiktok,
-		IconBrandLinkedin
-	} from '@tabler/icons-svelte';
+	import { IconBrandWhatsapp } from '@tabler/icons-svelte';
+	import SocialLinks from '$lib/components/social-links.svelte';
+	import { contactInfo } from '$lib/site';
 
 	let { data } = $props();
 	const { form, errors, enhance, delayed, message } = superForm(data.form, {
 		dataType: 'json'
 	});
 
-	// Dynamic Studio Social Matrices
-	const socialLinks = [
-		{
-			name: 'Facebook',
-			href: 'https://www.facebook.com/golladesign',
-			icon: IconBrandFacebook,
-			color: 'hover:border-primary'
-		},
-		{
-			name: 'Instagram',
-			href: 'https://www.instagram.com/golladesign/',
-			icon: IconBrandInstagram,
-			color: 'hover:border-primary'
-		},
-		{
-			name: 'TikTok',
-			href: 'https://www.tiktok.com/@golladesign',
-			icon: IconBrandTiktok,
-			color: 'hover:border-primary'
-		},
-		{
-			name: 'LinkedIn',
-			href: 'https://www.linkedin.com/company/golladesign',
-			icon: IconBrandLinkedin,
-			color: 'hover:border-primary'
-		}
-	];
-
 	// Direct Studio Contact Coordinates
-	const contactInfo = [
+	const contactRows = [
+		...contactInfo.phones.map((phone, index) => ({
+			icon: PhoneIcon,
+			label: index === 0 ? 'Studio Line' : 'Alternate Line',
+			value: phone.display,
+			href: phone.href,
+			external: false
+		})),
+		{
+			icon: IconBrandWhatsapp,
+			label: 'WhatsApp',
+			value: contactInfo.whatsapp.display,
+			href: contactInfo.whatsapp.href,
+			external: true
+		},
 		{
 			icon: MailIcon,
 			label: 'Email',
-			value: 'studio@golladesign.com',
-			href: 'mailto:studio@golladesign.com'
+			value: contactInfo.email.display,
+			href: contactInfo.email.href,
+			external: false
 		},
 		{
-			icon: PhoneIcon,
-			label: 'Studio Line (WhatsApp)',
-			value: '+251 930 109 760',
-			href: 'https://wa.me/+251930109760'
+			icon: MapPinIcon,
+			label: 'Address',
+			value: contactInfo.address.display,
+			href: contactInfo.address.href,
+			external: true
 		}
 	];
 
@@ -161,7 +146,7 @@
 									{errors}
 									name="phoneNumber"
 									label="Phone Number"
-									placeholder="+251 930 109 760"
+									placeholder="+251 9XX XXX XXX"
 								/>
 							</div>
 
@@ -186,7 +171,8 @@
 							<!-- Reactive Submission Button Interaction Framework -->
 							<Button
 								type="submit"
-								class="w-full gap-2 rounded-xl py-6 font-bold tracking-wide uppercase transition-all"
+								size="lg"
+								class="h-12 w-full gap-2 rounded-xl font-bold tracking-wide uppercase transition-all"
 							>
 								{#if $delayed}
 									<LoadingBtn name="Transmitting Specification" />
@@ -210,10 +196,12 @@
 						>
 					</CardHeader>
 					<CardContent class="space-y-3">
-						{#each contactInfo as info (info.label)}
+						{#each contactRows as info (info.label)}
 							<a
 								href={info.href}
-								class="flex items-start gap-4 rounded-xl border border-transparent p-3 transition-all hover:border-border/40 hover:bg-secondary"
+								target={info.external ? '_blank' : undefined}
+								rel={info.external ? 'noopener noreferrer' : undefined}
+								class="flex min-h-14 items-start gap-4 rounded-xl border border-transparent p-3 transition-all hover:border-border/40 hover:bg-secondary active:bg-secondary"
 							>
 								<div
 									class="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-secondary text-primary"
@@ -226,7 +214,7 @@
 									>
 										{info.label}
 									</p>
-									<p class="truncate text-sm font-semibold text-foreground">{info.value}</p>
+									<p class="text-sm font-semibold text-foreground">{info.value}</p>
 								</div>
 							</a>
 						{/each}
@@ -241,25 +229,7 @@
 						>
 					</CardHeader>
 					<CardContent>
-						<div class="grid grid-cols-2 gap-3">
-							{#each socialLinks as social (social.name)}
-								<a
-									href={social.href}
-									target="_blank"
-									rel="noopener noreferrer"
-									class={[
-										'flex flex-col items-center gap-2 rounded-xl border border-border/60 bg-background/50 p-4 transition-all hover:bg-secondary hover:text-primary',
-										social.color
-									]}
-									title={social.name}
-								>
-									<social.icon
-										class="size-5 text-muted-foreground transition-colors group-hover:text-primary"
-									/>
-									<span class="text-xs font-semibold">{social.name}</span>
-								</a>
-							{/each}
-						</div>
+						<SocialLinks layout="grid" />
 					</CardContent>
 				</Card>
 

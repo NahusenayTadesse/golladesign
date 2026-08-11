@@ -8,7 +8,6 @@
 	type Service = {
 		id: string | number;
 		name: string;
-		slug: string;
 		featuredImage: string | null;
 		description: string | null;
 		longDescription: string | null;
@@ -38,19 +37,19 @@
 
 	<!-- Open Graph / Social Matrices -->
 	<meta property="og:type" content="website" />
-	<meta property="og:url" content="https://golladesign.com/services/${service?.slug}" />
+	<meta property="og:url" content={`https://golladesign.com/services/${service?.id}`} />
 	<meta property="og:title" content={pageTitle} />
 	<meta property="og:description" content={service?.description} />
 	<meta property="og:image" content={imageUrl} />
 
 	<!-- Twitter Engine Specs -->
 	<meta property="twitter:card" content="summary_large_image" />
-	<meta property="twitter:url" content="https://golladesign.com/services/${service?.slug}" />
+	<meta property="twitter:url" content={`https://golladesign.com/services/${service?.id}`} />
 	<meta property="twitter:title" content={pageTitle} />
 	<meta property="twitter:description" content={service?.description} />
 	<meta property="twitter:image" content={imageUrl} />
 
-	<link rel="canonical" href="https://golladesign.com/services/${service?.slug}" />
+	<link rel="canonical" href={`https://golladesign.com/services/${service?.id}`} />
 
 	<!-- Local Architectural Practice Schema Injection -->
 	{#if service}
@@ -156,7 +155,7 @@
 									<LayersIcon class="size-3.5" />
 									Related Studio Reference Executions
 								</div>
-								<Gallery bento images={data.images} title={service?.name} />
+								<Gallery images={data.images} title={service?.name} />
 							</div>
 						{/if}
 					</article>
@@ -166,7 +165,7 @@
 				<div class="mt-8 flex flex-col gap-3 sm:flex-row">
 					<Button
 						class="h-12 flex-1 gap-1.5 rounded-xl text-xs font-black tracking-widest uppercase"
-						href="/contact"
+						href="/contact-us"
 						size="lg"
 					>
 						Request Structural Proposal <ArrowRightIcon class="size-3.5" />

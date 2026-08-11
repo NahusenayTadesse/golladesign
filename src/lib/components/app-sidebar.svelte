@@ -16,6 +16,7 @@
 		Images
 	} from '@lucide/svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
+	import { siteLogos } from '$lib/site';
 	import type { ComponentProps } from 'svelte';
 	import { useSidebar } from '$lib/components/ui/sidebar/index.js';
 
@@ -92,6 +93,7 @@
 			url: '/dashboard/admin-panel',
 			icon: UserRoundCog,
 			items: [
+				{ title: 'Overview', url: '/dashboard/admin-panel', icon: LayoutDashboard },
 				{ title: 'Users', url: '/dashboard/admin-panel/users', icon: Users },
 				{ title: 'Roles', url: '/dashboard/admin-panel/roles', icon: ShieldCheck }
 			]
@@ -118,9 +120,9 @@
 					target="_blank"
 				>
 					<img
-						src="/logoForWhite.webp"
-						class="block h-32 w-32 object-contain text-center invert dark:invert-0"
-						alt="Logo"
+						src={siteLogos.mark}
+						class="block h-16 w-auto object-contain brightness-[0.4] contrast-125 dark:brightness-100 dark:contrast-100"
+						alt="Golla Design Group"
 					/>
 				</a>
 			</Sidebar.GroupLabel>

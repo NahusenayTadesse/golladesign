@@ -1,30 +1,38 @@
 import { db } from '$lib/server/db';
-import { services as portfolio, serviceGallery as portfolioGallery } from '$lib/server/db/schema';
-import { eq, getTableColumns } from 'drizzle-orm';
+import { services, serviceGallery } from '$lib/server/db/schema';
+import { eq } from 'drizzle-orm';
+import { error } from '@sveltejs/kit';
 
 import type { PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ params }) => {
-	const { id } = params;
-	// First, get products
-	const portfolioItems = await db
+	const id = Number(params.id);
+
+	if (!Number.isInteger(id)) {
+		error(404, 'Service not found');
+	}
+
+	const service = await db
 		.select()
-		.from(portfolio)
-		.where(eq(portfolio.id, Number(id)))
+		.from(services)
+		.where(eq(services.id, id))
 		.limit(1)
 		.then((res) => res[0]);
 
+	if (!service) {
+		error(404, 'Service not found');
+	}
+
 	const result = await db
 		.select({
-			url: portfolioGallery.imageUrl
+			url: serviceGallery.imageUrl
 		})
-		.from(portfolioGallery)
+		.from(serviceGallery)
+		.where(eq(serviceGallery.serviceId, service.id));
 
-		.where(eq(portfolioGallery.serviceId, portfolioItems.id));
-
-	const images = result.map((img) => img.url);
+	const images = result.map((img) => img.url).filter((url): url is string => Boolean(url));
 
 	return {
-		portfolioItems,
+		service,
 		images
 	};
 };

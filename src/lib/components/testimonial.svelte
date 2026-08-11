@@ -128,7 +128,7 @@
 				<Button
 					variant="ghost"
 					size="icon"
-					class="shadow-lg-md size-10 rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-background"
+					class="shadow-lg-md size-11 rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-background active:scale-95"
 					onclick={goToPrevious}
 					aria-label="Previous testimonial"
 				>
@@ -140,7 +140,7 @@
 				<Button
 					variant="ghost"
 					size="icon"
-					class="shadow-lg-md size-10 rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-background"
+					class="shadow-lg-md size-11 rounded-full bg-background/80 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-background active:scale-95"
 					onclick={goToNext}
 					aria-label="Next testimonial"
 				>
@@ -152,17 +152,22 @@
 
 	<!-- Indicator Dots -->
 	{#if testimonials.length > 1}
-		<div class="mt-6 flex justify-center gap-2">
+		<div class="mt-2 flex justify-center gap-0">
 			{#each testimonials as _, index}
 				<button
-					class={[
-						'size-2.5 rounded-full transition-all duration-300',
-						index === currentIndex ? 'w-8 bg-primary' : 'bg-primary/30 hover:bg-primary/50'
-					]}
+					type="button"
+					class="flex size-11 touch-manipulation items-center justify-center"
 					onclick={() => goToSlide(index)}
 					aria-label={`Go to testimonial ${index + 1}`}
 					aria-current={index === currentIndex ? 'true' : 'false'}
-				></button>
+				>
+					<span
+						class={[
+							'block size-2.5 rounded-full transition-all duration-300',
+							index === currentIndex ? 'w-8 bg-primary' : 'bg-primary/30 hover:bg-primary/50'
+						]}
+					></span>
+				</button>
 			{/each}
 		</div>
 	{/if}

@@ -6,8 +6,6 @@
 	import type { Component } from 'svelte';
 	import type { IconProps } from '@lucide/svelte';
 
-	import ScrollArea from '$lib/components/ui/scroll-area/scroll-area.svelte';
-
 	let {
 		title,
 		children,
@@ -27,7 +25,7 @@
 <Dialog.Root>
 	<Dialog.Trigger class="w-auto border-0">
 		{#snippet child({ props })}
-			<Button size="sm" class="border-0" {variant} {...props}>
+			<Button size="lg" class="border-0" {variant} {...props}>
 				{#if variant === 'destructive'}
 					<Trash />
 				{/if}
@@ -38,14 +36,17 @@
 			</Button>
 		{/snippet}
 	</Dialog.Trigger>
-	<Dialog.Content class="w-lg! {className}">
+	<!-- Full width on phones, capped on larger screens. The old `w-lg!` forced a
+	     512px box regardless of the viewport. -->
+	<Dialog.Content class="w-full sm:max-w-lg! {className}">
 		<Dialog.Header>
 			<Dialog.Title>{title}</Dialog.Title>
 		</Dialog.Header>
-		<ScrollArea class="h-auto w-full! min-w-0!  px-2 pr-4" orientation="both">
-			<div class="h-auto max-h-96 w-full lg:max-h-[calc(100vh-10rem)]">
-				{@render children()}
-			</div>
-		</ScrollArea>
+		<!-- Vertical scrolling is handled by Dialog.Content itself, so the body
+		     only needs to guard against wide fields. The previous `max-h-96`
+		     clipped anything below ~384px with no way to scroll to it. -->
+		<div class="w-full min-w-0 overflow-x-auto px-1">
+			{@render children()}
+		</div>
 	</Dialog.Content>
 </Dialog.Root>

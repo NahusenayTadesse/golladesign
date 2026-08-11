@@ -3,8 +3,8 @@
 	import { Avatar, AvatarImage, AvatarFallback } from '$lib/components/ui/avatar';
 	type TeamMember = {
 		name: string;
-		position: string;
-		avatar: string;
+		position: string | null;
+		avatar: string | null;
 		description: string;
 	};
 
@@ -22,8 +22,8 @@
 </script>
 
 <Card
-	class="group hover:bg-carbg! relative h-full overflow-hidden border border-border bg-card shadow-sm transition-all duration-300
- hover:-translate-y-2 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
+	class="group relative h-full overflow-hidden border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-2
+ hover:border-primary/50 hover:bg-carbg! hover:shadow-lg hover:shadow-primary/10"
 >
 	<CardContent class="flex flex-col items-center p-6 text-center">
 		<!-- Avatar with enhanced ring effect -->
@@ -34,7 +34,9 @@
 			<Avatar
 				class="relative size-24 border-4 border-background shadow-md transition-transform duration-300 group-hover:scale-105 group-hover:border-primary/20"
 			>
-				<AvatarImage src="/files/{member.avatar}" alt={member.name} class="object-cover" />
+				{#if member.avatar}
+					<AvatarImage src="/files/{member.avatar}" alt={member.name} class="object-cover" />
+				{/if}
 				<AvatarFallback class="bg-primary/5 text-primary">
 					{getInitials(member.name)}
 				</AvatarFallback>
@@ -49,11 +51,13 @@
 		</h3>
 
 		<!-- Position -->
-		<p
-			class="mb-3 text-sm font-medium text-muted-foreground transition-colors duration-300 group-hover:text-foreground"
-		>
-			{member.position}
-		</p>
+		{#if member.position}
+			<p
+				class="mb-3 text-sm font-medium text-muted-foreground transition-colors duration-300 group-hover:text-foreground"
+			>
+				{member.position}
+			</p>
+		{/if}
 
 		<!-- Description -->
 		<p

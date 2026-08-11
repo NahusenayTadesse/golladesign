@@ -1,58 +1,78 @@
-<script>
+<script lang="ts">
 	import * as Command from '$lib/components/ui/command/index.js';
 	import { Disc, Search } from '@lucide/svelte';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
+	import { goto } from '$app/navigation';
+
 	let isOpen = $state(false);
-	let list = [
+
+	// Kept in step with the routes that actually exist under /dashboard.
+	const list = [
 		{ label: 'Dashboard', path: '/dashboard' },
 
-		// Admin Panel
+		{ label: 'Blogs', path: '/dashboard/blog' },
+		{ label: 'Add Blog', path: '/dashboard/blog/add-blog' },
+		{ label: 'Blog Categories', path: '/dashboard/blog/category' },
 
-		// Customers
-		{ label: 'Customers', path: '/dashboard/customers' },
+		{ label: 'Projects', path: '/dashboard/projects' },
+		{ label: 'Add Project', path: '/dashboard/projects/add-project' },
+		{ label: 'Project Categories', path: '/dashboard/projects/category' },
 
-		// Orders
-		{ label: 'All Orders', path: '/dashboard/orders/all-orders' },
-		{ label: 'Cancelled Orders', path: '/dashboard/orders/cancelled' },
-		{ label: 'Delivered Orders', path: '/dashboard/orders/delivered' },
+		{ label: 'Services', path: '/dashboard/services' },
+		{ label: 'Add Service', path: '/dashboard/services/add-service' },
 
-		// Products
-		{ label: 'Products', path: '/dashboard/products' },
-		{ label: 'Add Products', path: '/dashboard/products/add-products' },
-		{ label: 'Product Categories', path: '/dashboard/products/categories' },
+		{ label: 'Messages', path: '/dashboard/messages' },
+		{ label: 'Partner Logos', path: '/dashboard/logos' },
+		{ label: 'Testimonials', path: '/dashboard/testimonials' },
+		{ label: 'Team Members', path: '/dashboard/team' },
 
-		// Recipes
-		{ label: 'Recipes', path: '/dashboard/recipes/recipes' },
-		{ label: 'Add Recipe', path: '/dashboard/recipes/add-recipes' },
-
-		{ label: 'Reports', path: '/dashboard/reports' },
-
-		{ label: 'Payment Methods', path: '/dashboard/admin-panel/payment-methods' },
-		{ label: 'Roles', path: '/dashboard/admin-panel/roles' },
-		{ label: 'Add Roles', path: '/dashboard/admin-panel/roles/add-roles' },
+		{ label: 'Admin Panel', path: '/dashboard/admin-panel' },
 		{ label: 'Users', path: '/dashboard/admin-panel/users' },
-		{ label: 'Add Users', path: '/dashboard/admin-panel/users/add-users' }
+		{ label: 'Add User', path: '/dashboard/admin-panel/users/add-users' },
+		{ label: 'Roles', path: '/dashboard/admin-panel/roles' },
+		{ label: 'Add Role', path: '/dashboard/admin-panel/roles/add-roles' }
 	];
+
+	const open = (path: string) => {
+		isOpen = false;
+		goto(path);
+	};
 </script>
 
 <Dialog.Root bind:open={isOpen}>
-	<Dialog.Trigger class="w-auto px-4" title="Search for Pages"><Search /></Dialog.Trigger>
+	<Dialog.Trigger title="Search for Pages">
+		{#snippet child({ props })}
+			<button
+				{...props}
+				type="button"
+				aria-label="Search pages"
+				class="flex size-11 shrink-0 touch-manipulation items-center justify-center rounded-lg transition-colors hover:bg-muted active:bg-muted"
+			>
+				<Search class="size-5" />
+			</button>
+		{/snippet}
+	</Dialog.Trigger>
 	<Dialog.Content class="w-full">
 		<Dialog.Header>
 			<Dialog.Title>Search the whole site</Dialog.Title>
 		</Dialog.Header>
 		<ScrollArea class="h-auto rounded-md border p-2">
-			<h5 class="text-center">Search Anything</h5>
-			<Command.Root class="rounded-lg shadow-md md:min-w-[450px]">
-				<Command.Input placeholder="Type a command or search..." type="search" />
+			<Command.Root class="rounded-lg shadow-md">
+				<Command.Input placeholder="Type a page name..." type="search" />
 				<Command.List>
 					<Command.Empty>No results found.</Command.Empty>
-					<Command.Group heading="Suggestions">
+					<Command.Group heading="Pages">
 						{#each list as item (item.path)}
-							<Command.Item>
-								<Disc />
-								<a href={item.path} onclick={() => (isOpen = false)}>{item.label}</a>
+							<!-- The whole row navigates; it used to wrap a bare <a>, so taps
+							     landing beside the link text did nothing. -->
+							<Command.Item
+								value={item.label}
+								onSelect={() => open(item.path)}
+								class="min-h-11 cursor-pointer touch-manipulation"
+							>
+								<Disc class="size-4" />
+								<span>{item.label}</span>
 							</Command.Item>
 						{/each}
 					</Command.Group>

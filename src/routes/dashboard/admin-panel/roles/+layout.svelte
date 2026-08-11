@@ -7,16 +7,16 @@
 	let { children } = $props();
 </script>
 
-<div class="mb-8 flex flex-row items-center justify-start gap-2">
+<div class="mb-6 flex flex-row flex-wrap items-center justify-start gap-2">
 	<Button
 		href="/dashboard/admin-panel/roles"
 		variant={page.url.pathname === '/dashboard/admin-panel/roles' ? 'default' : 'outline'}
-		><Sheet /> All Roles</Button
+		class="h-11"><Sheet /> All Roles</Button
 	>
 	<Button
 		href="/dashboard/admin-panel/roles/add-roles"
 		variant={page.url.pathname === '/dashboard/admin-panel/roles/add-roles' ? 'default' : 'outline'}
-		><Plus /> Add Roles</Button
+		class="h-11"><Plus /> Add Roles</Button
 	>
 	<!-- <DialogComp title="Add New Customer" {content} /> -->
 </div>

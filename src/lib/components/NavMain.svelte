@@ -1,9 +1,7 @@
 <script lang="ts">
 	import * as Collapsible from '$lib/components/ui/collapsible/index.js';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
-	import { cn } from 'tailwind-variants';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-	import { sidebarMenuButtonVariants } from './ui/sidebar/sidebar-menu-button.svelte';
 	let {
 		items,
 		closeSidebar
@@ -25,9 +23,7 @@
 		closeSidebar: () => void;
 	} = $props();
 	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
-	import { slide } from 'svelte/transition';
-	import { fade, scale } from 'svelte/transition';
+	import { slide, scale } from 'svelte/transition';
 
 	function variantChecker(url: string) {
 		const currentPath = page.url.pathname;
@@ -58,15 +54,19 @@
 	<Sidebar.Menu>
 		{#each items as item (item.title)}
 			{#if item.items}
-				<Collapsible.Root open={item.isActive} class="group/collapsible">
+				<!-- Start expanded when the current route lives inside this group, so
+				     the active page is visible without an extra tap. -->
+				<Collapsible.Root
+					open={item.isActive || variantChecker(item.url)}
+					class="group/collapsible"
+				>
 					{#snippet child({ props })}
 						<Sidebar.MenuItem {...props}>
-							<Collapsible.Trigger
-								onclick={() => {
-									goto(item.url);
-									closeSidebar();
-								}}
-							>
+							<!-- Parent rows only expand/collapse. Navigating from here used to
+							     close the sheet immediately, which made the sub-items
+							     unreachable on mobile — the section itself is always available
+							     as the first sub-item below. -->
+							<Collapsible.Trigger>
 								{#snippet child({ props })}
 									<Sidebar.MenuButton
 										{...props}
@@ -85,7 +85,7 @@
 											class="ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
 										/>
 									</Sidebar.MenuButton>
-									{#if item.counter > 0}
+									{#if typeof item.counter === 'number' && item.counter > 0}
 										<span
 											class="absolute -top-2 -right-2 flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground"
 											in:scale={{ duration: 200 }}
@@ -108,7 +108,12 @@
 												tooltipContent={subItem.title}
 											>
 												{#snippet child({ props })}
-													<a href={subItem.url} {...props} transition:slide|global>
+													<a
+														href={subItem.url}
+														onclick={closeSidebar}
+														{...props}
+														transition:slide|global
+													>
 														{#if subItem.icon}
 															<subItem.icon class="h-4 w-4" />
 														{/if}
@@ -139,7 +144,7 @@
 							{/snippet}
 						</Sidebar.MenuButton>
 
-						{#if item.counter > 0}
+						{#if typeof item.counter === 'number' && item.counter > 0}
 							<span
 								class="absolute -top-2 -right-2 flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground"
 								in:scale={{ duration: 200 }}
