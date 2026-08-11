@@ -5,7 +5,7 @@
 	import { fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 
-	const images = ['/golla1.webp', '/golla2.webp', '/golla3.webp', '/golla4.webp'];
+	const images = ['hero.jpg','/golla1.webp', '/golla2.webp', '/golla3.webp', '/golla4.webp'];
 	let currentIndex = $state(0);
 	let mounted = $state(false);
 

@@ -54,7 +54,7 @@
 			<!-- Feature Display Card -->
 			<div transition:fly={{ y: 20, duration: 600, delay: 100 }} class="lg:col-span-2">
 				<Card
-					style="background-image: url('/golla (2).webp')"
+					style="background-image: url('/golla1.webp')"
 					class="group relative flex h-full min-h-100 flex-col justify-end overflow-hidden border-border/40 bg-cover bg-center p-8 text-white shadow-xl"
 				>
 					<!-- Gradient overlay using theme shades instead of absolute alphas -->
