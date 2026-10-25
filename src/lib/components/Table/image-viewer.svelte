@@ -3,7 +3,7 @@
 	import { ImageIcon, FileTextIcon, ZoomInIcon, ZoomOutIcon, RotateCcwIcon } from '@lucide/svelte';
 
 	interface Props {
-		src: string;
+		src: string | null | undefined;
 		alt?: string;
 		class?: string;
 	}
@@ -13,7 +13,7 @@
 	let isOpen = $state(false);
 	let hasError = $state(false);
 
-	const isPdf = $derived(src.toLowerCase().endsWith('.pdf'));
+	const isPdf = $derived(Boolean(src?.toLowerCase().endsWith('.pdf')));
 
 	// Zoom/pan state
 	let scale = $state(1);
@@ -128,6 +128,10 @@
 	});
 </script>
 
+{#if !src}
+	<span class="text-muted-foreground">—</span>
+{:else}
+
 <Dialog bind:open={isOpen}>
 	<DialogTrigger>
 		{#snippet child({ props })}
@@ -233,3 +237,4 @@
 		{/if}
 	</DialogContent>
 </Dialog>
+{/if}

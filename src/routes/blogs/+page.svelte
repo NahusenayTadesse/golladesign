@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import PortfolioHero from '$lib/components/blogs/portfolio-hero.svelte';
 	import PortfolioFilters from '$lib/components/blogs/portfolio-filters.svelte';
 	import PortfolioGrid from '$lib/components/blogs/portfolio-grid.svelte';
@@ -36,32 +37,10 @@
 	const resultsCount = $derived(filteredItems.length);
 </script>
 
-<svelte:head>
-	<!-- Primary Spatial Meta Tags -->
-	<title>Design Journal &amp; Architecture Trends | Golla Design Group</title>
-	<meta name="title" content="Design Journal &amp; Architecture Trends | Golla Design Group" />
-	<meta
-		name="description"
-		content="Professional insights on premium architectural layouts, minimalist interior finishing adjustments, and luxury custom furniture fabrication trends from our Addis Ababa studio."
-	/>
-
-	<!-- Open Graph / Social Matrices -->
-	<meta property="og:type" content="website" />
-	<meta property="og:url" content="/blogs" />
-	<meta property="og:title" content="Golla Design Journal | Architectural Philosophy" />
-	<meta
-		property="og:description"
-		content="Discover premium spatial design strategies, ray-traced rendering deep-dives, and bespoke production records."
-	/>
-	<meta property="og:image" content="/logo.jpg" />
-
-	<!-- Twitter Frame Configurations -->
-	<meta property="twitter:card" content="summary_large_image" />
-	<meta property="twitter:title" content="Golla Design Group Journal" />
-	<meta property="twitter:image" content="/logo.jpg" />
-
-	<link rel="canonical" href="https://golladesign.com/blogs" />
-</svelte:head>
+<Seo
+	title="Design Journal & Architecture Trends | Golla Design Group"
+	description="Professional insights on premium architectural layouts, minimalist interior finishing adjustments, and luxury custom furniture fabrication trends from our Addis Ababa studio."
+/>
 
 <div class="min-h-dvh bg-background text-foreground">
 	<!-- Hero Display Layout Block -->

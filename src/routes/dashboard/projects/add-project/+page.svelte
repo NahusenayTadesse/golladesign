@@ -36,6 +36,11 @@
 
 	import { toast } from 'svelte-sonner';
 	import RichTextEditor from '$lib/formComponents/RichTextEditor.svelte';
+	import ContentMetaFields from '$lib/formComponents/ContentMetaFields.svelte';
+	import { projectTypes, toItems } from '$lib/enums';
+
+	const projectTypeItems = toItems(projectTypes);
+	import AmharicFields from '$lib/formComponents/AmharicFields.svelte';
 	$effect(() => {
 		if ($message) {
 			if ($message.type === 'error') {
@@ -142,14 +147,42 @@
 			placeholder="Upload Project Featured Image"
 			required
 		/>
-		<InputComp
-			{form}
-			{errors}
-			type="checkboxSingle"
-			name="isFeatured"
-			label="Featured"
-			placeholder="Is Project Featured?"
-		/>
+		<div class="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			<InputComp
+				{form}
+				{errors}
+				type="select"
+				name="serviceId"
+				label="Service"
+				items={data.serviceOptions}
+			/>
+			<InputComp
+				{form}
+				{errors}
+				type="select"
+				name="projectType"
+				label="Project type"
+				items={projectTypeItems}
+			/>
+			<InputComp {form} {errors} type="number" name="areaSqm" label="Area (m²)" min="0" />
+			<InputComp {form} {errors} type="number" name="floors" label="Floors" min="0" />
+			<InputComp
+				{form}
+				{errors}
+				type="number"
+				name="yearCompleted"
+				label="Year completed"
+				min="1900"
+			/>
+			<InputComp
+				{form}
+				{errors}
+				type="text"
+				name="duration"
+				label="Duration"
+				placeholder="e.g. 14 months"
+			/>
+		</div>
 		<InputComp
 			{form}
 			{errors}
@@ -179,6 +212,16 @@
 			required
 		/>
 
+		<ContentMetaFields {form} {errors} />
+		<AmharicFields
+			{form}
+			{errors}
+			fields={[
+				{ name: 'title', label: 'Title' },
+				{ name: 'excerpt', label: 'Excerpt', type: 'textarea' },
+				{ name: 'content', label: 'Content', type: 'rich' }
+			]}
+		/>
 		<Button type="submit" form="main">
 			{#if $delayed}
 				<LoadingBtn name="Adding Project" />

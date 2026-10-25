@@ -36,6 +36,8 @@
 
 	import { toast } from 'svelte-sonner';
 	import RichTextEditor from '$lib/formComponents/RichTextEditor.svelte';
+	import ContentMetaFields from '$lib/formComponents/ContentMetaFields.svelte';
+	import AmharicFields from '$lib/formComponents/AmharicFields.svelte';
 	$effect(() => {
 		if ($message) {
 			if ($message.type === 'error') {
@@ -144,6 +146,16 @@
 			required
 		/>
 
+		<ContentMetaFields {form} {errors} />
+		<AmharicFields
+			{form}
+			{errors}
+			fields={[
+				{ name: 'title', label: 'Title' },
+				{ name: 'excerpt', label: 'Excerpt', type: 'textarea' },
+				{ name: 'content', label: 'Content', type: 'rich' }
+			]}
+		/>
 		<Button type="submit" form="main">
 			{#if $delayed}
 				<LoadingBtn name="Adding Blog" />

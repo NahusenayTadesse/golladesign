@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import {
 		ArrowRightIcon,
@@ -17,7 +18,10 @@
 	import IndustriesSection from '$lib/components/industries-section.svelte';
 	import VisionMission from '$lib/components/vision-mission.svelte';
 	import SocialLinks from '$lib/components/social-links.svelte';
-	import { contactInfo } from '$lib/site';
+	import { contactInfo as defaultContact } from '$lib/site';
+	import { page } from '$app/state';
+
+	const contactInfo = $derived(page.data.site?.contactInfo ?? defaultContact);
 	import FAQ from '$lib/components/faq.svelte';
 	import Slider from '$lib/components/slider.svelte';
 	import Testimonial from '$lib/components/testimonial.svelte';
@@ -59,36 +63,10 @@
 	];
 </script>
 
-<svelte:head>
-	<!-- Primary Meta Tags -->
-	<title>About Our Studio | Golla Design Group Architecture &amp; Interiors</title>
-	<meta
-		name="title"
-		content="Golla Design Group | Premium Architecture &amp; Interior Design Addis Ababa"
-	/>
-	<meta
-		name="description"
-		content="Discover Golla Design Group. We specialize in high-end structural interior finishes, custom luxury furniture making, and modern spatial architecture in Ethiopia."
-	/>
-	<meta
-		name="keywords"
-		content="Golla Design, Architecture Ethiopia, Interior Design Addis Ababa, Furniture Design East Africa, Luxury Construction Finishes, Space Planning Studio"
-	/>
-
-	<!-- Open Graph / Facebook -->
-	<meta property="og:type" content="website" />
-	<meta property="og:url" content="https://golladesign.com/about" />
-	<meta property="og:title" content="Golla Design Group | About Our Studio" />
-	<meta
-		property="og:description"
-		content="We handle every design layer from architectural drafts to custom fabrication. Crafting environments that balance utility and beauty."
-	/>
-	<meta property="og:image" content="/logo.jpg" />
-
-	<!-- Canonical URL -->
-	<link rel="canonical" href="https://golladesign.com/about" />
-	<meta name="theme-color" content="#ffffff" />
-</svelte:head>
+<Seo
+	title="About Our Studio | Golla Design Group Architecture & Interiors"
+	description="Discover Golla Design Group. We specialize in high-end structural interior finishes, custom luxury furniture making, and modern spatial architecture in Ethiopia."
+/>
 
 <!-- Premium Hero Banner Section -->
 <section

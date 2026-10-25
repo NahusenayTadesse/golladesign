@@ -6,7 +6,10 @@
 		IconBrandFacebook,
 		IconBrandWhatsapp
 	} from '@tabler/icons-svelte';
-	import { socialLinks } from '$lib/site';
+	import { socialLinks as defaultSocial } from '$lib/site';
+	import { page } from '$app/state';
+
+	const socialLinks = $derived(page.data.site?.socialLinks ?? defaultSocial);
 
 	const icons = {
 		facebook: IconBrandFacebook,

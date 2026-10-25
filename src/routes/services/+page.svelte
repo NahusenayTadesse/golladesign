@@ -1,41 +1,15 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import ServiceGrid from '$lib/components/services/service-grid.svelte';
 	import { SparklesIcon } from '@lucide/svelte';
 
 	let { data } = $props();
 </script>
 
-<svelte:head>
-	<title>Our Services | Architecture, Interior Design &amp; Fabrication | Golla Design Group</title>
-	<meta
-		name="title"
-		content="Our Services | Architecture, Interior Design &amp; Fabrication | Golla Design Group"
-	/>
-	<meta
-		name="description"
-		content="Explore Golla Design Group's premium services in Addis Ababa: comprehensive architectural blueprinting, high-end interior structural finishing, and bespoke custom furniture fabrication."
-	/>
-
-	<!-- Open Graph -->
-	<meta property="og:type" content="website" />
-	<meta property="og:url" content="/services" />
-	<meta
-		property="og:title"
-		content="Spatial Architecture &amp; Luxury Fabrication | Golla Design Group"
-	/>
-	<meta
-		property="og:description"
-		content="We handle every design layer—from photorealistic ray-traced 3D models to technical material execution and custom built-in furniture setup."
-	/>
-	<meta property="og:image" content="/logo.jpg" />
-
-	<!-- Twitter -->
-	<meta property="twitter:card" content="summary_large_image" />
-	<meta property="twitter:title" content="Golla Design Group | Architectural Studio Services" />
-	<meta property="twitter:image" content="/logo.jpg" />
-
-	<link rel="canonical" href="/services" />
-</svelte:head>
+<Seo
+	title="Our Services | Architecture, Interior Design & Fabrication | Golla Design Group"
+	description="Explore Golla Design Group's premium services in Addis Ababa: comprehensive architectural blueprinting, high-end interior structural finishing, and bespoke custom furniture fabrication."
+/>
 
 <!-- Premium Studio Header Section -->
 <section

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import Hero from '$lib/components/hero.svelte';
 	import About from '$lib/components/about.svelte';
 	import Faq from '$lib/components/faq.svelte';
@@ -14,48 +15,10 @@
 	let { data } = $props();
 </script>
 
-<svelte:head>
-	<!-- Primary Meta Tags -->
-	<title>Golla Design Group | Premium Architecture & Interior Design Addis Ababa</title>
-	<meta
-		name="title"
-		content="Golla Design Group | Premium Architecture & Interior Design Addis Ababa"
-	/>
-	<meta
-		name="description"
-		content="Golla Design Group specializes in sophisticated structural design, high-end interior finishing, and custom luxury furniture manufacturing in Addis Ababa, Ethiopia."
-	/>
-	<meta
-		name="keywords"
-		content="Golla Design, Architecture Ethiopia, Interior Design Addis Ababa, Furniture Making Ethiopia, Luxury Finishings East Africa, Architectural Visualization"
-	/>
-
-	<!-- Open Graph / Facebook -->
-	<meta property="og:type" content="website" />
-	<meta property="og:url" content="https://golladesign.com/" />
-	<meta property="og:title" content="Golla Design Group | Architectural & Interior Perfection" />
-	<meta
-		property="og:description"
-		content="We design beautiful, functional, and cozy spaces tailored perfectly to your lifestyle. Explore our luxury interiors and architectural portfolios."
-	/>
-	<meta property="og:image" content="/logo.jpg" />
-
-	<!-- Twitter -->
-	<meta property="twitter:card" content="summary_large_image" />
-	<meta property="twitter:url" content="https://golladesign.com/" />
-	<meta property="twitter:title" content="Golla Design Group | Space Planning & Execution" />
-	<meta
-		property="twitter:description"
-		content="Premium multi-disciplinary design studio based in Addis Ababa. From architectural blueprints to custom furniture fabrication."
-	/>
-	<meta property="twitter:image" content="/logo.jpg" />
-
-	<!-- Canonical URL -->
-	<link rel="canonical" href="https://golladesign.com/" />
-
-	<!-- Theming (favicon is declared once in the root layout) -->
-	<meta name="theme-color" content="#ffffff" />
-</svelte:head>
+<Seo
+	title="Golla Design Group | Premium Architecture & Interior Design Addis Ababa"
+	description="Golla Design Group specializes in sophisticated structural design, high-end interior finishing, and custom luxury furniture manufacturing in Addis Ababa, Ethiopia."
+/>
 
 <Hero />
 <About />
@@ -182,4 +145,4 @@
 	</section>
 {/if}
 
-<Faq />
+<Faq faqs={data.faqs} />

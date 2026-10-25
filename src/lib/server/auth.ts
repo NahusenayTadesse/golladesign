@@ -12,6 +12,12 @@ export const auth = betterAuth({
 	database: drizzleAdapter(db, { provider: 'mysql' }),
 	// Accounts are created by admins from the dashboard, never by public sign-up.
 	emailAndPassword: { enabled: true, disableSignUp: true },
+	user: {
+		// Exposes the role used for dashboard permissions on session.user.
+		additionalFields: {
+			roleId: { type: 'number', required: false, input: false }
+		}
+	},
 	plugins: [
 		admin(),
 		sveltekitCookies(getRequestEvent) // make sure this is the last plugin in the array

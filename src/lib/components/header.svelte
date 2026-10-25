@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { ArrowRight, MenuIcon, XIcon } from '@lucide/svelte';
 	import DarkMode from './DarkMode.svelte';
+	import LangToggle from './LangToggle.svelte';
 	import { page } from '$app/state';
 	import { siteLogos } from '$lib/site';
 
@@ -73,15 +74,17 @@
 		<!-- Action Block Configuration -->
 		<div class="flex flex-row items-center gap-4">
 			<div class="hidden flex-row items-center justify-end gap-3 lg:flex">
+				<LangToggle />
 				<DarkMode />
-				<Button href="/contact-us" size="lg" class="group gap-2">
-					Consult Studio
+				<Button href="/request-a-quote" size="lg" class="group gap-2">
+					Get a Quote
 					<ArrowRight class="size-4 transition-transform duration-300 group-hover:translate-x-1" />
 				</Button>
 			</div>
 
 			<!-- Elegant Responsive Mobile Interface -->
 			<div class="flex items-center gap-2 lg:hidden">
+				<LangToggle />
 				<DarkMode />
 				<Sheet bind:open={isOpen}>
 					<SheetTrigger>

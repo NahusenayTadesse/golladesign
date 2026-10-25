@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+	import LiteYoutube from '$lib/components/LiteYoutube.svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -17,46 +19,16 @@
 	);
 
 	const post: BlogItem = $derived(data?.portfolioItems);
-
-	function getId(videoUrl: string) {
-		const regex =
-			/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-		const match = videoUrl?.match(regex);
-		return match ? match[1] : null;
-	}
 </script>
 
-<svelte:head>
-	<!-- Primary Meta Tags -->
-	<title>{post.title} | Golla Design Group Journal</title>
-	<meta name="title" content="{post.title} | Golla Design Group" />
-	<meta
-		name="description"
-		content={post.excerpt ||
-			'Read the latest design journals, structural blueprints insights, and spatial ideas from Golla Design Group in Addis Ababa.'}
-	/>
-
-	<!-- Open Graph / Facebook Matrices -->
-	<meta property="og:type" content="article" />
-	<meta property="og:url" content="/blogs/{post.slug}" />
-	<meta property="og:title" content={post.title} />
-	<meta property="og:description" content={post.excerpt} />
-	<meta property="og:image" content="/files/{post.featuredImage}" />
-	<meta property="article:section" content={post.category || 'Architecture'} />
-
-	<!-- Twitter Frame -->
-	<meta property="twitter:card" content="summary_large_image" />
-	<meta property="twitter:url" content="/blogs/{post.slug}" />
-	<meta property="twitter:title" content={post.title} />
-	<meta property="twitter:description" content={post.excerpt} />
-	<meta property="twitter:image" content="/files/{post.featuredImage}" />
-
-	<!-- Canonical URL Link alignment -->
-	<link rel="canonical" href="https://golladesign.com/blogs/{post.slug}" />
-
-	<!-- Article Schema Authorship -->
-	<meta name="author" content="Golla Design Group" />
-</svelte:head>
+<Seo
+	title={post.metaTitle || `${post.title} | Golla Design Group Journal`}
+	description={post.metaDescription ||
+		post.excerpt ||
+		'Design journal from Golla Design Group in Addis Ababa.'}
+	image={post.ogImage || post.featuredImage ? `/files/${post.ogImage || post.featuredImage}` : ''}
+	type="article"
+/>
 
 <div class="min-h-dvh bg-background text-foreground" in:fade={{ duration: 300 }}>
 	<!-- Hero Image Section Layer -->
@@ -168,17 +140,8 @@
 									<div
 										class="absolute -inset-4 scale-95 rounded-[2.5rem] border border-border/20 bg-secondary/50 opacity-0 transition-all duration-500 group-hover:scale-100 group-hover:opacity-100"
 									></div>
-									<div
-										class="relative aspect-video overflow-hidden rounded-2xl border border-border bg-muted shadow-2xl"
-									>
-										<iframe
-											src="https://www.youtube.com/embed/{getId(video.videoUrl)}"
-											title="Studio Walkthrough Presentation"
-											frameborder="0"
-											allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-											allowfullscreen
-											class="h-full w-full"
-										></iframe>
+									<div class="relative">
+										<LiteYoutube url={video.videoUrl} title="Studio walkthrough" />
 									</div>
 								</div>
 							{/each}

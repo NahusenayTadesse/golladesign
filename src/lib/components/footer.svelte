@@ -2,7 +2,11 @@
 	import { MailIcon, PhoneIcon, MapPinIcon } from '@lucide/svelte';
 	import { IconBrandWhatsapp } from '@tabler/icons-svelte';
 	import SocialLinks from './social-links.svelte';
-	import { contactInfo, siteLogos } from '$lib/site';
+	import { contactInfo as defaultContact, siteLogos } from '$lib/site';
+	import { page } from '$app/state';
+
+	// Editable in Dashboard → Settings; falls back to the defaults in $lib/site.
+	const contactInfo = $derived(page.data.site?.contactInfo ?? defaultContact);
 
 	const menuItems = [
 		{ label: 'Home', href: '/' },

@@ -23,8 +23,8 @@ export type BlogItem = {
 	excerpt: string | null;
 	content: string | null;
 	createdAt: string | Date | null;
+	date?: string | null;
+	metaTitle?: string | null;
+	metaDescription?: string | null;
+	ogImage?: string | null;
 };
-
-export const eventTypes = [
-	...new Set(portfolioItems.map((item) => item.eventType).filter(Boolean))
-] as string[];

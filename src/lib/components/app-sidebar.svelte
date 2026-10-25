@@ -13,8 +13,13 @@
 		Quote,
 		Briefcase,
 		Book,
-		Images
+		Images,
+		FileText,
+		CircleHelp,
+		Settings,
+		History
 	} from '@lucide/svelte';
+	import { page } from '$app/state';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import { siteLogos } from '$lib/site';
 	import type { ComponentProps } from 'svelte';
@@ -24,13 +29,13 @@
 
 	let { ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
 
-	const navigation = [
+	const allNavigation = [
 		{ title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
-
 		{
 			title: 'Blogs',
 			url: '/dashboard/blog',
 			icon: Book,
+			perm: 'manage_content',
 			items: [
 				{ title: 'Add New Blog', url: '/dashboard/blog/add-blog', icon: Plus },
 				{ title: 'View All Blogs', url: '/dashboard/blog', icon: Sheet }
@@ -40,58 +45,26 @@
 			title: 'Projects',
 			url: '/dashboard/projects',
 			icon: Briefcase,
+			perm: 'manage_content',
 			items: [
 				{ title: 'Add New Project', url: '/dashboard/projects/add-project', icon: Plus },
 				{ title: 'View All Projects', url: '/dashboard/projects', icon: Sheet }
 			]
 		},
-
-		{
-			title: 'Services',
-			url: '/dashboard/services',
-			icon: TrendingUp
-		},
-
-		{
-			title: 'Messages',
-			url: '/dashboard/messages',
-			icon: Mail
-		},
-
-		{
-			title: 'Partner Logos',
-			url: '/dashboard/logos',
-			icon: Images
-		},
-
-		// {
-		// 	title: 'Gallery',
-		// 	url: '/dashboard/gallery',
-		// 	icon: Image
-		// },bu
-
-		{
-			title: 'Testimonials',
-			url: '/dashboard/testimonials',
-			icon: Star
-		},
-
-		{
-			title: 'Team Members',
-			url: '/dashboard/team',
-			icon: Contact
-		},
-
-		// {
-		// 	title: 'Reports',
-		// 	url: '/dashboard/reports',
-		// 	icon: ChartArea
-		// },
-
+		{ title: 'Services', url: '/dashboard/services', icon: TrendingUp, perm: 'manage_content' },
+		{ title: 'Quote Requests', url: '/dashboard/quotes', icon: FileText, perm: 'manage_leads' },
+		{ title: 'Messages', url: '/dashboard/messages', icon: Mail, perm: 'manage_leads' },
+		{ title: 'Partner Logos', url: '/dashboard/logos', icon: Images, perm: 'manage_content' },
+		{ title: 'Testimonials', url: '/dashboard/testimonials', icon: Star, perm: 'manage_content' },
+		{ title: 'Team Members', url: '/dashboard/team', icon: Contact, perm: 'manage_content' },
+		{ title: 'FAQs', url: '/dashboard/faqs', icon: CircleHelp, perm: 'manage_content' },
+		{ title: 'Site Settings', url: '/dashboard/settings', icon: Settings, perm: 'manage_settings' },
+		{ title: 'Activity Log', url: '/dashboard/activity', icon: History, perm: 'view_activity' },
 		{
 			title: 'Admin Panel',
 			url: '/dashboard/admin-panel',
 			icon: UserRoundCog,
+			perm: 'manage_users',
 			items: [
 				{ title: 'Overview', url: '/dashboard/admin-panel', icon: LayoutDashboard },
 				{ title: 'Users', url: '/dashboard/admin-panel/users', icon: Users },
@@ -99,6 +72,11 @@
 			]
 		}
 	];
+
+	// Only show sections the user's role can open.
+	const navigation = $derived(
+		allNavigation.filter((item) => !item.perm || page.data.permissions?.includes(item.perm))
+	);
 
 	const sidebar = useSidebar();
 

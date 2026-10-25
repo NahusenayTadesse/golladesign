@@ -2,7 +2,11 @@
 	import Lightbox from './lightbox.svelte';
 	import { MaximizeIcon } from '@lucide/svelte';
 
-	let { images, title }: { images: string[]; title: string } = $props();
+	let {
+		images,
+		title,
+		alts = []
+	}: { images: string[]; title: string; alts?: string[]; bento?: boolean } = $props();
 
 	/* light-box state ------------------------------------------------------ */
 	let lightboxOpen = $state(false);
@@ -33,7 +37,7 @@
 		>
 			<img
 				src="/files/{image}"
-				alt="{title} gallery image {index + 1}"
+				alt={alts[index] || `${title} gallery image ${index + 1}`}
 				loading="lazy"
 				class="h-64 w-full object-cover transition-transform duration-300 group-hover:scale-110"
 			/>

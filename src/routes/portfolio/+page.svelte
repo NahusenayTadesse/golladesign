@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import PortfolioHero from '$lib/components/portfolio/portfolio-hero.svelte';
 	import PortfolioFilters from '$lib/components/portfolio/portfolio-filters.svelte';
 	import PortfolioGrid from '$lib/components/portfolio/portfolio-grid.svelte';
@@ -53,35 +54,10 @@
 	const resultsCount = $derived(filteredItems.length);
 </script>
 
-<svelte:head>
-	<!-- Studio SEO Metadata Blocks -->
-	<title>Studio Portfolio | Golla Design Group Architecture</title>
-	<meta name="title" content="Studio Portfolio | Golla Design Group Architecture" />
-	<meta
-		name="description"
-		content="Explore our completed spatial portfolio, luxury room concepts, and photorealistic architectural visualizations executed across Addis Ababa."
-	/>
-
-	<!-- Open Graph / Social Engine Parameters -->
-	<meta property="og:type" content="website" />
-	<meta property="og:url" content="/portfolio" />
-	<meta
-		property="og:title"
-		content="Golla Design Group Portfolio | Architectural Blueprint Archives"
-	/>
-	<meta
-		property="og:description"
-		content="From boutique commercial structural layouts to master planned residential interiors. Walk through our spatial project archive."
-	/>
-	<meta property="og:image" content="/golla1.webp" />
-
-	<!-- Twitter Metric Frames -->
-	<meta property="twitter:card" content="summary_large_image" />
-	<meta property="twitter:title" content="Golla Design Group | Project Portfolio" />
-	<meta property="twitter:image" content="/golla1.webp" />
-
-	<link rel="canonical" href="/portfolio" />
-</svelte:head>
+<Seo
+	title="Studio Portfolio | Golla Design Group Architecture"
+	description="Explore our completed spatial portfolio, luxury room concepts, and photorealistic architectural visualizations executed across Addis Ababa."
+/>
 
 <div class="min-h-dvh bg-background text-foreground transition-colors duration-200">
 	<!-- Hero Presentation Block -->

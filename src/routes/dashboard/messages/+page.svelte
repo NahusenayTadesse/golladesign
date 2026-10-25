@@ -7,6 +7,10 @@
 	import Read from './read.svelte';
 	import Delete from './delete.svelte';
 	import BigText from './bigText.svelte';
+	import LeadManage from '$lib/components/LeadManage.svelte';
+	import { contactStatuses, toItems } from '$lib/enums';
+
+	const statusItems = toItems(contactStatuses);
 
 	const columns = [
 		{
@@ -27,6 +31,36 @@
 					onclick: column.getToggleSortingHandler()
 				}),
 			sortable: true
+		},
+		{
+			accessorKey: 'status',
+			header: 'Status',
+			cell: ({ row }) => renderComponent(Statuses, { status: row.original.status })
+		},
+		{
+			accessorKey: 'assignee',
+			header: 'Assigned to',
+			cell: ({ row }) => row.original.assignee ?? '—'
+		},
+		{
+			accessorKey: 'manage',
+			header: 'Manage',
+			cell: ({ row }) =>
+				renderComponent(LeadManage, {
+					id: row.original.id,
+					status: row.original.status,
+					assignedTo: row.original.assignedTo,
+					notes: row.original.notes,
+					statusItems,
+					userItems: data.users,
+					details: [
+						['Name', row.original.name],
+						['Email', row.original.email],
+						['Phone', row.original.phone],
+						['Subject', row.original.subject],
+						['Message', row.original.message]
+					]
+				})
 		},
 
 		{

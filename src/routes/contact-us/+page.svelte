@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { z } from 'zod';
 	import {
 		Card,
@@ -17,7 +18,10 @@
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import { IconBrandWhatsapp } from '@tabler/icons-svelte';
 	import SocialLinks from '$lib/components/social-links.svelte';
-	import { contactInfo } from '$lib/site';
+	import { contactInfo as defaultContact } from '$lib/site';
+	import { page } from '$app/state';
+
+	const contactInfo = $derived(page.data.site?.contactInfo ?? defaultContact);
 
 	let { data } = $props();
 	const { form, errors, enhance, delayed, message } = superForm(data.form, {
@@ -25,7 +29,18 @@
 	});
 
 	// Direct Studio Contact Coordinates
-	const contactRows = [
+	// One "Day: time" pair per line, from Dashboard → Settings.
+	const hours = $derived(
+		(contactInfo.hours ?? '')
+			.split('\n')
+			.filter((line: string) => line.trim())
+			.map((line: string) => {
+				const i = line.indexOf(':');
+				return i > 0 ? [line.slice(0, i).trim(), line.slice(i + 1).trim()] : [line.trim(), ''];
+			})
+	);
+
+	const contactRows = $derived([
 		...contactInfo.phones.map((phone, index) => ({
 			icon: PhoneIcon,
 			label: index === 0 ? 'Studio Line' : 'Alternate Line',
@@ -54,7 +69,7 @@
 			href: contactInfo.address.href,
 			external: true
 		}
-	];
+	]);
 
 	$effect(() => {
 		if ($message) {
@@ -67,27 +82,10 @@
 	});
 </script>
 
-<svelte:head>
-	<!-- Primary Spatial Meta Tags -->
-	<title>Consult Our Studio | Golla Design Group Architecture</title>
-	<meta
-		name="description"
-		content="Get in touch with Golla Design Group in Addis Ababa for modern architectural blueprinting, photorealistic 3D renders, and custom built-in furniture fabrication inquiries."
-	/>
-	<meta
-		name="keywords"
-		content="Golla Design Group, Contact Architect Addis Ababa, Interior Designer Ethiopia, Custom Furniture Sourcing, Spatial Vis consultation"
-	/>
-
-	<!-- Open Graph / Social Configuration Matrices -->
-	<meta property="og:type" content="website" />
-	<meta property="og:title" content="Consult Golla Design Group | Architecture &amp; Interiors" />
-	<meta
-		property="og:description"
-		content="Ready to plan your space? Contact our team for luxury spatial designs, premium room finishes, and architectural master planning."
-	/>
-	<meta property="og:image" content="/studio-cta.webp" />
-</svelte:head>
+<Seo
+	title="Consult Our Studio | Golla Design Group Architecture"
+	description="Get in touch with Golla Design Group in Addis Ababa for modern architectural blueprinting, photorealistic 3D renders, and custom built-in furniture fabrication inquiries."
+/>
 
 <div class="min-h-dvh w-full bg-background text-foreground">
 	<!-- Primary Main Frame Container -->
@@ -100,7 +98,7 @@
 				<CompassIcon class="size-3.5" />
 				<span>Studio Intake Portfolio</span>
 			</div>
-			<h2 class="text-4xl font-black tracking-tight uppercase sm:text-5xl">Get in Touch</h2>
+			<h1 class="text-4xl font-black tracking-tight uppercase sm:text-5xl">Get in Touch</h1>
 			<p class="mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
 				Initiate your project onboarding blueprint. For residential layout queries, interior styling
 				quotes, and custom furniture production timelines.
@@ -241,14 +239,12 @@
 						>
 					</CardHeader>
 					<CardContent class="space-y-2 text-sm leading-relaxed text-muted-foreground">
-						<div class="flex justify-between border-b border-border/30 pb-2">
-							<span class="font-medium">Monday - Friday</span>
-							<span class="font-bold text-foreground">8:30 AM - 5:30 PM</span>
-						</div>
-						<div class="flex justify-between pt-1">
-							<span class="font-medium">Saturday Desk</span>
-							<span class="font-bold text-foreground">8:30 AM - 12:00 PM</span>
-						</div>
+						{#each hours as [day, time], i (i)}
+							<div class="flex justify-between gap-4 border-border/30 pb-2 not-last:border-b">
+								<span class="font-medium">{day}</span>
+								<span class="text-right font-bold text-foreground">{time}</span>
+							</div>
+						{/each}
 					</CardContent>
 				</Card>
 			</div>

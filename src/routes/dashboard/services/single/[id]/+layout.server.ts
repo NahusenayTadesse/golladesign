@@ -4,21 +4,26 @@ import { edit, editGallery } from './schema';
 
 import { db } from '$lib/server/db';
 import { services as event, serviceGallery as productImages, user } from '$lib/server/db/schema';
-import { eq, sql, getTableColumns } from 'drizzle-orm';
+import { asc, eq, getTableColumns } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ params }) => {
 	const { id } = params;
 
-	const result = await db
+	const galleryRows = await db
 		.select({
-			url: productImages.imageUrl
+			id: productImages.id,
+			url: productImages.imageUrl,
+			altText: productImages.altText,
+			caption: productImages.caption,
+			sortOrder: productImages.sortOrder
 		})
 		.from(productImages)
-		.where(eq(productImages.serviceId, Number(id)));
+		.where(eq(productImages.serviceId, Number(id)))
+		.orderBy(asc(productImages.sortOrder), asc(productImages.id));
 
-	const images = result.map((img) => img.url);
+	const images = galleryRows.map((img) => img.url).filter((u): u is string => Boolean(u));
 
 	const product = await db
 		.select({
@@ -40,6 +45,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		product,
 		form,
 		images,
+		galleryRows,
 		galleryEdit
 	};
 };

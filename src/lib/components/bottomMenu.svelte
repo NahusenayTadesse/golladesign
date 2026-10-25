@@ -9,9 +9,15 @@
 	// tap away behind "More", which opens the full sidebar.
 	const mobNav = [
 		{ title: 'Home', url: '/dashboard', icon: LayoutDashboard, exact: true },
-		{ title: 'Projects', url: '/dashboard/projects', icon: Briefcase, exact: false },
-		{ title: 'Blogs', url: '/dashboard/blog', icon: Book, exact: false },
-		{ title: 'Messages', url: '/dashboard/messages', icon: Mail, exact: false }
+		{
+			title: 'Projects',
+			url: '/dashboard/projects',
+			icon: Briefcase,
+			exact: false,
+			perm: 'manage_content'
+		},
+		{ title: 'Blogs', url: '/dashboard/blog', icon: Book, exact: false, perm: 'manage_content' },
+		{ title: 'Quotes', url: '/dashboard/quotes', icon: Mail, exact: false, perm: 'manage_leads' }
 	];
 
 	const isActive = (url: string, exact: boolean) => {
@@ -27,7 +33,7 @@
 	class="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl lg:hidden"
 >
 	<div class="grid grid-cols-5 items-stretch">
-		{#each mobNav as item (item.url)}
+		{#each mobNav.filter((i) => !('perm' in i) || page.data.permissions?.includes(i.perm)) as item (item.url)}
 			{@const active = isActive(item.url, item.exact)}
 			<a
 				href={item.url}

@@ -58,6 +58,25 @@ export const columns = [
 			});
 		}
 	},
+	{
+		accessorKey: 'status',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Status',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => renderComponent(Statuses, { status: row.original.status })
+	},
+	{
+		accessorKey: 'sortOrder',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Order',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true
+	},
 
 	{
 		accessorKey: 'category',

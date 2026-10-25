@@ -1,18 +1,17 @@
+import { asc, desc, eq, getTableColumns } from 'drizzle-orm';
 import { db } from '$lib/server/db';
-import { projects as blog, projectCategories as blogCategories } from '$lib/server/db/schema';
-import { getTableColumns, eq } from 'drizzle-orm';
-import type { PageServerLoad } from '../$types';
+import { projects, projectCategories } from '$lib/server/db/schema';
+import type { PageServerLoad } from './$types';
+
 export const load: PageServerLoad = async () => {
-	// First, get products
 	const eventList = await db
 		.select({
-			...getTableColumns(blog),
-			category: blogCategories.name
+			...getTableColumns(projects),
+			category: projectCategories.name
 		})
-		.from(blog)
-		.leftJoin(blogCategories, eq(blog.categoryId, blogCategories.id));
+		.from(projects)
+		.leftJoin(projectCategories, eq(projects.categoryId, projectCategories.id))
+		.orderBy(asc(projects.sortOrder), desc(projects.completedAt));
 
-	return {
-		eventList
-	};
+	return { eventList };
 };

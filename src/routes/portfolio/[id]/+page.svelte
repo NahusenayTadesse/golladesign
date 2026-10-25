@@ -16,19 +16,36 @@
 		CompassIcon
 	} from '@lucide/svelte';
 	import Gallery from '$lib/components/gallery.svelte';
+	import Seo from '$lib/components/Seo.svelte';
+	import LiteYoutube from '$lib/components/LiteYoutube.svelte';
+	import BeforeAfter from '$lib/components/BeforeAfter.svelte';
+	import Testimonial from '$lib/components/testimonial.svelte';
 
 	// Svelte 5 Rune-based data intake mapping out Drizzle-inferred relations
 	let { data } = $props();
 
 	// Structured destruction matching updated projects schema relations
-	let { project, category, videos, images } = $derived(data);
+	let { project, category, service, videos, images, beforeAfter, testimonials } = $derived(data);
 
-	function getId(videoUrl: string) {
-		const regex =
-			/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-		const match = videoUrl?.match(regex);
-		return match ? match[1] : null;
-	}
+	const typeLabels: Record<string, string> = {
+		residential: 'Residential',
+		commercial: 'Commercial',
+		hospitality: 'Hospitality',
+		interior: 'Interior',
+		other: 'Other'
+	};
+
+	// Only the facts that were filled in.
+	const facts = $derived(
+		[
+			['Project type', project?.projectType ? typeLabels[project.projectType] : null],
+			['Area', project?.areaSqm ? `${project.areaSqm.toLocaleString()} m²` : null],
+			['Floors', project?.floors ? String(project.floors) : null],
+			['Year completed', project?.yearCompleted ? String(project.yearCompleted) : null],
+			['Duration', project?.duration],
+			['Category', category?.name]
+		].filter((f): f is [string, string] => Boolean(f[1]))
+	);
 
 	// Architectural Page Anchor Jumps
 	const navItems = $derived(
@@ -41,11 +58,9 @@
 				show: !!project?.blueprintUrl || !!project?.clientName
 			},
 			{ label: 'Media Renders', id: 'gallery', show: images?.length > 0 },
-			{
-				label: 'Video Walkthroughs',
-				id: 'videos',
-				show: videos?.filter((v) => v.isActive).length > 0
-			}
+			{ label: 'Before & After', id: 'before-after', show: beforeAfter?.length > 0 },
+			{ label: 'Video Walkthroughs', id: 'videos', show: videos?.length > 0 },
+			{ label: 'Client Words', id: 'testimonials', show: testimonials?.length > 0 }
 		].filter((item) => item.show)
 	);
 
@@ -75,17 +90,22 @@
 	);
 </script>
 
-<svelte:head>
-	<title>{project?.title} | Golla Design Group Architectural Works</title>
-	<meta name="description" content={project?.excerpt} />
-</svelte:head>
+<Seo
+	title={project?.metaTitle || `${project?.title} | Golla Design Group`}
+	description={project?.metaDescription || project?.excerpt}
+	image={project?.ogImage || project?.featuredImage
+		? `/files/${project?.ogImage || project?.featuredImage}`
+		: ''}
+	type="article"
+/>
 
 <!-- Cinematic Hero Cover Frame -->
 <section class="relative h-[65vh] min-h-[500px] w-full overflow-hidden" in:fade={{ duration: 400 }}>
 	<div class="absolute inset-0">
 		<img
-			src={project?.featuredImage ? `/files/${project.featuredImage}` : '/fallback-render.webp'}
+			src={project?.featuredImage ? `/files/${project.featuredImage}` : '/hero.jpg'}
 			alt={project?.title}
+			fetchpriority="high"
 			class="h-full w-full scale-102 object-cover"
 		/>
 		<!-- Sophisticated architecture studio dark gradient mask mapping -->
@@ -230,21 +250,27 @@
 					</CardTitle>
 				</CardHeader>
 				<CardContent class="space-y-6 p-6">
-					<div class="space-y-2 text-xs">
-						<div class="flex justify-between border-b border-border/30 pb-2">
-							<span class="font-medium text-muted-foreground">Verification State</span>
-							<Badge
-								variant="outline"
-								class="rounded-xs border-primary bg-primary/5 text-[10px] font-bold tracking-wider text-primary uppercase"
-							>
-								{project?.status}
-							</Badge>
-						</div>
-						<div class="flex justify-between border-b border-border/30 pt-1 pb-2">
-							<span class="font-medium text-muted-foreground">Framework Index</span>
-							<span class="font-bold text-foreground">G-{project?.id}</span>
-						</div>
-					</div>
+					{#if facts.length || service}
+						<dl class="space-y-2 text-xs">
+							{#each facts as [label, value] (label)}
+								<div class="flex justify-between gap-4 border-b border-border/30 pb-2">
+									<dt class="font-medium text-muted-foreground">{label}</dt>
+									<dd class="text-right font-bold text-foreground">{value}</dd>
+								</div>
+							{/each}
+							{#if service}
+								<div class="flex justify-between gap-4 border-b border-border/30 pb-2">
+									<dt class="font-medium text-muted-foreground">Service</dt>
+									<dd class="text-right font-bold">
+										<a
+											href="/services/{service.slug}"
+											class="text-primary underline-offset-4 hover:underline">{service.name}</a
+										>
+									</dd>
+								</div>
+							{/if}
+						</dl>
+					{/if}
 
 					{#if project?.blueprintUrl}
 						<div class="space-y-3 rounded-xl border border-border/40 bg-muted/30 p-4">
@@ -273,11 +299,11 @@
 					{/if}
 
 					<Button
-						href="/contact-us"
+						href="/request-a-quote"
 						variant="outline"
 						class="h-11 w-full rounded-xl border-border/60 text-xs font-bold tracking-wide uppercase"
 					>
-						Request Material Sample Board
+						Start a similar project
 					</Button>
 				</CardContent>
 			</Card>
@@ -298,13 +324,30 @@
 				</h2>
 			</div>
 			<!-- Uses your existing bento gallery parser cleanly -->
-			<Gallery {images} title="{project?.title} Execution Portfolio" bento />
+			<Gallery {images} alts={data.imageAlts} title={project?.title} bento />
 		</div>
 	</div>
 {/if}
 
 <!-- Studio Video Render Walkthrough Deck -->
-{#if videos?.filter((v) => v.isActive).length}
+{#if beforeAfter?.length}
+	<section id="before-after" class="mx-auto max-w-7xl px-6 py-16 md:px-12">
+		<h2 class="mb-8 text-2xl font-black tracking-tight text-foreground uppercase">
+			Before & After
+		</h2>
+		<div class="grid grid-cols-1 gap-10 md:grid-cols-2">
+			{#each beforeAfter as pair (pair.id)}
+				<BeforeAfter
+					before="/files/{pair.beforeUrl}"
+					after="/files/{pair.afterUrl}"
+					caption={pair.caption}
+				/>
+			{/each}
+		</div>
+	</section>
+{/if}
+
+{#if videos?.length}
 	<section id="videos" class="mx-auto max-w-7xl px-6 py-16 md:px-12 lg:py-24">
 		<div class="mb-12 flex items-center gap-4">
 			<Separator class="flex-1 bg-border/60" />
@@ -317,22 +360,13 @@
 		</div>
 
 		<div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-			{#each videos.filter((v) => v.isActive) as video (video.id)}
+			{#each videos as video (video.id)}
 				<div class="group relative space-y-4">
 					<div
 						class="absolute -inset-4 scale-98 rounded-3xl border border-border/30 bg-secondary/50 opacity-0 transition-all duration-500 group-hover:scale-100 group-hover:opacity-100"
 					></div>
-					<div
-						class="relative aspect-video overflow-hidden rounded-2xl border border-border bg-muted shadow-xl"
-					>
-						<iframe
-							src="https://www.youtube.com/embed/{getId(video.videoUrl)}"
-							title="Architectural Presentation Render Video Player"
-							frameborder="0"
-							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-							allowfullscreen
-							class="h-full w-full"
-						></iframe>
+					<div class="relative">
+						<LiteYoutube url={video.videoUrl} title="{project?.title} walkthrough" />
 					</div>
 					<div class="relative flex items-start justify-between px-2">
 						<div>
@@ -347,14 +381,28 @@
 							variant="ghost"
 							size="icon"
 							class="rounded-lg text-muted-foreground hover:text-primary"
-							href="https://www.youtube.com/embed/{getId(video.videoUrl)}"
+							href={video.videoUrl}
 							target="_blank"
+							rel="noopener noreferrer"
+							aria-label="Open video on YouTube"
 						>
-							<Maximize2Icon class="size-4" />
+							<Maximize2Icon class="size-4" aria-hidden="true" />
 						</Button>
 					</div>
 				</div>
 			{/each}
 		</div>
+	</section>
+{/if}
+
+{#if testimonials?.length}
+	<section
+		id="testimonials"
+		class="flex flex-col items-center border-t border-border/40 px-4 py-16"
+	>
+		<h2 class="mb-10 text-2xl font-black tracking-tight text-foreground uppercase">
+			What the client says
+		</h2>
+		<Testimonial {testimonials} />
 	</section>
 {/if}

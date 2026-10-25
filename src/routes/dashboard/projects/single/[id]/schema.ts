@@ -1,18 +1,18 @@
 import { z } from 'zod/v4';
+import { projectFields } from '../../projectFields';
 
 export const edit = z.object({
-	title: z.string('Title is required').min(2).max(100),
-	slug: z.string('Slug is required').min(2).max(100),
-	category: z.number('Category is required'),
-	excerpt: z.string('Excerpt is required'),
-	clientName: z.string('Client Name is required'),
-	location: z.string('Location is required'),
-	date: z.string('Completed At Date is required'),
-	bluePrint: z.file('Blue Print is required').max(10000000).optional(),
-	isFeatured: z.boolean('Is Featured is required').default(false),
-	content: z.string('Long Description is required'),
+	...projectFields,
 	image: z.file('Featured Image is required').max(10000000).optional()
 });
+
+export const addBeforeAfter = z.object({
+	before: z.file('Before image is required').max(10000000),
+	after: z.file('After image is required').max(10000000),
+	caption: z.string().max(255).optional()
+});
+
+export const deleteBeforeAfter = z.object({ id: z.coerce.number().int() });
 
 export const editGallery = z.object({
 	existing: z.string(),

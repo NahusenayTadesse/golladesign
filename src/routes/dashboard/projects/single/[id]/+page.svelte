@@ -24,6 +24,16 @@
 		{ name: 'Client Name', value: data.product?.clientName },
 		{ name: 'Location', value: data.product?.location },
 		{ name: 'Featured Project', value: data?.product?.isFeatured ? 'Yes' : 'No' },
+		{ name: 'Status', value: data.product?.status },
+		{ name: 'Display order', value: String(data.product?.sortOrder ?? 0) },
+		{ name: 'Project type', value: data.product?.projectType ?? '—' },
+		{ name: 'Area', value: data.product?.areaSqm ? `${data.product.areaSqm} m²` : '—' },
+		{ name: 'Floors', value: data.product?.floors ? String(data.product.floors) : '—' },
+		{
+			name: 'Year completed',
+			value: data.product?.yearCompleted ? String(data.product.yearCompleted) : '—'
+		},
+		{ name: 'Duration', value: data.product?.duration ?? '—' },
 		{
 			name: 'Completed On',
 			value: data?.product?.completedAt
@@ -52,6 +62,13 @@
 	import EditGallery from './editGallery.svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte.js';
 	import RichTextEditor from '$lib/formComponents/RichTextEditor.svelte';
+	import ContentMetaFields from '$lib/formComponents/ContentMetaFields.svelte';
+	import { projectTypes, toItems } from '$lib/enums';
+
+	const projectTypeItems = toItems(projectTypes);
+	import AmharicFields from '$lib/formComponents/AmharicFields.svelte';
+	import ImageMetaEditor from '$lib/formComponents/ImageMetaEditor.svelte';
+	import BeforeAfterManager from './beforeAfter.svelte';
 	$effect(() => {
 		if ($message) {
 			if ($message.type === 'error') {
@@ -67,8 +84,6 @@
 	import ViewOnSite from '$lib/components/ViewOnSite.svelte';
 
 	// $form.date = data?.product?.createdAt?.toLocaleString('en-CA');
-
-	
 </script>
 
 <svelte:head>
@@ -93,7 +108,7 @@
 		</Button>
 
 		<Delete redirect="/dashboard/projects" />
-		<ViewOnSite href="/projects/{data?.product.slug}" />
+		<ViewOnSite href="/portfolio/{data?.product.slug}" />
 	</div>
 
 	{#if editForm === false}
@@ -117,11 +132,9 @@
 			</article>
 
 			<article class="max-auto mx-auto w-full max-w-4xl px-6 py-12">
-				<div class="rounded-2xl border  p-8 shadow-sm md:p-12">
+				<div class="rounded-2xl border p-8 shadow-sm md:p-12">
 					<!-- Section Header -->
-					<h2 class="mb-6 border-b bpb-4 text-3xl font-bold tracking-tight">
-						Content
-					</h2>
+					<h2 class="bpb-4 mb-6 border-b text-3xl font-bold tracking-tight">Content</h2>
 
 					<!-- Injected Content -->
 					<div
@@ -225,14 +238,42 @@
 					placeholder="Upload Project Featured Image"
 					required
 				/>
-				<InputComp
-					{form}
-					{errors}
-					type="checkboxSingle"
-					name="isFeatured"
-					label="Featured"
-					placeholder="Is Project Featured?"
-				/>
+				<div class="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
+					<InputComp
+						{form}
+						{errors}
+						type="select"
+						name="serviceId"
+						label="Service"
+						items={data.serviceOptions}
+					/>
+					<InputComp
+						{form}
+						{errors}
+						type="select"
+						name="projectType"
+						label="Project type"
+						items={projectTypeItems}
+					/>
+					<InputComp {form} {errors} type="number" name="areaSqm" label="Area (m²)" min="0" />
+					<InputComp {form} {errors} type="number" name="floors" label="Floors" min="0" />
+					<InputComp
+						{form}
+						{errors}
+						type="number"
+						name="yearCompleted"
+						label="Year completed"
+						min="1900"
+					/>
+					<InputComp
+						{form}
+						{errors}
+						type="text"
+						name="duration"
+						label="Duration"
+						placeholder="e.g. 14 months"
+					/>
+				</div>
 				<InputComp
 					{form}
 					{errors}
@@ -253,6 +294,16 @@
 					required
 				/>
 
+				<ContentMetaFields {form} {errors} ogImage={data?.product?.ogImage ?? ''} />
+				<AmharicFields
+					{form}
+					{errors}
+					fields={[
+						{ name: 'title', label: 'Title' },
+						{ name: 'excerpt', label: 'Excerpt', type: 'textarea' },
+						{ name: 'content', label: 'Content', type: 'rich' }
+					]}
+				/>
 				<Button form="edit" type="submit" class="mt-4">
 					{#if $delayed}
 						<LoadingBtn name="Saving Changes" />
@@ -269,18 +320,14 @@
 <div class="mx-auto my-12 px-4 sm:px-6 lg:px-4">
 	{#if data?.product?.title}
 		<div class="mb-6 border-b pb-4">
-			<nav class="mb-2 text-xs font-medium tracking-wideruppercase">
-				Gallery Images
-			</nav>
+			<nav class="tracking-wideruppercase mb-2 text-xs font-medium">Gallery Images</nav>
 			<h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
 				{data.product.title}
 			</h1>
 		</div>
 	{/if}
 
-	<div
-		class="overflow-hidden rounded-3xl border shadow-xl transition-shadow hover:shadow-2xl"
-	>
+	<div class="overflow-hidden rounded-3xl border shadow-xl transition-shadow hover:shadow-2xl">
 		<div class="p-3 sm:p-6">
 			<Button onclick={() => (editGallery = !editGallery)} class="mb-4">
 				{#if !editGallery}
@@ -295,6 +342,10 @@
 
 			{#if !editGallery}
 				<Gallery {images} title={data?.product?.title} />
+				<div class="mt-8 border-t pt-6">
+					<h2 class="mb-4 text-lg font-semibold">Image details</h2>
+					<ImageMetaEditor images={data.galleryRows} />
+				</div>
 			{:else}
 				<EditGallery data={data?.galleryEdit} bind:images />
 			{/if}
@@ -310,3 +361,10 @@
 		videos={data?.videos}
 	/>
 </div>
+
+<section class="mx-auto my-12 px-4 sm:px-6 lg:px-4">
+	<div class="rounded-3xl border p-3 shadow-xl sm:p-6">
+		<h2 class="mb-4 text-lg font-semibold">Before & after</h2>
+		<BeforeAfterManager data={data.beforeAfterForm} pairs={data.beforeAfter} />
+	</div>
+</section>

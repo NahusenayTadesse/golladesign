@@ -35,6 +35,52 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
 	});
 };
 
+// --- ADMIN QUOTE REQUEST TEMPLATE ---
+export const adminQuoteTemplate = (data: {
+	name: string;
+	email: string;
+	phone: string;
+	service?: string;
+	location?: string;
+	plotSize?: string;
+	budgetRange?: string;
+	timeline?: string;
+	description?: string;
+}) => {
+	const rows: [string, string | undefined][] = [
+		['Client', data.name],
+		['Email', data.email],
+		['Phone', data.phone],
+		['Service', data.service],
+		['Location', data.location],
+		['Plot / area size', data.plotSize],
+		['Budget', data.budgetRange],
+		['Timeline', data.timeline]
+	];
+	return {
+		subject: `New quote request from ${data.name}${data.service ? ` (${data.service})` : ''}`,
+		html: `
+        <div style="font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; color: #171717; max-width: 600px; margin: auto; border: 1px solid #e5e5e5; border-radius: 12px; overflow: hidden;">
+            <div style="background-color: #171717; padding: 24px 30px;">
+                <h2 style="color: #ffffff; margin: 0; font-size: 20px; text-transform: uppercase;">New Quote Request</h2>
+            </div>
+            <div style="padding: 30px; background-color: #ffffff;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    ${rows
+											.filter(([, v]) => v)
+											.map(
+												([k, v]) =>
+													`<tr><td style="padding: 8px 0; color: #566557; width: 140px;">${k}:</td><td style="padding: 8px 0; font-weight: 700;">${esc(v as string)}</td></tr>`
+											)
+											.join('')}
+                </table>
+                ${data.description ? `<div style="margin-top: 20px; background: #f5f5f5; padding: 16px; border-radius: 8px; line-height: 1.6;">${esc(data.description).replace(/\n/g, '<br>')}</div>` : ''}
+                <p style="margin-top: 24px; font-size: 13px; color: #566557;">Manage it in Dashboard → Quote Requests.</p>
+            </div>
+        </div>`
+	};
+};
+
 // --- ADMIN NOTIFICATION TEMPLATE ---
 export const adminContactTemplate = (data: {
 	name: string;

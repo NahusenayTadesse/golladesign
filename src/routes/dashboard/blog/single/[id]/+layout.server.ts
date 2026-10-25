@@ -10,21 +10,26 @@ import {
 	user,
 	blogVideos
 } from '$lib/server/db/schema';
-import { eq, sql, getTableColumns } from 'drizzle-orm';
+import { asc, eq, getTableColumns } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ params }) => {
 	const { id } = params;
 
-	const result = await db
+	const galleryRows = await db
 		.select({
-			url: productImages.imageUrl
+			id: productImages.id,
+			url: productImages.imageUrl,
+			altText: productImages.altText,
+			caption: productImages.caption,
+			sortOrder: productImages.sortOrder
 		})
 		.from(productImages)
-		.where(eq(productImages.blogId, Number(id)));
+		.where(eq(productImages.blogId, Number(id)))
+		.orderBy(asc(productImages.sortOrder), asc(productImages.id));
 
-	const images = result.map((img) => img.url);
+	const images = galleryRows.map((img) => img.url).filter((u): u is string => Boolean(u));
 
 	const cats = await db
 		.select({
@@ -50,7 +55,11 @@ export const load: LayoutServerLoad = async ({ params }) => {
 	if (!product) error(404, 'Blog not found');
 
 	const form = await superValidate(
-		{ ...product, date: new Date(product.createdAt).toLocaleDateString('en-CA') },
+		{
+			...product,
+			isFeatured: product.isFeaturedOnHome === 1,
+			date: (product.publishedAt ?? product.createdAt).toISOString().slice(0, 10)
+		},
 		zod4(edit)
 	);
 	const galleryEdit = await superValidate(zod4(editGallery));
@@ -62,12 +71,14 @@ export const load: LayoutServerLoad = async ({ params }) => {
 	const videos = await db
 		.select()
 		.from(blogVideos)
-		.where(eq(blogVideos.blogId, Number(id)));
+		.where(eq(blogVideos.blogId, Number(id)))
+		.orderBy(asc(blogVideos.sortOrder), asc(blogVideos.id));
 
 	return {
 		product,
 		form,
 		images,
+		galleryRows,
 		galleryEdit,
 		cats,
 		addVideoForm,

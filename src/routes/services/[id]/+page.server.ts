@@ -1,38 +1,18 @@
-import { db } from '$lib/server/db';
-import { services, serviceGallery } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
-import { error } from '@sveltejs/kit';
-
+import { error, redirect } from '@sveltejs/kit';
+import { getService } from '$lib/server/content';
 import type { PageServerLoad } from './$types';
-export const load: PageServerLoad = async ({ params }) => {
-	const id = Number(params.id);
 
-	if (!Number.isInteger(id)) {
-		error(404, 'Service not found');
-	}
+export const load: PageServerLoad = async ({ params, locals: { lang } }) => {
+	const result = await getService(params.id, lang);
+	if (!result) error(404, 'Service not found');
 
-	const service = await db
-		.select()
-		.from(services)
-		.where(eq(services.id, id))
-		.limit(1)
-		.then((res) => res[0]);
-
-	if (!service) {
-		error(404, 'Service not found');
-	}
-
-	const result = await db
-		.select({
-			url: serviceGallery.imageUrl
-		})
-		.from(serviceGallery)
-		.where(eq(serviceGallery.serviceId, service.id));
-
-	const images = result.map((img) => img.url).filter((url): url is string => Boolean(url));
+	// Old links used the numeric id; send them to the slug URL.
+	if (params.id !== result.service.slug) redirect(301, `/services/${result.service.slug}`);
 
 	return {
-		service,
-		images
+		service: result.service,
+		images: result.images.map((i) => i.url),
+		imageAlts: result.images.map((i) => i.alt ?? ''),
+		relatedProjects: result.relatedProjects
 	};
 };

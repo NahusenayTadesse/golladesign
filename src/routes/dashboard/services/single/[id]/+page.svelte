@@ -17,6 +17,9 @@
 
 	let singleTable = $derived([
 		{ name: 'Title', value: data.product?.name },
+		{ name: 'URL', value: `/services/${data.product?.slug}` },
+		{ name: 'Status', value: data.product?.status },
+		{ name: 'Display order', value: String(data.product?.sortOrder ?? 0) },
 		{ name: 'Short Description', value: data.product?.description },
 		{ name: 'Added On', value: formatEthiopianDate(data.product?.createdAt) },
 		{ name: 'Added By', value: data.product?.createdBy }
@@ -43,6 +46,10 @@
 	import { formatEthiopianDate } from '$lib/global.svelte.js';
 	import RichTextEditor from '$lib/formComponents/RichTextEditor.svelte';
 	import ViewOnSite from '$lib/components/ViewOnSite.svelte';
+	import ContentMetaFields from '$lib/formComponents/ContentMetaFields.svelte';
+	import AmharicFields from '$lib/formComponents/AmharicFields.svelte';
+	import ImageMetaEditor from '$lib/formComponents/ImageMetaEditor.svelte';
+	import Statuses from '$lib/components/Table/statuses.svelte';
 	$effect(() => {
 		if ($message) {
 			if ($message.type === 'error') {
@@ -78,7 +85,7 @@
 		</Button>
 
 		<Delete redirect="/dashboard/services" />
-		<ViewOnSite href="/services/{data?.product.id}" />
+		<ViewOnSite href="/services/{data?.product.slug}" />
 	</div>
 
 	{#if editForm === false}
@@ -86,11 +93,9 @@
 			<SingleTable {singleTable} />
 
 			<article class="max-auto mx-auto w-full max-w-4xl px-6 py-12">
-				<div class="rounded-2xl border border-slate-100  p-8 shadow-sm md:p-12">
+				<div class="rounded-2xl border border-slate-100 p-8 shadow-sm md:p-12">
 					<!-- Section Header -->
-					<h2
-						class="mb-6 border-b border-slate-100 pb-4 text-3xl font-bold tracking-tight "
-					>
+					<h2 class="mb-6 border-b border-slate-100 pb-4 text-3xl font-bold tracking-tight">
 						Long Description
 					</h2>
 
@@ -117,6 +122,13 @@
 				<Errors allErrors={$allErrors} />
 
 				<InputComp {form} {errors} label="name" type="text" name="name" required={true} />
+				<InputComp
+					{form}
+					{errors}
+					label="URL slug (leave blank to build it from the name)"
+					type="text"
+					name="slug"
+				/>
 
 				<InputComp
 					{form}
@@ -150,6 +162,16 @@
 					placeholder="Upload Service Featured Image"
 					required
 				/>
+				<ContentMetaFields {form} {errors} ogImage={data?.product?.ogImage ?? ''} />
+				<AmharicFields
+					{form}
+					{errors}
+					fields={[
+						{ name: 'name', label: 'Name' },
+						{ name: 'description', label: 'Short description', type: 'textarea' },
+						{ name: 'longDescription', label: 'Long description', type: 'rich' }
+					]}
+				/>
 				<Button form="edit" type="submit" class="mt-4">
 					{#if $delayed}
 						<LoadingBtn name="Saving Changes" />
@@ -164,20 +186,16 @@
 </SingleView>
 
 <div class="mx-auto my-12 px-4 sm:px-6 lg:px-4">
-	{#if data?.product?.title}
-		<div class="mb-6 border-bpb-4">
-			<nav class="mb-2 text-xs font-medium tracking-wider uppercase">
-				Gallery Images
-			</nav>
+	{#if data?.product?.name}
+		<div class="border-bpb-4 mb-6">
+			<nav class="mb-2 text-xs font-medium tracking-wider uppercase">Gallery Images</nav>
 			<h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
-				{data.product.title}
+				{data.product.name}
 			</h1>
 		</div>
 	{/if}
 
-	<div
-		class="overflow-hidden rounded-3xl border shadow-xl transition-shadow hover:shadow-2xl"
-	>
+	<div class="overflow-hidden rounded-3xl border shadow-xl transition-shadow hover:shadow-2xl">
 		<div class="p-3 sm:p-6">
 			<Button onclick={() => (editGallery = !editGallery)} class="mb-4">
 				{#if !editGallery}
@@ -191,7 +209,11 @@
 			</Button>
 
 			{#if !editGallery}
-				<Gallery {images} title={data?.product?.title} />
+				<Gallery {images} title={data?.product?.name} />
+				<div class="mt-8 border-t pt-6">
+					<h2 class="mb-4 text-lg font-semibold">Image details</h2>
+					<ImageMetaEditor images={data.galleryRows} />
+				</div>
 			{:else}
 				<EditGallery data={data?.galleryEdit} bind:images />
 			{/if}

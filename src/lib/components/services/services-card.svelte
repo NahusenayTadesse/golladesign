@@ -7,6 +7,7 @@
 		name: string;
 		featuredImage: string | null;
 		description: string | null;
+		slug?: string;
 		galleryImages?: string[];
 	};
 
@@ -35,7 +36,7 @@
 	<!-- Image stage: doubles as the link into the service and as a mini gallery -->
 	<div class="relative aspect-4/3 overflow-hidden bg-muted">
 		<a
-			href="/services/{service.id}"
+			href="/services/{service.slug ?? service.id}"
 			aria-label="View {service.name}"
 			class="block h-full w-full focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
 		>
@@ -113,7 +114,7 @@
 	<CardHeader class="gap-1">
 		<CardTitle class="text-lg">
 			<a
-				href="/services/{service.id}"
+				href="/services/{service.slug ?? service.id}"
 				class="flex items-center justify-between gap-2 transition-colors hover:text-primary active:text-primary"
 			>
 				{service.name}

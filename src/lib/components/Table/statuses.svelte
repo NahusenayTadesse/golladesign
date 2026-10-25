@@ -38,16 +38,32 @@
 		unremovable: { icon: BadgeCheck, colour: 'bg-green-400' },
 		removable: { icon: OctagonMinus, colour: 'bg-red-500' },
 
+		/* content publishing */
+		published: { icon: BadgeCheck, colour: 'bg-green-600' },
+		draft: { icon: Loader, colour: 'bg-yellow-600' },
+		archived: { icon: OctagonMinus, colour: 'bg-gray-600' },
+
+		/* leads */
+		new: { icon: Loader, colour: 'bg-blue-600' },
+		contacted: { icon: Loader, colour: 'bg-yellow-600' },
+		in_progress: { icon: Loader, colour: 'bg-yellow-600' },
+		proposal_sent: { icon: Loader, colour: 'bg-purple-600' },
+		replied: { icon: BadgeCheck, colour: 'bg-green-600' },
+		won: { icon: BadgeCheck, colour: 'bg-green-600' },
+		closed: { icon: OctagonMinus, colour: 'bg-gray-600' },
+		lost: { icon: OctagonMinus, colour: 'bg-red-600' },
+
 		/* fallback */
 		unknown: { icon: Loader, colour: 'bg-gray-500' }
 	} as const;
 
 	/* ---------- derived ---------- */
-	const key = String(status).trim().toLowerCase() as keyof typeof statusMeta;
-	const { icon: Icon, colour } = statusMeta[key] ?? statusMeta.unknown;
+	const key = $derived(String(status).trim().toLowerCase() as keyof typeof statusMeta);
+	const meta = $derived(statusMeta[key] ?? statusMeta.unknown);
+	const Icon = $derived(meta.icon);
 </script>
 
-<Badge variant="secondary" class="{colour} text-white">
+<Badge variant="secondary" class="{meta.colour} text-white capitalize">
 	<Icon />
-	{String(status)}
+	{String(status).replace(/_/g, ' ')}
 </Badge>

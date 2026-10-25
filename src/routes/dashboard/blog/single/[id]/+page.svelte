@@ -16,6 +16,13 @@
 	import Errors from '$lib/formComponents/Errors.svelte';
 
 	let singleTable = $derived([
+		{ name: 'Status', value: data.product?.status },
+		{
+			name: 'Published',
+			value: data.product?.publishedAt
+				? formatEthiopianDate(new Date(data.product.publishedAt))
+				: '—'
+		},
 		{ name: 'Title', value: data.product?.title },
 		{ name: 'Slug', value: data.product?.slug },
 		{ name: 'Category', value: data.product?.categoryName },
@@ -45,6 +52,9 @@
 	import EditGallery from './editGallery.svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte.js';
 	import RichTextEditor from '$lib/formComponents/RichTextEditor.svelte';
+	import ContentMetaFields from '$lib/formComponents/ContentMetaFields.svelte';
+	import AmharicFields from '$lib/formComponents/AmharicFields.svelte';
+	import ImageMetaEditor from '$lib/formComponents/ImageMetaEditor.svelte';
 	$effect(() => {
 		if ($message) {
 			if ($message.type === 'error') {
@@ -91,11 +101,9 @@
 			<SingleTable {singleTable} />
 
 			<article class="max-auto mx-auto w-full max-w-4xl px-6 py-12">
-				<div class="rounded-2xl border  p-8 shadow-sm md:p-12">
+				<div class="rounded-2xl border p-8 shadow-sm md:p-12">
 					<!-- Section Header -->
-					<h2
-						class="mb-6 border-b border-slate-100 pb-4 text-3xl font-bold tracking-tight"
-					>
+					<h2 class="mb-6 border-b border-slate-100 pb-4 text-3xl font-bold tracking-tight">
 						Content
 					</h2>
 
@@ -193,6 +201,16 @@
 					required
 				/>
 
+				<ContentMetaFields {form} {errors} ogImage={data?.product?.ogImage ?? ''} />
+				<AmharicFields
+					{form}
+					{errors}
+					fields={[
+						{ name: 'title', label: 'Title' },
+						{ name: 'excerpt', label: 'Excerpt', type: 'textarea' },
+						{ name: 'content', label: 'Content', type: 'rich' }
+					]}
+				/>
 				<Button form="edit" type="submit" class="mt-4">
 					{#if $delayed}
 						<LoadingBtn name="Saving Changes" />
@@ -218,9 +236,7 @@
 		</div>
 	{/if}
 
-	<div
-		class="overflow-hidden rounded-3xl border  shadow-xl transition-shadow hover:shadow-2xl"
-	>
+	<div class="overflow-hidden rounded-3xl border shadow-xl transition-shadow hover:shadow-2xl">
 		<div class="p-3 sm:p-6">
 			<Button onclick={() => (editGallery = !editGallery)} class="mb-4">
 				{#if !editGallery}
@@ -235,6 +251,10 @@
 
 			{#if !editGallery}
 				<Gallery {images} title={data?.product?.title} />
+				<div class="mt-8 border-t pt-6">
+					<h2 class="mb-4 text-lg font-semibold">Image details</h2>
+					<ImageMetaEditor images={data.galleryRows} />
+				</div>
 			{:else}
 				<EditGallery data={data?.galleryEdit} bind:images />
 			{/if}

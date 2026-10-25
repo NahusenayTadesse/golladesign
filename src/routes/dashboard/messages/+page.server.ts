@@ -1,10 +1,12 @@
 import { superValidate, message, fail } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 
 import { deleteTestimonial, markRead } from './schema.js';
 import { db } from '$lib/server/db';
-import { contactMessages as paymentMethods } from '$lib/server/db/schema';
+import { contactMessages as paymentMethods, user } from '$lib/server/db/schema';
+import { assigneeOptions, updateLead } from '$lib/server/leads';
+import { logActivity } from '$lib/server/activity';
 import type { Actions } from './$types.js';
 import type { PageServerLoad } from './$types.js';
 
@@ -21,18 +23,27 @@ export const load: PageServerLoad = async () => {
 			subject: paymentMethods.subject,
 			isRead: paymentMethods.seen,
 			message: paymentMethods.message,
+			status: paymentMethods.status,
+			notes: paymentMethods.notes,
+			assignedTo: paymentMethods.assignedTo,
+			assignee: user.name,
 			submittedAt: paymentMethods.createdAt
 		})
-		.from(paymentMethods);
+		.from(paymentMethods)
+		.leftJoin(user, eq(user.id, paymentMethods.assignedTo))
+		.orderBy(desc(paymentMethods.createdAt));
 
 	return {
 		readForm,
 		deleteForm,
-		allPaymentMethods
+		allPaymentMethods,
+		users: await assigneeOptions()
 	};
 };
 
 export const actions: Actions = {
+	update: async ({ request, locals }) => updateLead('message', request, locals),
+
 	read: async ({ request, locals }) => {
 		const form = await superValidate(request, zod4(deleteTestimonial));
 
@@ -43,7 +54,11 @@ export const actions: Actions = {
 		const { id } = form.data;
 
 		try {
-			await db.update(paymentMethods).set({ seen: 1 }).where(eq(paymentMethods.id, id));
+			const [row] = await db.select().from(paymentMethods).where(eq(paymentMethods.id, id));
+			await db
+				.update(paymentMethods)
+				.set({ seen: 1, ...(row?.status === 'new' ? { status: 'in_progress' as const } : {}) })
+				.where(eq(paymentMethods.id, id));
 			return message(form, { type: 'success', text: 'Message Successfully Marked as Read' });
 		} catch (err: any) {
 			return message(
@@ -67,6 +82,7 @@ export const actions: Actions = {
 
 		try {
 			await db.delete(paymentMethods).where(eq(paymentMethods.id, id));
+			await logActivity(locals, 'delete', 'contact message', id);
 			return message(form, { type: 'success', text: 'Message Successfully Deleted' });
 		} catch (err: any) {
 			return message(

@@ -1,84 +1,100 @@
-import { superValidate } from 'sveltekit-superforms';
+import { superValidate, fail, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-
-import { edit, editGallery } from './schema';
-
-import { db } from '$lib/server/db';
-import { services as products, serviceGallery as productImages } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
-import { fail, message } from 'sveltekit-superforms';
 import { redirect, setFlash } from 'sveltekit-flash-message/server';
 
-import { saveUploadedFile, uploadGallery } from '$lib/server/upload';
+import { edit, editGallery } from './schema';
+import { db } from '$lib/server/db';
+import { services, serviceGallery } from '$lib/server/db/schema';
+import { deleteUploadedFiles, saveUploadedFile, uploadGallery } from '$lib/server/upload';
+import { amharicValues, contentMetaValues, uniqueSlug } from '$lib/server/forms';
+import { imageMetaAction } from '$lib/server/imageMeta';
+import { logActivity } from '$lib/server/activity';
 import type { Actions } from './$types';
 
-export const actions: Actions = {
-	editProduct: async ({ request, cookies, locals, params }) => {
-		const { id } = params;
-		const form = await superValidate(request, zod4(edit));
-		console.log(form.data);
+const getService = (id: number) =>
+	db
+		.select()
+		.from(services)
+		.where(eq(services.id, id))
+		.then((r) => r[0]);
 
+export const actions: Actions = {
+	editProduct: async ({ request, locals, params }) => {
+		const id = Number(params.id);
+		const form = await superValidate(request, zod4(edit));
 		if (!form.valid) {
-			// Stay on the same page and set a flash message
-			setFlash({ type: 'error', message: 'Please check your form data.' }, cookies);
-			return fail(400, { form });
+			return message(
+				form,
+				{ type: 'error', text: 'Please check your form data.' },
+				{ status: 400 }
+			);
 		}
 
-		const { name, image, description, longDescription } = form.data;
+		const { name, slug, image, description, longDescription } = form.data;
 
 		try {
-			if (image) {
-				const featuredImage = await saveUploadedFile(image);
+			const existing = await getService(id);
+			if (!existing)
+				return message(form, { type: 'error', text: 'Service not found' }, { status: 404 });
 
-				await db
-					.update(products)
-					.set({
-						name,
-						featuredImage,
-						description,
-						longDescription,
-						updatedBy: locals?.user?.id
-					})
-					.where(eq(products.id, Number(id)));
-			} else {
-				await db
-					.update(products)
-					.set({
-						name,
-						description,
-						longDescription,
+			const featuredImage = await saveUploadedFile(image);
+			const meta = await contentMetaValues(form.data);
 
-						updatedBy: locals?.user?.id
-					})
-					.where(eq(products.id, Number(id)));
-			}
+			await db
+				.update(services)
+				.set({
+					name,
+					slug: await uniqueSlug(services, slug || name, id),
+					description,
+					longDescription,
+					...(featuredImage ? { featuredImage } : {}),
+					...meta,
+					...amharicValues(form.data),
+					updatedBy: locals.user?.id
+				})
+				.where(eq(services.id, id));
+
+			// Remove the files that were just replaced.
+			await deleteUploadedFiles([
+				featuredImage ? existing.featuredImage : null,
+				meta.ogImage ? existing.ogImage : null
+			]);
+			await logActivity(locals, 'update', 'service', id, name);
 
 			return message(form, { type: 'success', text: 'Service Updated Successfully' });
 		} catch (err) {
-			console.error(err?.message);
-
-			return message(form, { type: 'error', text: 'Service Update Failed' + err?.message });
+			console.error('Error updating service:', err);
+			return message(form, { type: 'error', text: 'Service update failed' }, { status: 500 });
 		}
 	},
 
-	delete: async ({ cookies, params }) => {
-		const { id } = params;
+	delete: async ({ cookies, params, locals }) => {
+		const id = Number(params.id);
+		if (!id) {
+			setFlash({ type: 'error', message: 'Missing ID' }, cookies);
+			return fail(400);
+		}
 
 		try {
-			if (!id) {
-				setFlash({ type: 'error', message: 'Missing ID' }, cookies);
-				return fail(400);
-			}
+			const existing = await getService(id);
+			const images = await db
+				.select({ url: serviceGallery.imageUrl })
+				.from(serviceGallery)
+				.where(eq(serviceGallery.serviceId, id));
 
-			// Remove child rows too, otherwise they are left orphaned.
-			await db.transaction(async (tx) => {
-				await tx.delete(productImages).where(eq(productImages.serviceId, Number(id)));
-				await tx.delete(products).where(eq(products.id, Number(id)));
-			});
+			// Gallery rows are removed by ON DELETE CASCADE.
+			await db.delete(services).where(eq(services.id, id));
+			await deleteUploadedFiles([
+				existing?.featuredImage,
+				existing?.ogImage,
+				...images.map((i) => i.url)
+			]);
+			await logActivity(locals, 'delete', 'service', id, existing?.name);
 		} catch (err) {
-			console.error('Error deleting Service:', err);
-			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
-			return fail(400);
+			console.error('Error deleting service:', err);
+			setFlash({ type: 'error', message: 'Could not delete the service.' }, cookies);
+			return fail(500);
 		}
 
 		redirect(
@@ -88,60 +104,54 @@ export const actions: Actions = {
 		);
 	},
 
-	editGallery: async ({ params, request }) => {
-		const { id } = params;
+	editGallery: async ({ params, request, locals }) => {
+		const id = Number(params.id);
 		const form = await superValidate(request, zod4(editGallery));
-
 		const { existing, gallery } = form.data;
 
 		try {
-			if (!id) {
-				return message(
-					form,
-					{ type: 'error', text: 'Unexpected Error: Event ID not provided' },
-					{ status: 500 }
-				);
-			}
+			const uploaded = gallery?.length ? await uploadGallery(gallery) : [];
+			const kept = new Set(existing.split(',').filter((u) => u.trim()));
+
+			const current = await db
+				.select()
+				.from(serviceGallery)
+				.where(eq(serviceGallery.serviceId, id));
+			const removed = current.filter((row) => !row.imageUrl || !kept.has(row.imageUrl));
 
 			await db.transaction(async (tx) => {
-				let galleryImages = [];
-
-				// 1. Upload new files if they exist
-				if (gallery && gallery.length > 0) {
-					galleryImages = await uploadGallery(gallery);
-				}
-				const old = existing.split(',');
-				// 2. Combine existing (edited) strings with newly uploaded URLs
-				// We filter out empty strings/nulls to ensure data integrity
-				const finalList = [...new Set([...old, ...galleryImages])].filter(
-					(item) => item && item.trim() !== ''
-				);
-
-				// 3. ALWAYS sync if the final list is valid,
-				// even if galleryImages.length is 0 (e.g., you just deleted an old photo)
-				if (finalList.length > 0) {
-					const imageRecords = finalList.map((url) => ({
-						serviceId: Number(id),
-						imageUrl: url
-					}));
-
-					// Wipe the old associations and replace with the new "finalList"
-					await tx.delete(productImages).where(eq(productImages.serviceId, Number(id)));
-					await tx.insert(productImages).values(imageRecords);
-				} else {
-					// Handle the case where all images were removed
-					await tx.delete(productImages).where(eq(productImages.serviceId, Number(id)));
+				for (const row of removed)
+					await tx.delete(serviceGallery).where(eq(serviceGallery.id, row.id));
+				if (uploaded.length) {
+					const start = current.length;
+					await tx
+						.insert(serviceGallery)
+						.values(
+							uploaded.map((url, i) => ({ serviceId: id, imageUrl: url, sortOrder: start + i }))
+						);
 				}
 			});
 
-			return message(form, { type: 'success', text: 'Service added Successfully!' });
+			await deleteUploadedFiles(removed.map((r) => r.imageUrl));
+			await logActivity(locals, 'update', 'service', id, 'Updated gallery');
+			return message(form, { type: 'success', text: 'Gallery updated successfully!' });
 		} catch (err) {
-			console.error('Error marking adding service gallery:', err);
+			console.error('Error updating service gallery:', err);
 			return message(
 				form,
-				{ type: 'error', text: `Unexpected Error: ${err?.message}` },
+				{ type: 'error', text: 'Could not update the gallery.' },
 				{ status: 500 }
 			);
 		}
-	}
+	},
+
+	imageMeta: async ({ params, request, locals }) =>
+		imageMetaAction(
+			request,
+			locals,
+			serviceGallery,
+			serviceGallery.serviceId,
+			Number(params.id),
+			'service'
+		)
 };

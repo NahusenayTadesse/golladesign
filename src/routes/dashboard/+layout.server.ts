@@ -1,14 +1,7 @@
-import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async ({ locals }) => {
-	if (!locals.user) {
-		return redirect(302, '/login');
-	}
-
-	const name = locals?.user?.name;
-
-	return {
-		name
-	};
-};
+// hooks.server.ts has already checked the session and the route's permission.
+export const load: LayoutServerLoad = async ({ locals }) => ({
+	name: locals.user?.name,
+	permissions: locals.permissions
+});

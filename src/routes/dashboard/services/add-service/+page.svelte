@@ -22,11 +22,6 @@
 					resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
 				});
 			},
-			onChange(event) {
-				if (event.paths.includes('title')) {
-					$form.slug = $form.title?.toLowerCase().replace(/\s+/g, '-');
-				}
-			},
 			validators: zod4Client(schema),
 			dataType: 'json'
 		}
@@ -36,6 +31,8 @@
 
 	import { toast } from 'svelte-sonner';
 	import RichTextEditor from '$lib/formComponents/RichTextEditor.svelte';
+	import ContentMetaFields from '$lib/formComponents/ContentMetaFields.svelte';
+	import AmharicFields from '$lib/formComponents/AmharicFields.svelte';
 	$effect(() => {
 		if ($message) {
 			if ($message.type === 'error') {
@@ -106,6 +103,17 @@
 			placeholder="Upload Service Gallery Images"
 			required
 			bind:images
+		/>
+
+		<ContentMetaFields {form} {errors} />
+		<AmharicFields
+			{form}
+			{errors}
+			fields={[
+				{ name: 'name', label: 'Name' },
+				{ name: 'description', label: 'Short description', type: 'textarea' },
+				{ name: 'longDescription', label: 'Long description', type: 'rich' }
+			]}
 		/>
 
 		<Button type="submit" form="main">

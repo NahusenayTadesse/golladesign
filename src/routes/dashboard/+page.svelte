@@ -13,25 +13,34 @@
 		Briefcase,
 		Contact,
 		MapPin,
-		Plus
+		CircleHelp,
+		Settings,
+		History,
+		FileText
 	} from '@lucide/svelte';
+	import { page } from '$app/state';
 
-	const navigation = [
+	let { data } = $props();
+
+	const allNavigation = [
 		{
 			title: 'Content',
-			description: 'Blogs, testimonials, partners and team',
+			description: 'Blogs, testimonials, partners, team and FAQs',
 			color: 'border-l-amber-500',
+			perm: 'manage_content',
 			links: [
 				{ name: 'Blog', href: '/blog', icon: Newspaper },
 				{ name: 'Testimonials', href: '/testimonials', icon: Quote },
 				{ name: 'Partner Logos', href: '/logos', icon: Image },
-				{ name: 'Team Members', href: '/team', icon: Contact }
+				{ name: 'Team Members', href: '/team', icon: Contact },
+				{ name: 'FAQs', href: '/faqs', icon: CircleHelp }
 			]
 		},
 		{
 			title: 'Operations',
 			description: 'Projects',
 			color: 'border-l-emerald-500',
+			perm: 'manage_content',
 			span: 'md:col-span-2',
 			links: [
 				{ name: 'Projects', href: '/projects', icon: MapPin },
@@ -40,26 +49,61 @@
 		},
 		{
 			title: 'Sales & CRM',
-			description: 'Inquiries',
+			description: 'Quote requests and messages',
 			color: 'border-l-rose-500',
-			links: [{ name: 'Messages', href: '/messages', icon: MessageSquare }]
+			perm: 'manage_leads',
+			links: [
+				{ name: 'Quote Requests', href: '/quotes', icon: FileText },
+				{ name: 'Messages', href: '/messages', icon: MessageSquare }
+			]
 		},
 		{
 			title: 'User Management',
 			description: 'Manage system access and permissions',
 			color: 'border-l-blue-500',
+			perm: 'manage_users',
 			links: [
 				{ name: 'Users', href: '/admin-panel/users', icon: Users },
 				{ name: 'Roles', href: '/admin-panel/roles', icon: ShieldCheck }
 			]
+		},
+		{
+			title: 'Site',
+			description: 'Contact details, links and change history',
+			color: 'border-l-violet-500',
+			links: [
+				{ name: 'Site Settings', href: '/settings', icon: Settings, perm: 'manage_settings' },
+				{ name: 'Activity Log', href: '/activity', icon: History, perm: 'view_activity' }
+			]
 		}
 	];
+
+	const can = (perm?: string) => !perm || page.data.permissions?.includes(perm);
+	const navigation = $derived(
+		allNavigation
+			.filter((s) => can(s.perm))
+			.map((s) => ({ ...s, links: s.links.filter((l) => can((l as { perm?: string }).perm)) }))
+			.filter((s) => s.links.length)
+	);
 </script>
 
 <svelte:head>
 	<title>Dashboard - golla designs</title>
 	<meta name="description" content="Dashboard for Golla Designs" />
 </svelte:head>
+
+{#if data.newQuotes !== null}
+	<div class="grid grid-cols-2 gap-4 px-6 pt-6">
+		<a href="/dashboard/quotes?status=new" class="rounded-xl border p-4 hover:bg-muted">
+			<p class="text-xs text-muted-foreground uppercase">New quote requests</p>
+			<p class="text-3xl font-bold">{data.newQuotes}</p>
+		</a>
+		<a href="/dashboard/messages" class="rounded-xl border p-4 hover:bg-muted">
+			<p class="text-xs text-muted-foreground uppercase">New messages</p>
+			<p class="text-3xl font-bold">{data.newMessages}</p>
+		</a>
+	</div>
+{/if}
 
 <div class="grid grid-cols-1 gap-6 p-6 md:grid-cols-2 lg:grid-cols-1">
 	{#each navigation as section (section.title)}

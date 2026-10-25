@@ -6,25 +6,35 @@
 
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
+	import { untrack } from 'svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
+
+	type Row = {
+		id: number;
+		name: string;
+		position: string | null;
+		clientCompany: string | null;
+		testimonial: string;
+		messageAm: string | null;
+		avatar: string | null;
+		rating: number | null;
+		projectId: number | null;
+		isActive: number;
+		isFeatured: boolean;
+		sortOrder: number;
+	};
 
 	let {
 		data,
-		action = '/dashboard/customers?/addCustomer',
-		id,
-		name,
-		position,
-		testimonial,
-		avatar,
+		action = '?/edit',
+		row,
+		projectOptions = [],
 		icon = false
 	}: {
 		data: SuperValidated<Infer<schema>>;
 		action: string;
-		id: number;
-		name: string;
-		position?: string;
-		avatar?: string;
-		testimonial?: string;
+		row: Row;
+		projectOptions?: { value: string; name: string }[];
 		icon: boolean;
 	} = $props();
 
@@ -34,13 +44,22 @@
 
 	let open = $state(false);
 
-	$form.id = id;
-	$form.name = name;
-	$form.position = position;
-	$form.testimonial = testimonial;
+	// Prefill once; the list remounts these dialogs whenever the data changes.
+	const initial = untrack(() => row);
+	$form.id = initial.id;
+	$form.name = initial.name;
+	$form.position = initial.position ?? undefined;
+	$form.clientCompany = initial.clientCompany ?? undefined;
+	$form.testimonial = initial.testimonial;
+	$form.messageAm = initial.messageAm ?? undefined;
+	$form.rating = initial.rating ?? undefined;
+	$form.projectId = initial.projectId ? String(initial.projectId) : undefined;
+	$form.isActive = initial.isActive === 1;
+	$form.isFeatured = initial.isFeatured;
+	$form.sortOrder = initial.sortOrder;
 
 	import { toast } from 'svelte-sonner';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import Fields from './fields.svelte';
 	import ScrollArea from '$lib/components/ui/scroll-area/scroll-area.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	$effect(() => {
@@ -55,7 +74,11 @@
 	});
 </script>
 
-<DialogComp variant="ghost" title={icon ? 'Edit' : name} IconComp={icon ? SquarePen : undefined}>
+<DialogComp
+	variant="ghost"
+	title={icon ? 'Edit' : row.name}
+	IconComp={icon ? SquarePen : undefined}
+>
 	<form
 		{action}
 		use:enhance
@@ -66,17 +89,7 @@
 	>
 		<Errors allErrors={$allErrors} />
 		<input type="hidden" name="id" value={$form.id} />
-		<InputComp {form} {errors} label="Name of Customer" type="text" name="name" required={true} />
-		<InputComp {form} {errors} label="Position" type="text" name="position" />
-		<InputComp {form} {errors} label="Team Member" type="textarea" name="testimonial" />
-		<InputComp
-			{form}
-			{errors}
-			label="Logo or Avatar"
-			image={avatar ? avatar : ''}
-			type="file"
-			name="avatar"
-		/>
+		<Fields {form} {errors} {projectOptions} avatar={row.avatar ?? ''} />
 
 		<Button type="submit" class="mt-4" form="edit">
 			{#if $delayed}

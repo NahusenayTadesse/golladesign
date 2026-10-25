@@ -1,103 +1,75 @@
 import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
+import { redirect, setFlash } from 'sveltekit-flash-message/server';
 
 import { add } from './schema';
 import { db } from '$lib/server/db';
-import { services as inventory, serviceGallery as productImages } from '$lib/server/db/schema';
+import { services, serviceGallery } from '$lib/server/db/schema';
+import { saveUploadedFile, uploadGallery } from '$lib/server/upload';
+import { amharicValues, contentMetaValues, uniqueSlug } from '$lib/server/forms';
+import { logActivity } from '$lib/server/activity';
 import type { Actions, PageServerLoad } from './$types';
-import { redirect, setFlash } from 'sveltekit-flash-message/server';
-import { eq } from 'drizzle-orm';
 
 export const load: PageServerLoad = async () => {
 	const form = await superValidate(zod4(add));
-
-	return {
-		form
-	};
+	return { form };
 };
-
-import { saveUploadedFile, uploadGallery } from '$lib/server/upload.js';
 
 export const actions: Actions = {
 	addService: async ({ request, cookies, locals }) => {
 		const form = await superValidate(request, zod4(add));
 		if (!form.valid) {
-			// Stay on the same page and set a flash message
 			setFlash({ type: 'error', message: 'Please check your form data.' }, cookies);
 			return message(form, { type: 'error', text: 'Please check your form data.' });
 		}
 
-		const { name, image, description, gallery, longDescription } = form.data;
+		const { name, slug, image, description, gallery, longDescription } = form.data;
 
-		const result = await db.transaction(async (tx) => {
-			// 1. Upload images first (usually done before the DB transaction starts
-			// to avoid keeping a DB connection open during slow network I/O)
+		let newId: number;
+		try {
+			// Write files before the transaction so it isn't held open during slow I/O.
 			const featuredImage = await saveUploadedFile(image);
 			const galleryImages = await uploadGallery(gallery);
+			const meta = await contentMetaValues(form.data);
 
-			// 2. Insert the main product
-			const [product] = await tx
-				.insert(inventory)
-				.values({
-					name,
-					description,
-					longDescription,
-					featuredImage,
-					createdBy: locals?.user?.id
-				})
-				.$returningId();
+			newId = await db.transaction(async (tx) => {
+				const [{ id }] = await tx
+					.insert(services)
+					.values({
+						name,
+						slug: await uniqueSlug(services, slug || name),
+						description,
+						longDescription,
+						featuredImage,
+						...meta,
+						...amharicValues(form.data),
+						createdBy: locals.user?.id
+					})
+					.$returningId();
 
-			const newProductId = product.id;
-
-			// 3. Prepare and insert the gallery images
-			if (galleryImages.length > 0) {
-				const imageRecords = galleryImages.map((url) => ({
-					serviceId: newProductId,
-					imageUrl: url
-				}));
-
-				await tx.insert(productImages).values(imageRecords);
-			}
-
-			// Return the ID or the full object if needed
-			return newProductId;
-		});
-
-		if (!result) {
+				if (galleryImages.length) {
+					await tx
+						.insert(serviceGallery)
+						.values(
+							galleryImages.map((url, i) => ({ serviceId: id, imageUrl: url, sortOrder: i }))
+						);
+				}
+				return id;
+			});
+		} catch (err) {
+			console.error('Error adding service:', err);
 			return message(
 				form,
-				{
-					type: 'error',
-					text: 'An error occurred while adding the event.'
-				},
+				{ type: 'error', text: 'An error occurred while adding the service.' },
 				{ status: 500 }
 			);
-		} else {
-			message(form, { type: 'success', text: 'New Service Successfully Added' });
-			redirect(
-				`/dashboard/services/single/${result}`,
-				{ type: 'success', message: 'New Service Successfully Added' },
-				cookies
-			);
 		}
+
+		await logActivity(locals, 'create', 'service', newId, name);
+		redirect(
+			`/dashboard/services/single/${newId}`,
+			{ type: 'success', message: 'New Service Successfully Added' },
+			cookies
+		);
 	}
 };
-// const uploadGallery = async (gallery: File[] | undefined) => {
-// 	try {
-// 		// 1. Map each file to the upload promise
-// 		const uploadPromises = gallery.map(async (file) => {
-// 			const address = await saveUploadedFile(file);
-// 			return address; // This is the string returned by your function
-// 		});
-
-// 		// 2. Wait for all uploads to complete and store results in an array
-// 		const uploadedAddresses: string[] = await Promise.all(uploadPromises);
-
-// 		console.log('All files uploaded:', uploadedAddresses);
-
-// 		return uploadedAddresses;
-// 	} catch (error) {
-// 		console.error('Error uploading gallery:', error);
-// 		throw error;
-// 	}
-// };

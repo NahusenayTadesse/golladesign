@@ -43,11 +43,8 @@
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
-					id: row.original.id,
-					name: row.original.name,
-					position: row.original.position,
-					testimonial: row.original.testimonial,
-					avatar: row.original.avatar,
+					row: row.original,
+					projectOptions: data.projectOptions,
 					action: '?/edit',
 					data: data.editForm,
 					icon: false
@@ -63,6 +60,20 @@
 					onclick: column.getToggleSortingHandler()
 				}),
 			sortable: true
+		},
+		{
+			accessorKey: 'rating',
+			header: 'Rating',
+			cell: ({ row }) => (row.original.rating ? '★'.repeat(row.original.rating) : '—')
+		},
+		{
+			accessorKey: 'project',
+			header: 'Project',
+			cell: ({ row }) => row.original.project ?? '—'
+		},
+		{
+			accessorKey: 'sortOrder',
+			header: 'Order'
 		},
 
 		{
@@ -97,11 +108,8 @@
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
-					id: row.original.id,
-					name: row.original.name,
-					position: row.original.position,
-					testimonial: row.original.testimonial,
-					avatar: row.original.avatar,
+					row: row.original,
+					projectOptions: data.projectOptions,
 					action: '?/edit',
 					data: data.editForm,
 					icon: true
@@ -124,7 +132,7 @@
 	];
 	let { data } = $props();
 	import { superForm } from 'sveltekit-superforms/client';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import Fields from './fields.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import { Plus } from '@lucide/svelte';
 
@@ -155,10 +163,7 @@
 			method="post"
 			enctype="multipart/form-data"
 		>
-			<InputComp {form} {errors} label="Name of Customer" type="text" name="name" required={true} />
-			<InputComp {form} {errors} label="Position" type="text" name="position" />
-			<InputComp {form} {errors} label="Testimonial" type="textarea" name="testimonial" />
-			<InputComp {form} {errors} label="Logo or Avatar" type="file" name="avatar" />
+			<Fields {form} {errors} projectOptions={data.projectOptions} />
 
 			<Button type="submit" form="main">
 				{#if $delayed}

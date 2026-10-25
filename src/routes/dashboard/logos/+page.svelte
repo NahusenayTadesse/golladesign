@@ -6,6 +6,7 @@
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { toast } from 'svelte-sonner';
 	import FormCard from '$lib/formComponents/FormCard.svelte';
+	import ImageMetaEditor from '$lib/formComponents/ImageMetaEditor.svelte';
 
 	let { data } = $props();
 
@@ -22,13 +23,6 @@
 				toast.success($message.text);
 			}
 		}
-	});
-
-	let videoId = $derived.by(() => {
-		const regex =
-			/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-		const match = rawUrl?.match(regex);
-		return match ? match[1] : null;
 	});
 </script>
 
@@ -77,4 +71,10 @@
 			</form>
 		</FormCard>
 	</section>
+	{#if data.galleryRows?.length}
+		<section class="rounded-xl border p-4">
+			<h2 class="mb-4 text-lg font-semibold">Logo details</h2>
+			<ImageMetaEditor images={data.galleryRows} />
+		</section>
+	{/if}
 </main>

@@ -4,13 +4,20 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { ArrowLeftIcon, CompassIcon, LayersIcon, ArrowRightIcon } from '@lucide/svelte';
 	import Gallery from '$lib/components/gallery.svelte';
+	import Seo from '$lib/components/Seo.svelte';
+	import PortfolioCard from '$lib/components/portfolio/portfolio-card.svelte';
+	import { page } from '$app/state';
 
 	type Service = {
 		id: string | number;
 		name: string;
+		slug: string;
 		featuredImage: string | null;
 		description: string | null;
 		longDescription: string | null;
+		metaTitle: string | null;
+		metaDescription: string | null;
+		ogImage: string | null;
 	};
 
 	let { data } = $props();
@@ -23,55 +30,34 @@
 	);
 
 	const pageTitle = $derived(`${service?.name || 'Studio Pillar'} | Golla Design Group`);
+
+	const jsonLd = $derived({
+		'@context': 'https://schema.org',
+		'@type': 'Service',
+		serviceType: service?.name,
+		provider: {
+			'@type': 'ProfessionalService',
+			name: 'Golla Design Group',
+			image: `${page.url.origin}/logo.jpg`,
+			address: { '@type': 'PostalAddress', addressLocality: 'Addis Ababa', addressCountry: 'ET' }
+		},
+		description: service?.description ?? '',
+		image: `${page.url.origin}${imageUrl}`
+	});
 </script>
 
+<Seo
+	title={service?.metaTitle || pageTitle}
+	description={service?.metaDescription ||
+		service?.description ||
+		`Professional ${service?.name} services in Addis Ababa by Golla Design Group.`}
+	image={service?.ogImage ? `/files/${service.ogImage}` : imageUrl}
+/>
+
 <svelte:head>
-	<!-- Primary Structural Meta Tags -->
-	<title>{pageTitle}</title>
-	<meta name="title" content={pageTitle} />
-	<meta
-		name="description"
-		content={service?.description ||
-			`Professional ${service?.name} consulting across Addis Ababa by Golla Design Group. We shape enduring human spatial narratives.`}
-	/>
-
-	<!-- Open Graph / Social Matrices -->
-	<meta property="og:type" content="website" />
-	<meta property="og:url" content={`https://golladesign.com/services/${service?.id}`} />
-	<meta property="og:title" content={pageTitle} />
-	<meta property="og:description" content={service?.description} />
-	<meta property="og:image" content={imageUrl} />
-
-	<!-- Twitter Engine Specs -->
-	<meta property="twitter:card" content="summary_large_image" />
-	<meta property="twitter:url" content={`https://golladesign.com/services/${service?.id}`} />
-	<meta property="twitter:title" content={pageTitle} />
-	<meta property="twitter:description" content={service?.description} />
-	<meta property="twitter:image" content={imageUrl} />
-
-	<link rel="canonical" href={`https://golladesign.com/services/${service?.id}`} />
-
-	<!-- Local Architectural Practice Schema Injection -->
 	{#if service}
-		{@html `<script type="application/ld+json">
-			{
-				"@context": "https://schema.org",
-				"@type": "Service",
-				"serviceType": "${service.name}",
-				"provider": {
-					"@type": "ArchitecturalBusiness",
-					"name": "Golla Design Group",
-					"image": "https://golladesign.com/logo.png",
-					"address": {
-						"@type": "PostalAddress",
-						"addressLocality": "Addis Ababa",
-						"addressCountry": "ET"
-					}
-				},
-				"description": "${service.description?.replace(/"/g, '\\"') || ''}",
-				"image": "${imageUrl}"
-			}
-		</script>`}
+		<!-- JSON.stringify escapes quotes; "<" is escaped so content can't close the script tag. -->
+		{@html `<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`}
 	{/if}
 </svelte:head>
 
@@ -155,7 +141,7 @@
 									<LayersIcon class="size-3.5" />
 									Related Studio Reference Executions
 								</div>
-								<Gallery images={data.images} title={service?.name} />
+								<Gallery images={data.images} alts={data.imageAlts} title={service?.name} />
 							</div>
 						{/if}
 					</article>
@@ -165,10 +151,10 @@
 				<div class="mt-8 flex flex-col gap-3 sm:flex-row">
 					<Button
 						class="h-12 flex-1 gap-1.5 rounded-xl text-xs font-black tracking-widest uppercase"
-						href="/contact-us"
+						href="/request-a-quote"
 						size="lg"
 					>
-						Request Structural Proposal <ArrowRightIcon class="size-3.5" />
+						Request a Quote <ArrowRightIcon class="size-3.5" />
 					</Button>
 					<Button
 						variant="outline"
@@ -182,6 +168,17 @@
 			</div>
 		</div>
 	</div>
+
+	{#if data.relatedProjects?.length}
+		<section class="mx-auto max-w-7xl px-4 pt-16 sm:px-6 lg:px-8">
+			<h2 class="mb-8 text-2xl font-black tracking-tight uppercase">Projects in this service</h2>
+			<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+				{#each data.relatedProjects as item (item.id)}
+					<PortfolioCard {item} />
+				{/each}
+			</div>
+		</section>
+	{/if}
 
 	<!-- Layout Frame Baseline Padding -->
 	<div class="h-24"></div>

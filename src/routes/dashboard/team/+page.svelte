@@ -43,11 +43,7 @@
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
-					id: row.original.id,
-					name: row.original.name,
-					position: row.original.position,
-					avatar: row.original.avatar,
-					testimonial: row.original.testimonial,
+					row: row.original,
 					action: '?/edit',
 					data: data.editForm,
 					icon: false
@@ -63,6 +59,10 @@
 					onclick: column.getToggleSortingHandler()
 				}),
 			sortable: true
+		},
+		{
+			accessorKey: 'sortOrder',
+			header: 'Order'
 		},
 
 		{
@@ -97,11 +97,7 @@
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
-					id: row.original.id,
-					name: row.original.name,
-					position: row.original.position,
-					avatar: row.original.avatar,
-					testimonial: row.original.testimonial,
+					row: row.original,
 					action: '?/edit',
 					data: data.editForm,
 					icon: true
@@ -124,7 +120,7 @@
 	];
 	let { data } = $props();
 	import { superForm } from 'sveltekit-superforms/client';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import Fields from './fields.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import { Plus } from '@lucide/svelte';
 
@@ -155,17 +151,7 @@
 			method="post"
 			enctype="multipart/form-data"
 		>
-			<InputComp {form} {errors} label="Name" type="text" name="name" required={true} />
-			<InputComp {form} {errors} label="Position" type="text" name="position" />
-			<InputComp
-				{form}
-				{errors}
-				label="Description"
-				type="textarea"
-				name="testimonial"
-				placeholder="Add description about the team member"
-			/>
-			<InputComp {form} {errors} label="Logo or Avatar" type="file" name="avatar" />
+			<Fields {form} {errors} />
 
 			<Button type="submit" form="main">
 				{#if $delayed}

@@ -5,8 +5,15 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1792958750242,
+      "when": 1792959965694,
       "tag": "0000_init_mysql",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1792959966281,
+      "tag": "0001_seed_permissions_and_faqs",
       "breakpoints": true
     }
   ]

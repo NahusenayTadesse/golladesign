@@ -1,94 +1,101 @@
-import { superValidate } from 'sveltekit-superforms';
+import { superValidate, fail, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-
-import { addVideo, deleteFeature, edit, editGallery, editVideo } from './schema';
-
-import { db } from '$lib/server/db';
-import {
-	blog as products,
-	blogGallery as productImages,
-	blogVideos as venueVideos
-} from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
-import { fail, message } from 'sveltekit-superforms';
 import { redirect, setFlash } from 'sveltekit-flash-message/server';
 
-import { saveUploadedFile, uploadGallery } from '$lib/server/upload';
+import { addVideo, deleteFeature, edit, editGallery, editVideo } from './schema';
+import { db } from '$lib/server/db';
+import { blog, blogGallery, blogVideos as venueVideos } from '$lib/server/db/schema';
+import { deleteUploadedFiles, saveUploadedFile, uploadGallery } from '$lib/server/upload';
+import { amharicValues, contentMetaValues, uniqueSlug } from '$lib/server/forms';
+import { imageMetaAction } from '$lib/server/imageMeta';
+import { logActivity } from '$lib/server/activity';
 import type { Actions } from './$types';
 
-export const actions: Actions = {
-	editProduct: async ({ request, cookies, locals, params }) => {
-		const { id } = params;
-		const form = await superValidate(request, zod4(edit));
-		console.log(form.data);
+const getBlog = (id: number) =>
+	db
+		.select()
+		.from(blog)
+		.where(eq(blog.id, id))
+		.then((r) => r[0]);
 
+export const actions: Actions = {
+	editProduct: async ({ request, locals, params }) => {
+		const id = Number(params.id);
+		const form = await superValidate(request, zod4(edit));
 		if (!form.valid) {
-			// Stay on the same page and set a flash message
-			setFlash({ type: 'error', message: 'Please check your form data.' }, cookies);
-			return fail(400, { form });
+			return message(
+				form,
+				{ type: 'error', text: 'Please check your form data.' },
+				{ status: 400 }
+			);
 		}
 
 		const { title, slug, category, image, excerpt, content, date } = form.data;
 
 		try {
-			if (image) {
-				const featuredImage = await saveUploadedFile(image);
+			const existing = await getBlog(id);
+			if (!existing)
+				return message(form, { type: 'error', text: 'Blog not found' }, { status: 404 });
 
-				await db
-					.update(products)
-					.set({
-						title,
-						slug,
-						categoryId: category,
-						excerpt,
-						createdAt: new Date(date),
-						content,
-						featuredImage,
-						updatedBy: locals?.user?.id
-					})
-					.where(eq(products.id, Number(id)));
-			} else {
-				await db
-					.update(products)
-					.set({
-						title,
-						slug,
-						categoryId: category,
-						excerpt,
-						content,
-						createdAt: new Date(date),
-						updatedBy: locals?.user?.id
-					})
-					.where(eq(products.id, Number(id)));
-			}
+			const featuredImage = await saveUploadedFile(image);
+			const { isFeatured, ...meta } = await contentMetaValues(form.data);
 
+			await db
+				.update(blog)
+				.set({
+					title,
+					slug: await uniqueSlug(blog, slug || title, id),
+					categoryId: category,
+					excerpt,
+					content,
+					publishedAt: new Date(date),
+					isFeaturedOnHome: isFeatured ? 1 : 0,
+					...(featuredImage ? { featuredImage } : {}),
+					...meta,
+					...amharicValues(form.data),
+					updatedBy: locals.user?.id
+				})
+				.where(eq(blog.id, id));
+
+			await deleteUploadedFiles([
+				featuredImage ? existing.featuredImage : null,
+				meta.ogImage ? existing.ogImage : null
+			]);
+			await logActivity(locals, 'update', 'blog', id, title);
 			return message(form, { type: 'success', text: 'Blog Updated Successfully' });
 		} catch (err) {
-			console.error(err?.message);
-
-			return message(form, { type: 'error', text: 'Blog Update Failed' + err?.message });
+			console.error('Error updating blog:', err);
+			return message(form, { type: 'error', text: 'Blog update failed' }, { status: 500 });
 		}
 	},
 
-	delete: async ({ cookies, params }) => {
-		const { id } = params;
+	delete: async ({ cookies, params, locals }) => {
+		const id = Number(params.id);
+		if (!id) {
+			setFlash({ type: 'error', message: 'Missing ID' }, cookies);
+			return fail(400);
+		}
 
 		try {
-			if (!id) {
-				setFlash({ type: 'error', message: 'Missing ID' }, cookies);
-				return fail(400);
-			}
+			const existing = await getBlog(id);
+			const images = await db
+				.select({ url: blogGallery.imageUrl })
+				.from(blogGallery)
+				.where(eq(blogGallery.blogId, id));
 
-			// Remove child rows too, otherwise they are left orphaned.
-			await db.transaction(async (tx) => {
-				await tx.delete(productImages).where(eq(productImages.blogId, Number(id)));
-				await tx.delete(venueVideos).where(eq(venueVideos.blogId, Number(id)));
-				await tx.delete(products).where(eq(products.id, Number(id)));
-			});
+			// Gallery and video rows are removed by ON DELETE CASCADE.
+			await db.delete(blog).where(eq(blog.id, id));
+			await deleteUploadedFiles([
+				existing?.featuredImage,
+				existing?.ogImage,
+				...images.map((i) => i.url)
+			]);
+			await logActivity(locals, 'delete', 'blog', id, existing?.title);
 		} catch (err) {
-			console.error('Error deleting Blog:', err);
-			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
-			return fail(400);
+			console.error('Error deleting blog:', err);
+			setFlash({ type: 'error', message: 'Could not delete the blog.' }, cookies);
+			return fail(500);
 		}
 
 		redirect(
@@ -98,62 +105,48 @@ export const actions: Actions = {
 		);
 	},
 
-	editGallery: async ({ params, request }) => {
-		const { id } = params;
+	editGallery: async ({ params, request, locals }) => {
+		const id = Number(params.id);
 		const form = await superValidate(request, zod4(editGallery));
-
 		const { existing, gallery } = form.data;
 
 		try {
-			if (!id) {
-				return message(
-					form,
-					{ type: 'error', text: 'Unexpected Error: Blog ID not provided' },
-					{ status: 500 }
-				);
-			}
+			const uploaded = gallery?.length ? await uploadGallery(gallery) : [];
+			const kept = new Set(existing.split(',').filter((u) => u.trim()));
+			const current = await db.select().from(blogGallery).where(eq(blogGallery.blogId, id));
+			const removed = current.filter((row) => !row.imageUrl || !kept.has(row.imageUrl));
 
 			await db.transaction(async (tx) => {
-				let galleryImages = [];
-
-				// 1. Upload new files if they exist
-				if (gallery && gallery.length > 0) {
-					galleryImages = await uploadGallery(gallery);
-				}
-				const old = existing.split(',');
-				// 2. Combine existing (edited) strings with newly uploaded URLs
-				// We filter out empty strings/nulls to ensure data integrity
-				const finalList = [...new Set([...old, ...galleryImages])].filter(
-					(item) => item && item.trim() !== ''
-				);
-
-				// 3. ALWAYS sync if the final list is valid,
-				// even if galleryImages.length is 0 (e.g., you just deleted an old photo)
-				if (finalList.length > 0) {
-					const imageRecords = finalList.map((url) => ({
-						blogId: Number(id),
-						imageUrl: url
-					}));
-
-					// Wipe the old associations and replace with the new "finalList"
-					await tx.delete(productImages).where(eq(productImages.blogId, Number(id)));
-					await tx.insert(productImages).values(imageRecords);
-				} else {
-					// Handle the case where all images were removed
-					await tx.delete(productImages).where(eq(productImages.blogId, Number(id)));
+				for (const row of removed) await tx.delete(blogGallery).where(eq(blogGallery.id, row.id));
+				if (uploaded.length) {
+					await tx
+						.insert(blogGallery)
+						.values(
+							uploaded.map((url, i) => ({
+								blogId: id,
+								imageUrl: url,
+								sortOrder: current.length + i
+							}))
+						);
 				}
 			});
 
-			return message(form, { type: 'success', text: 'Blog added Successfully!' });
+			await deleteUploadedFiles(removed.map((r) => r.imageUrl));
+			await logActivity(locals, 'update', 'blog', id, 'Updated gallery');
+			return message(form, { type: 'success', text: 'Gallery updated successfully!' });
 		} catch (err) {
-			console.error('Error marking adding blog gallery:', err);
+			console.error('Error updating blog gallery:', err);
 			return message(
 				form,
-				{ type: 'error', text: `Unexpected Error: ${err?.message}` },
+				{ type: 'error', text: 'Could not update the gallery.' },
 				{ status: 500 }
 			);
 		}
 	},
+
+	imageMeta: async ({ params, request, locals }) =>
+		imageMetaAction(request, locals, blogGallery, blogGallery.blogId, Number(params.id), 'blog'),
+
 	addVideo: async ({ request, params }) => {
 		const form = await superValidate(request, zod4(addVideo));
 		const { id } = params;
