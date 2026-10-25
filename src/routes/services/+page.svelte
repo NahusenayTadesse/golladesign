@@ -1,4 +1,5 @@
 <script lang="ts">
+	import heroPhoto from '$lib/assets/photos/golla1.webp?enhanced';
 	import Seo from '$lib/components/Seo.svelte';
 	import ServiceGrid from '$lib/components/services/service-grid.svelte';
 	import { SparklesIcon } from '@lucide/svelte';
@@ -13,9 +14,15 @@
 
 <!-- Premium Studio Header Section -->
 <section
-	class="relative mb-12 overflow-hidden border-b border-border/40 bg-cover bg-center px-4 py-24 text-foreground sm:py-36"
-	style="background-image: url('/golla1.webp')"
+	class="relative mb-12 overflow-hidden border-b border-border/40 px-4 py-24 text-foreground sm:py-36"
 >
+	<enhanced:img
+		src={heroPhoto}
+		alt=""
+		sizes="100vw"
+		fetchpriority="high"
+		class="absolute inset-0 h-full w-full object-cover"
+	/>
 	<!-- Theme-compliant mask overlay -->
 	<div class="absolute inset-0 bg-background/30 backdrop-blur-xs"></div>
 

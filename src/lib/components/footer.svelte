@@ -2,6 +2,7 @@
 	import { MailIcon, PhoneIcon, MapPinIcon } from '@lucide/svelte';
 	import { IconBrandWhatsapp } from '@tabler/icons-svelte';
 	import SocialLinks from './social-links.svelte';
+	import MapEmbed from './MapEmbed.svelte';
 	import { contactInfo as defaultContact, siteLogos } from '$lib/site';
 	import { page } from '$app/state';
 
@@ -76,9 +77,9 @@
 
 			<!-- Quick Links Column -->
 			<div class="md:justify-self-center">
-				<h4 class="mb-4 text-sm font-bold tracking-tight text-foreground uppercase">
+				<h2 class="mb-4 text-sm font-bold tracking-tight text-foreground uppercase">
 					Studio Exploration
-				</h4>
+				</h2>
 				<ul class="flex flex-col gap-x-8 gap-y-2.5 text-sm">
 					{#each menuItems as item (item.href)}
 						<li>
@@ -95,20 +96,17 @@
 
 			<!-- Interactive Studio Map Frame -->
 			<div class="space-y-4">
-				<h4
+				<h2
 					class="flex items-center gap-2 text-sm font-bold tracking-tight text-foreground uppercase"
 				>
 					<MapPinIcon class="size-4 text-primary" /> Studio Location
-				</h4>
+				</h2>
 				<div class="relative h-36 w-full overflow-hidden rounded-2xl border border-border/50">
-					<iframe
+					<MapEmbed
 						src={contactInfo.mapEmbed}
-						style="border:0;"
-						class="absolute inset-0 h-full w-full contrast-[1.1] grayscale dark:invert"
-						loading="lazy"
-						referrerpolicy="no-referrer-when-downgrade"
 						title="Golla Design Location Map"
-					></iframe>
+						address="{contactInfo.address.display}, {contactInfo.address.city}"
+					/>
 				</div>
 			</div>
 		</div>

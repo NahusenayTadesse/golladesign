@@ -1,11 +1,18 @@
 <script lang="ts">
+	import heroPhoto from '$lib/assets/photos/golla4.webp?enhanced';
 	import { CompassIcon } from '@lucide/svelte';
 </script>
 
 <section
-	class="relative overflow-hidden border-b border-border/40 bg-cover bg-center px-4 py-24 text-foreground sm:py-36"
-	style="background-image: url('/golla4.webp')"
+	class="relative overflow-hidden border-b border-border/40 px-4 py-24 text-foreground sm:py-36"
 >
+	<enhanced:img
+		src={heroPhoto}
+		alt=""
+		sizes="100vw"
+		fetchpriority="high"
+		class="absolute inset-0 h-full w-full object-cover"
+	/>
 	<!-- Adaptive dynamic mask layer matching shadcn background strategies -->
 	<div class="absolute inset-0 bg-background/40 backdrop-blur-xs"></div>
 
@@ -24,7 +31,7 @@
 			class="text-4xl font-black tracking-tight text-foreground uppercase sm:text-5xl lg:text-6xl"
 		>
 			Blueprints, Materials, &amp;
-			<span class="text-primary dark:text-primary/80">Spatial Form</span>
+			<span class="text-primary dark:text-primary">Spatial Form</span>
 		</h1>
 
 		<!-- Design Subtext -->

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fileUrl, fileSrcset } from '$lib/files';
 	import { fade, fly } from 'svelte/transition';
 	import { Button } from '$lib/components/ui/button';
 	import { Card } from '$lib/components/ui/card';
@@ -74,7 +75,7 @@
 		class="shadow-lg-xl relative overflow-hidden border-primary/10 bg-gradient-to-br from-card via-card to-primary/5 pt-0"
 	>
 		<!-- Decorative Quote Icon -->
-		<div class="absolute top-6 right-6 text-primary/10">
+		<div class="absolute top-6 right-6 text-primary">
 			<QuoteIcon class="size-16" />
 		</div>
 
@@ -87,9 +88,7 @@
 					out:fade={{ duration: 200 }}
 				>
 					<!-- Testimonial Text -->
-					<blockquote
-						class="max-w-2xl text-lg leading-relaxed text-foreground/90 italic md:text-xl"
-					>
+					<blockquote class="max-w-2xl text-lg leading-relaxed text-foreground italic md:text-xl">
 						"{currentTestimonial.testimonial}"
 					</blockquote>
 
@@ -99,7 +98,7 @@
 						<div class="relative">
 							{#if currentTestimonial.avatar}
 								<img
-									src="/files/{currentTestimonial.avatar}"
+									src={fileUrl(currentTestimonial.avatar, 320)}
 									alt={currentTestimonial.name}
 									class="size-14 rounded-full object-cover ring-2 ring-primary/20 ring-offset-2 ring-offset-background"
 								/>

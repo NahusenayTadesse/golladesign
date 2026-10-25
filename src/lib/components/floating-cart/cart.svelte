@@ -75,9 +75,9 @@
 			</div>
 		{:else}
 			<div class=" p-8 text-center">
-				<ShoppingCartIcon class="mx-auto mb-3 size-12 text-muted-foreground/50" />
+				<ShoppingCartIcon class="mx-auto mb-3 size-12 text-muted-foreground" />
 				<p class="text-sm text-muted-foreground">Your cart is empty</p>
-				<p class="mt-1 text-xs text-muted-foreground/70">Add some products to get started</p>
+				<p class="mt-1 text-xs text-muted-foreground">Add some products to get started</p>
 			</div>
 		{/if}
 	</Popover.Content>

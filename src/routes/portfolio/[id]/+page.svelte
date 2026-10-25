@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fileUrl, fileSrcset } from '$lib/files';
 	import { fade, fly } from 'svelte/transition';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -103,7 +104,9 @@
 <section class="relative h-[65vh] min-h-[500px] w-full overflow-hidden" in:fade={{ duration: 400 }}>
 	<div class="absolute inset-0">
 		<img
-			src={project?.featuredImage ? `/files/${project.featuredImage}` : '/hero.jpg'}
+			src={project?.featuredImage ? fileUrl(project.featuredImage, 1280) : '/logo.jpg'}
+			srcset={fileSrcset(project?.featuredImage)}
+			sizes="100vw"
 			alt={project?.title}
 			fetchpriority="high"
 			class="h-full w-full scale-102 object-cover"
@@ -176,7 +179,7 @@
 				<UserIcon class="size-5" />
 			</div>
 			<div class="min-w-0">
-				<p class="text-[10px] font-bold tracking-wider text-muted-foreground/60 uppercase">
+				<p class="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
 					Client Entity
 				</p>
 				<p class="truncate text-sm font-black">{project?.clientName || 'Private Commission'}</p>
@@ -190,7 +193,7 @@
 				<MapPinIcon class="size-5" />
 			</div>
 			<div class="min-w-0">
-				<p class="text-[10px] font-bold tracking-wider text-muted-foreground/60 uppercase">
+				<p class="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
 					Site Coordinates
 				</p>
 				<p class="truncate text-sm font-black">{project?.location || 'Addis Ababa'}</p>
@@ -204,7 +207,7 @@
 				<CalendarIcon class="size-5" />
 			</div>
 			<div class="min-w-0">
-				<p class="text-[10px] font-bold tracking-wider text-muted-foreground/60 uppercase">
+				<p class="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
 					Execution Timeline
 				</p>
 				<p class="truncate text-sm font-black">{formattedDate || 'In Development'}</p>
@@ -338,8 +341,8 @@
 		<div class="grid grid-cols-1 gap-10 md:grid-cols-2">
 			{#each beforeAfter as pair (pair.id)}
 				<BeforeAfter
-					before="/files/{pair.beforeUrl}"
-					after="/files/{pair.afterUrl}"
+					before={fileUrl(pair.beforeUrl, 1280)}
+					after={fileUrl(pair.afterUrl, 1280)}
 					caption={pair.caption}
 				/>
 			{/each}

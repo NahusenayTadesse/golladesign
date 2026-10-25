@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fileUrl, fileSrcset } from '$lib/files';
 	import { fade, scale } from 'svelte/transition';
 	import { Button } from '$lib/components/ui/button';
 	import { XIcon, ChevronLeftIcon, ChevronRightIcon } from '@lucide/svelte';
@@ -146,7 +147,7 @@
 		>
 			{#key currentIndex}
 				<img
-					src="/files/{currentImage}"
+					src={fileUrl(currentImage, 1920)}
 					alt="{title} - Image {currentIndex + 1}"
 					class="shadow-lg-2xl max-h-[85vh] max-w-[90vw] rounded-lg object-contain"
 					transition:scale={{ duration: 200, start: 0.95 }}
@@ -171,7 +172,12 @@
 						]}
 						onclick={() => (currentIndex = index)}
 					>
-						<img src="/files/{image}" alt="Thumbnail {index + 1}" class="size-full object-cover" />
+						<img
+							src={fileUrl(image, 320)}
+							alt="Thumbnail {index + 1}"
+							loading="lazy"
+							class="size-full object-cover"
+						/>
 					</button>
 				{/each}
 			</div>

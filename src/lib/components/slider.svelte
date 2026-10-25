@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fileUrl, fileSrcset } from '$lib/files';
 	import * as Carousel from '$lib/components/ui/carousel/index.js';
 	import Autoplay from 'embla-carousel-autoplay';
 	const plugin = Autoplay({ delay: 1000, stopOnInteraction: true });
@@ -35,7 +36,7 @@
 					<Carousel.Item class="basis-1/2 px-0 md:basis-1/3 lg:basis-1/5 lg:px-4">
 						<div class="flex w-full items-center justify-center">
 							<img
-								src="/files/{src}"
+								src={fileUrl(src, 320)}
 								alt="Partner Logo"
 								loading="lazy"
 								class="hover: rounded-4xl object-cover transition-all duration-300 ease-in-out hover:scale-110"

@@ -1,4 +1,8 @@
 <script lang="ts">
+	import heroPhoto from '$lib/assets/photos/golla1.webp?enhanced';
+	import studioPhoto from '$lib/assets/photos/golla2.webp?enhanced';
+	import ecosystemPhoto from '$lib/assets/photos/golla3.webp?enhanced';
+	import ctaPhoto from '$lib/assets/photos/golla4.webp?enhanced';
 	import Seo from '$lib/components/Seo.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import {
@@ -69,10 +73,14 @@
 />
 
 <!-- Premium Hero Banner Section -->
-<section
-	class="relative overflow-hidden border-b border-border/40 bg-cover bg-center px-4 py-24 text-white sm:py-36"
-	style="background-image: url('/golla1.webp')"
->
+<section class="relative overflow-hidden border-b border-border/40 px-4 py-24 text-white sm:py-36">
+	<enhanced:img
+		src={heroPhoto}
+		alt=""
+		sizes="100vw"
+		fetchpriority="high"
+		class="absolute inset-0 h-full w-full object-cover"
+	/>
 	<!-- Adaptive dynamic mask layer matching theme background strategies -->
 	<div class="absolute inset-0 bg-background/90 backdrop-blur-xs dark:bg-background/95"></div>
 
@@ -128,9 +136,11 @@
 		<div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
 			<div class="relative">
 				<div class="aspect-square overflow-hidden rounded-2xl border border-border/60 bg-muted/20">
-					<img
-						src="/golla2.webp"
+					<enhanced:img
+						src={studioPhoto}
 						alt="Golla Studio Production Design"
+						sizes="(min-width: 1024px) 560px, 100vw"
+						loading="lazy"
 						class="h-full w-full object-cover"
 					/>
 				</div>
@@ -279,10 +289,14 @@
 </section>
 
 <!-- Target Environments Integration Matrix -->
-<section
-	class="relative border-b border-border/40 bg-cover bg-center px-4 py-24 sm:py-32"
-	style="background-image: url('/studio-ecosystem.webp')"
->
+<section class="relative overflow-hidden border-b border-border/40 px-4 py-24 sm:py-32">
+	<enhanced:img
+		src={ecosystemPhoto}
+		alt=""
+		sizes="100vw"
+		loading="lazy"
+		class="absolute inset-0 h-full w-full object-cover"
+	/>
 	<div class="absolute inset-0 bg-background/90 dark:bg-background/95"></div>
 	<div class="relative z-10 mx-auto max-w-5xl">
 		<div class="mb-16 space-y-2 text-center">
@@ -375,7 +389,7 @@
 		<h3
 			class="text-4xl font-black tracking-tight text-foreground uppercase sm:text-5xl lg:text-6xl"
 		>
-			Studio <span class="text-muted-foreground/60">Units</span>
+			Studio <span class="text-muted-foreground">Units</span>
 		</h3>
 		<div class="h-1 w-12 rounded-full bg-primary"></div>
 	</div>
@@ -434,13 +448,17 @@
 	</section>
 {/if}
 
-<FAQ />
+<FAQ faqs={data.faqs} />
 
 <!-- Studio Closing Contact Section -->
-<section
-	class="relative bg-cover bg-center px-4 py-24 sm:py-32"
-	style="background-image: url('/studio-cta.webp')"
->
+<section class="relative overflow-hidden px-4 py-24 sm:py-32">
+	<enhanced:img
+		src={ctaPhoto}
+		alt=""
+		sizes="100vw"
+		loading="lazy"
+		class="absolute inset-0 h-full w-full object-cover"
+	/>
 	<div class="absolute inset-0 bg-background/80 backdrop-blur-xs dark:bg-background/90"></div>
 	<div class="relative z-10 mx-auto max-w-4xl">
 		<div

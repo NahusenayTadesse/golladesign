@@ -51,7 +51,7 @@
 	description="Request a consultation or quote from Golla Design Group for architecture, interior design and finishing projects in Addis Ababa."
 />
 
-<main class="mx-auto min-h-dvh max-w-7xl px-4 py-16 text-foreground sm:px-6 lg:px-8 lg:py-24">
+<div class="mx-auto min-h-dvh max-w-7xl px-4 py-16 text-foreground sm:px-6 lg:px-8 lg:py-24">
 	<div class="mb-14 space-y-4 text-center">
 		<div
 			class="inline-flex items-center gap-2 rounded-full border border-border/50 bg-secondary px-4 py-1.5 text-xs font-bold tracking-widest text-primary uppercase"
@@ -178,4 +178,4 @@
 			</CardContent>
 		</Card>
 	</div>
-</main>
+</div>

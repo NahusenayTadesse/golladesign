@@ -32,7 +32,6 @@
 		className = ''
 	} = $props();
 
-
 	function flattenErrors(err: unknown): string[] {
 		if (!err) return [];
 		if (typeof err === 'string') return [err];
@@ -51,7 +50,15 @@
 <div class="flex w-full max-w-full flex-col justify-start gap-2 p-1">
 	<Label for={name} class="capitalize">{label}</Label>
 	{#if type === 'textarea'}
-		<Textarea class={className} {name} bind:value={$form[name]} {required} {rows} {placeholder} />
+		<Textarea
+			id={name}
+			class={className}
+			{name}
+			bind:value={$form[name]}
+			{required}
+			{rows}
+			{placeholder}
+		/>
 	{:else if type === 'file'}
 		<FileUpload {name} {form} {image} {placeholder} />
 	{:else if type === 'gallery'}
@@ -77,6 +84,7 @@
 		</div>
 	{:else}
 		<Input
+			id={name}
 			class={className}
 			{type}
 			{name}
@@ -99,9 +107,9 @@
 		{/if}
 	{/if} -->
 
-{#if fieldErrors.length}
-	{#each fieldErrors as error}
-		<p class="flex items-center gap-2 text-red-500"><CircleAlert /> {error}</p>
-	{/each}
-{/if}
+	{#if fieldErrors.length}
+		{#each fieldErrors as error}
+			<p class="flex items-center gap-2 text-red-500"><CircleAlert /> {error}</p>
+		{/each}
+	{/if}
 </div>

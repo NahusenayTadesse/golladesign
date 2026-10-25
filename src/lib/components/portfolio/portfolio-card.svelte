@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fileUrl, fileSrcset } from '$lib/files';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Card, CardContent } from '$lib/components/ui/card';
 	import { CalendarIcon, MapPinIcon, UserIcon } from '@lucide/svelte';
@@ -40,7 +41,12 @@
 	<a href="/portfolio/{item.slug}" class="relative block aspect-4/3 overflow-hidden bg-muted/20">
 		{#if item.featuredImage}
 			<img
-				src="/files/{item.featuredImage}"
+				src={fileUrl(item.featuredImage, 640)}
+				srcset={fileSrcset(item.featuredImage, 1280)}
+				sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+				width="640"
+				height="480"
+				decoding="async"
 				alt={item.title}
 				class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
 			/>
@@ -81,21 +87,21 @@
 		<div class="flex flex-wrap gap-x-4 gap-y-2 pt-1 text-xs font-medium text-muted-foreground">
 			{#if formattedDate}
 				<div class="flex shrink-0 items-center gap-1.5">
-					<CalendarIcon class="size-3.5 text-primary/70" />
+					<CalendarIcon class="size-3.5 text-primary" />
 					<span>{formattedDate}</span>
 				</div>
 			{/if}
 
 			{#if item.clientName}
 				<div class="flex shrink-0 items-center gap-1.5">
-					<UserIcon class="size-3.5 text-primary/70" />
+					<UserIcon class="size-3.5 text-primary" />
 					<span class="max-w-[120px] truncate">{item.clientName}</span>
 				</div>
 			{/if}
 
 			{#if item.location}
 				<div class="flex shrink-0 items-center gap-1.5">
-					<MapPinIcon class="size-3.5 text-primary/70" />
+					<MapPinIcon class="size-3.5 text-primary" />
 					<span class="max-w-[140px] truncate">{item.location}</span>
 				</div>
 			{/if}

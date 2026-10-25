@@ -158,7 +158,7 @@
 								<span
 									class="text-xl font-black tracking-tight transition-colors {isActive
 										? 'text-foreground'
-										: 'text-foreground/80'}"
+										: 'text-foreground'}"
 								>
 									{product.amount}
 								</span>
@@ -166,7 +166,7 @@
 								<span
 									class="text-xs font-medium tracking-wider uppercase transition-colors {isActive
 										? 'text-foreground'
-										: 'text-foreground/80'}"
+										: 'text-foreground'}"
 								>
 									{product.price} ETB
 								</span>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fileUrl, fileSrcset } from '$lib/files';
 	import { Card, CardContent } from '$lib/components/ui/card';
 	import { Avatar, AvatarImage, AvatarFallback } from '$lib/components/ui/avatar';
 	type TeamMember = {
@@ -35,7 +36,7 @@
 				class="relative size-24 border-4 border-background shadow-md transition-transform duration-300 group-hover:scale-105 group-hover:border-primary/20"
 			>
 				{#if member.avatar}
-					<AvatarImage src="/files/{member.avatar}" alt={member.name} class="object-cover" />
+					<AvatarImage src={fileUrl(member.avatar, 320)} alt={member.name} class="object-cover" />
 				{/if}
 				<AvatarFallback class="bg-primary/5 text-primary">
 					{getInitials(member.name)}
@@ -61,7 +62,7 @@
 
 		<!-- Description -->
 		<p
-			class="line-clamp-3 text-sm leading-relaxed text-muted-foreground transition-colors duration-300 group-hover:text-muted-foreground/90"
+			class="line-clamp-3 text-sm leading-relaxed text-muted-foreground transition-colors duration-300 group-hover:text-muted-foreground"
 		>
 			{member.description}
 		</p>

@@ -8,6 +8,8 @@ const config = {
 	},
 	kit: {
 		adapter: adapter(),
+		// Inline the (small) stylesheet so it doesn't block the first paint.
+		inlineStyleThreshold: 40_000,
 		typescript: {
 			config: (config) => ({
 				...config,

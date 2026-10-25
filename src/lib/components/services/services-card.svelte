@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
+	import { fileUrl, fileSrcset } from '$lib/files';
 	import { Card, CardHeader, CardTitle, CardDescription } from '$lib/components/ui/card';
 	import { ChevronLeftIcon, ChevronRightIcon, ImagesIcon, ArrowRightIcon } from '@lucide/svelte';
 
@@ -24,9 +26,15 @@
 	const hasMultiple = $derived(images.length > 1);
 
 	let index = $state(0);
+	// Stacked photos would all download at once; add each one only when it's first shown.
+	const seen = new SvelteSet([0]);
+	const show = (i: number) => {
+		index = i;
+		seen.add(i);
+	};
 
 	const step = (direction: number) => {
-		index = (index + direction + images.length) % images.length;
+		show((index + direction + images.length) % images.length);
 	};
 </script>
 
@@ -42,16 +50,23 @@
 		>
 			{#if images.length}
 				{#each images as image, i (image)}
-					<img
-						src="/files/{image}"
-						alt="{service.name} — image {i + 1} of {images.length}"
-						loading="lazy"
-						class={[
-							'absolute inset-0 h-full w-full object-cover transition-all duration-500',
-							i === index ? 'opacity-100' : 'opacity-0',
-							'group-hover:scale-105'
-						]}
-					/>
+					{#if seen.has(i)}
+						<img
+							src={fileUrl(image, 640)}
+							srcset={fileSrcset(image, 1280)}
+							sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+							width="640"
+							height="480"
+							alt="{service.name} — image {i + 1} of {images.length}"
+							loading="lazy"
+							decoding="async"
+							class={[
+								'absolute inset-0 h-full w-full object-cover transition-all duration-500',
+								i === index ? 'opacity-100' : 'opacity-0',
+								'group-hover:scale-105'
+							]}
+						/>
+					{/if}
 				{/each}
 			{:else}
 				<div class="flex h-full w-full items-center justify-center text-muted-foreground">
@@ -96,7 +111,7 @@
 						type="button"
 						aria-label="Show image {i + 1}"
 						aria-current={i === index}
-						onclick={() => (index = i)}
+						onclick={() => show(i)}
 						class="flex size-6 touch-manipulation items-center justify-center"
 					>
 						<span

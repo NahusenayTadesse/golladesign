@@ -64,7 +64,7 @@
 	<PortfolioHero />
 
 	<!-- Core Architectural Content Filter Grid Area -->
-	<main class="mx-auto mt-6 max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
+	<div class="mx-auto mt-6 max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
 		<!-- Portfolio Interface Control Layout -->
 		<div class="mb-12">
 			<PortfolioFilters
@@ -77,7 +77,7 @@
 
 		<!-- Real-time Metrics Readout Counter -->
 		<div class="mb-8 text-center">
-			<p class="text-xs font-bold tracking-widest text-muted-foreground/70 uppercase">
+			<p class="text-xs font-bold tracking-widest text-muted-foreground uppercase">
 				Displaying <span class="font-black text-foreground">{resultsCount}</span>
 				{resultsCount === 1 ? 'architectural case' : 'architectural cases'}
 			</p>
@@ -93,5 +93,5 @@
 				</p>
 			</div>
 		{/if}
-	</main>
+	</div>
 </div>

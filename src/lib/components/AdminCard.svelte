@@ -63,7 +63,7 @@
 					href={item.href}
 					class="group/link flex items-center justify-between rounded-lg px-4 py-3 transition-all duration-200 hover:bg-primary/10"
 				>
-					<span class="font-medium text-foreground/80 group-hover/link:text-foreground"
+					<span class="font-medium text-foreground group-hover/link:text-foreground"
 						>{item.name}</span
 					>
 					<ArrowRightIcon

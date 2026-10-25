@@ -1,4 +1,5 @@
 <script lang="ts">
+	import aboutPhoto from '$lib/assets/photos/golla1.webp?enhanced';
 	import {
 		Card,
 		CardContent,
@@ -55,9 +56,15 @@
 			<!-- Feature Display Card -->
 			<div transition:fly={{ y: 20, duration: 600, delay: 100 }} class="lg:col-span-2">
 				<Card
-					style="background-image: url('/golla1.webp')"
-					class="group relative flex h-full min-h-100 flex-col justify-end overflow-hidden border-border/40 bg-cover bg-center p-8 text-white shadow-xl"
+					class="group relative flex h-full min-h-100 flex-col justify-end overflow-hidden border-border/40 p-8 text-white shadow-xl"
 				>
+					<enhanced:img
+						src={aboutPhoto}
+						alt=""
+						sizes="(min-width: 1024px) 66vw, 100vw"
+						loading="lazy"
+						class="absolute inset-0 h-full w-full object-cover"
+					/>
 					<!-- Gradient overlay using theme shades instead of absolute alphas -->
 					<div
 						class="absolute inset-0 bg-linear-to-t from-background via-background/80 to-background/20 transition-opacity duration-500 group-hover:via-background/75"

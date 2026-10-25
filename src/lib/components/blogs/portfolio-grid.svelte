@@ -7,6 +7,8 @@
 	const { items }: { items: BlogItem[] } = $props();
 </script>
 
+<h2 class="sr-only">Articles</h2>
+
 {#if items.length > 0}
 	<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
 		{#each items as item, index (item.id)}

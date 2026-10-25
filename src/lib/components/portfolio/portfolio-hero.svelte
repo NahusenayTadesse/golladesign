@@ -7,7 +7,7 @@
 	<div class="relative mx-auto max-w-5xl space-y-6 px-4 text-center sm:px-6 lg:px-8">
 		<!-- Project Blueprint Accent Tag -->
 		<div
-			class="inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/50 px-4 py-1.5 text-xs font-black tracking-widest text-muted-foreground/80 uppercase backdrop-blur-xs"
+			class="inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/50 px-4 py-1.5 text-xs font-black tracking-widest text-muted-foreground uppercase backdrop-blur-xs"
 		>
 			<span class="flex size-1.5 animate-pulse rounded-full bg-primary"></span>
 			Selected Works Studio Archive
@@ -37,19 +37,19 @@
 		>
 			<div>
 				<p class="text-2xl font-black text-foreground lg:text-3xl">01</p>
-				<p class="mt-1 text-[10px] font-bold tracking-wider text-muted-foreground/60 uppercase">
+				<p class="mt-1 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
 					Concept Layouts
 				</p>
 			</div>
 			<div class="border-x border-border/30">
 				<p class="text-2xl font-black text-foreground lg:text-3xl">3D</p>
-				<p class="mt-1 text-[10px] font-bold tracking-wider text-muted-foreground/60 uppercase">
+				<p class="mt-1 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
 					Ray-Traced Renders
 				</p>
 			</div>
 			<div>
 				<p class="text-2xl font-black text-foreground lg:text-3xl">Premium</p>
-				<p class="mt-1 text-[10px] font-bold tracking-wider text-muted-foreground/60 uppercase">
+				<p class="mt-1 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
 					Material Finishes
 				</p>
 			</div>

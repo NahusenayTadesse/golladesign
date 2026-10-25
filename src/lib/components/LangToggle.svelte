@@ -17,8 +17,9 @@
 	variant="ghost"
 	size="sm"
 	onclick={toggle}
-	aria-label={next === 'am' ? 'Switch to Amharic' : 'Switch to English'}
+	title={next === 'am' ? 'Switch to Amharic' : 'Switch to English'}
 	class="h-10 min-w-10 px-2 text-xs font-bold tracking-wide"
 >
-	{next === 'am' ? 'አማ' : 'EN'}
+	<span class="sr-only">Language:</span>
+	<span lang={next}>{next === 'am' ? 'አማ' : 'EN'}</span>
 </Button>

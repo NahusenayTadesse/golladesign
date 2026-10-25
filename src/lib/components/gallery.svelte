@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fileUrl, fileSrcset } from '$lib/files';
 	import Lightbox from './lightbox.svelte';
 	import { MaximizeIcon } from '@lucide/svelte';
 
@@ -32,11 +33,15 @@
 		<button
 			type="button"
 			class="group relative cursor-pointer touch-manipulation overflow-hidden rounded-lg bg-secondary transition-transform active:scale-[0.98]"
-			aria-label="Open image {index + 1} of {images.length}"
 			onclick={() => openLightbox(index)}
 		>
 			<img
-				src="/files/{image}"
+				src={fileUrl(image, 640)}
+				srcset={fileSrcset(image, 1280)}
+				sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+				width="640"
+				height="480"
+				decoding="async"
 				alt={alts[index] || `${title} gallery image ${index + 1}`}
 				loading="lazy"
 				class="h-64 w-full object-cover transition-transform duration-300 group-hover:scale-110"
@@ -46,7 +51,8 @@
 			<span
 				class="absolute right-2 bottom-2 flex items-center gap-1.5 rounded-full bg-black/70 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur-sm"
 			>
-				<MaximizeIcon class="size-3" />
+				<span class="sr-only">Open image</span>
+				<MaximizeIcon class="size-3" aria-hidden="true" />
 				{index + 1}/{images.length}
 			</span>
 		</button>

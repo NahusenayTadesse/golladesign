@@ -29,14 +29,14 @@
 		></div>
 	</div>
 
-	<main
+	<div
 		class="flex min-h-dvh flex-col items-center justify-center px-6 py-24 text-center sm:py-32 lg:px-8"
 	>
 		<!-- Studio Status Framing Icon -->
 		<div
 			class="relative mb-6 flex h-20 w-20 items-center justify-center rounded-2xl border border-border/60 bg-muted/30"
 		>
-			<CompassIcon class="h-10 w-10 stroke-[1.5] text-primary/80" />
+			<CompassIcon class="h-10 w-10 stroke-[1.5] text-primary" />
 			<span
 				class="text-destructive-foreground absolute -right-1 -bottom-1 flex h-4 w-4 items-center justify-center rounded-md bg-destructive px-1 text-[9px] font-black shadow-md"
 			>
@@ -96,7 +96,7 @@
 		<div
 			class="mt-16 flex w-full max-w-md flex-col items-center gap-4 border-t border-border/50 pt-8"
 		>
-			<p class="text-xs font-black tracking-widest text-muted-foreground/60 uppercase">
+			<p class="text-xs font-black tracking-widest text-muted-foreground uppercase">
 				Direct Support Pipeline
 			</p>
 			<div class="flex flex-wrap justify-center gap-x-8 gap-y-3">
@@ -115,11 +115,11 @@
 				</a>
 			</div>
 		</div>
-	</main>
+	</div>
 
 	<!-- Clean Studio Terminal Branding -->
 	<footer class="pointer-events-none absolute bottom-6 w-full text-center">
-		<p class="text-[10px] font-black tracking-[0.25em] text-muted-foreground/40 uppercase">
+		<p class="text-[10px] font-black tracking-[0.25em] text-muted-foreground uppercase">
 			Golla Design Group • Enduring Space & Narrative
 		</p>
 	</footer>

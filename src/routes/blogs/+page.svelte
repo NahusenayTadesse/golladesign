@@ -47,7 +47,7 @@
 	<PortfolioHero />
 
 	<!-- Primary Interactive Article Board Content Frame -->
-	<main class="mx-auto mt-12 max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
+	<div class="mx-auto mt-12 max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
 		<!-- Unified Filtering Input System Frame -->
 		<div class="mb-12">
 			<PortfolioFilters
@@ -68,5 +68,5 @@
 
 		<!-- Render Grid Canvas -->
 		<PortfolioGrid items={filteredItems} />
-	</main>
+	</div>
 </div>

@@ -1,4 +1,5 @@
 import { error, redirect, type Handle } from '@sveltejs/kit';
+import { sequence } from '@sveltejs/kit/hooks';
 import { building } from '$app/environment';
 import { auth } from '$lib/server/auth';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
@@ -42,4 +43,31 @@ const handleBetterAuth: Handle = async ({ event, resolve }) => {
 	});
 };
 
-export const handle: Handle = handleBetterAuth;
+/**
+ * adapter-node pre-compresses static assets but sends rendered pages uncompressed.
+ * Gzip HTML and data responses unless something upstream already compressed them.
+ */
+const compress: Handle = async ({ event, resolve }) => {
+	const response = await resolve(event);
+	const type = response.headers.get('content-type') ?? '';
+	if (
+		!response.body ||
+		response.headers.has('content-encoding') ||
+		!/\bgzip\b/.test(event.request.headers.get('accept-encoding') ?? '') ||
+		!/^(text\/html|application\/json|text\/plain|application\/javascript)/.test(type)
+	) {
+		return response;
+	}
+
+	const headers = new Headers(response.headers);
+	headers.set('content-encoding', 'gzip');
+	headers.delete('content-length');
+	headers.append('vary', 'Accept-Encoding');
+	return new Response(response.body.pipeThrough(new CompressionStream('gzip')), {
+		status: response.status,
+		statusText: response.statusText,
+		headers
+	});
+};
+
+export const handle: Handle = sequence(compress, handleBetterAuth);

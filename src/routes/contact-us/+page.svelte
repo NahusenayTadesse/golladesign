@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Seo from '$lib/components/Seo.svelte';
-	import { z } from 'zod';
 	import {
 		Card,
 		CardHeader,
@@ -89,7 +88,7 @@
 
 <div class="min-h-dvh w-full bg-background text-foreground">
 	<!-- Primary Main Frame Container -->
-	<main class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+	<div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
 		<!-- Hero Presentation Block -->
 		<div class="mb-16 space-y-4 text-center">
 			<div
@@ -207,9 +206,7 @@
 									<info.icon class="size-4" />
 								</div>
 								<div class="min-w-0 flex-1">
-									<p
-										class="text-[10px] font-bold tracking-wider text-muted-foreground/60 uppercase"
-									>
+									<p class="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
 										{info.label}
 									</p>
 									<p class="text-sm font-semibold text-foreground">{info.value}</p>
@@ -249,5 +246,5 @@
 				</Card>
 			</div>
 		</div>
-	</main>
+	</div>
 </div>

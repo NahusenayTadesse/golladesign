@@ -55,11 +55,13 @@ export async function getServices(lang: Lang) {
 		)
 		.orderBy(asc(serviceGallery.sortOrder), asc(serviceGallery.id));
 
+	// Only what the cards show; everything returned here is serialized into the page.
 	return rows.map((s) => ({
-		...s,
+		id: s.id,
+		slug: s.slug,
+		featuredImage: s.featuredImage,
 		name: tr(s, 'name', lang),
 		description: tr(s, 'description', lang),
-		longDescription: tr(s, 'longDescription', lang),
 		galleryImages: images
 			.filter((img) => img.serviceId === s.id && img.imageUrl)
 			.map((img) => img.imageUrl as string)
@@ -125,11 +127,17 @@ export async function getProjects(
 		.orderBy(desc(projects.isFeatured), asc(projects.sortOrder), desc(projects.completedAt));
 
 	const rows = opts.limit ? await query.limit(opts.limit) : await query;
+	// Card fields only; the full content is loaded on the project page.
 	return rows.map((p) => ({
-		...p,
+		id: p.id,
+		slug: p.slug,
+		featuredImage: p.featuredImage,
+		clientName: p.clientName,
+		location: p.location,
+		isFeatured: p.isFeatured,
 		title: tr(p, 'title', lang),
 		excerpt: tr(p, 'excerpt', lang),
-		content: tr(p, 'content', lang),
+		content: null,
 		description: null,
 		category: p.category ?? '',
 		completedAt: p.completedAt ? p.completedAt.toISOString() : null
@@ -216,7 +224,25 @@ export async function getBlogs(lang: Lang, limit?: number) {
 		.where(published(blog))
 		.orderBy(desc(blog.publishedAt), desc(blog.id));
 	const rows = limit ? await query.limit(limit) : await query;
-	return rows.map((b) => ({ ...localizeBlog(b, lang), category: b.category ?? '' }));
+	return rows.map((b) => {
+		const post = localizeBlog(b, lang);
+		return {
+			id: post.id,
+			slug: post.slug,
+			title: post.title,
+			excerpt: post.excerpt,
+			featuredImage: post.featuredImage,
+			date: post.date,
+			createdAt: post.createdAt,
+			category: b.category ?? '',
+			// Plain text for the list page search; the HTML is only needed on the post page.
+			content: (post.content ?? '')
+				.replace(/<[^>]*>/g, ' ')
+				.replace(/\s+/g, ' ')
+				.trim()
+				.slice(0, 2000)
+		};
+	});
 }
 
 export async function getBlog(slug: string, lang: Lang) {

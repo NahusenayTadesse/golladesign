@@ -1,5 +1,7 @@
 <script lang="ts">
 	import './layout.css';
+	// Body text font; preloaded so text doesn't repaint late when it swaps in.
+	import interLatin from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
 	import { getFlash } from 'sveltekit-flash-message';
 	import { page } from '$app/state';
 	import { Toaster } from '$lib/components/ui/sonner/index.js';
@@ -57,14 +59,25 @@
 	});
 </script>
 
-<svelte:head><link rel="icon" href={siteLogos.raster} /></svelte:head>
+<svelte:head>
+	<link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin="anonymous" />
+	<link rel="icon" href="/favicon-64.png" sizes="64x64" type="image/png" />
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+</svelte:head>
 <ModeWatcher />
 <Toaster position="bottom-right" richColors closeButton />
 <ProgressBar color="#F2E1D1" zIndex={1000} />
 
 {#if !page.url.pathname.startsWith('/dashboard')}
+	<a
+		href="#main-content"
+		class="sr-only z-[100] rounded bg-background px-4 py-2 focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
+		>Skip to content</a
+	>
 	<Header serviceNames={data.servicesItems} />
-	{@render children()}
+	<main id="main-content">
+		{@render children()}
+	</main>
 	<Footer />
 {:else}
 	{@render children()}

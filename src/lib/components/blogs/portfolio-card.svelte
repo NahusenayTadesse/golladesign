@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fileUrl, fileSrcset } from '$lib/files';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Card, CardContent } from '$lib/components/ui/card';
 	import { CalendarIcon, MapPinIcon, UserIcon } from '@lucide/svelte';
@@ -22,7 +23,12 @@
 >
 	<a href="/blogs/{item?.slug}" class="relative aspect-4/3 overflow-hidden">
 		<img
-			src="/files/{item?.featuredImage}"
+			src={fileUrl(item?.featuredImage, 640)}
+			srcset={fileSrcset(item?.featuredImage, 1280)}
+			sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+			width="640"
+			height="480"
+			decoding="async"
 			alt={item.title}
 			class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
 		/>

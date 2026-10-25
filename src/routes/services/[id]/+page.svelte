@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fileUrl, fileSrcset } from '$lib/files';
 	import { fade, fly } from 'svelte/transition';
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
@@ -70,7 +71,10 @@
 		></div>
 
 		<img
-			src={service?.featuredImage ? `/files/${service.featuredImage}` : '/fallback-blueprint.webp'}
+			src={service?.featuredImage ? fileUrl(service.featuredImage, 1280) : '/logo.jpg'}
+			srcset={fileSrcset(service?.featuredImage)}
+			sizes="100vw"
+			fetchpriority="high"
 			alt={service?.name}
 			class="h-full w-full object-cover grayscale-25"
 		/>
@@ -126,7 +130,7 @@
 					<article class="mt-8 space-y-8 rounded-xl border border-border/50 bg-muted/20 p-6">
 						{#if service?.longDescription}
 							<div
-								class="prose prose-neutral dark:prose-invert max-w-none text-sm leading-relaxed text-muted-foreground/90"
+								class="prose prose-neutral dark:prose-invert max-w-none text-sm leading-relaxed text-muted-foreground"
 							>
 								{@html service.longDescription}
 							</div>
@@ -136,7 +140,7 @@
 						{#if data?.images?.length}
 							<div class="space-y-3 border-t border-border/40 pt-4">
 								<div
-									class="flex items-center gap-2 text-[10px] font-black tracking-widest text-muted-foreground/70 uppercase"
+									class="flex items-center gap-2 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
 								>
 									<LayersIcon class="size-3.5" />
 									Related Studio Reference Executions

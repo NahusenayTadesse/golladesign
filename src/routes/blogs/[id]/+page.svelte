@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fileUrl, fileSrcset } from '$lib/files';
 	import Seo from '$lib/components/Seo.svelte';
 	import LiteYoutube from '$lib/components/LiteYoutube.svelte';
 	import { fade, fly } from 'svelte/transition';
@@ -33,7 +34,14 @@
 <div class="min-h-dvh bg-background text-foreground" in:fade={{ duration: 300 }}>
 	<!-- Hero Image Section Layer -->
 	<div class="relative h-[50vh] overflow-hidden lg:h-[60vh]">
-		<img src={`/files/${item.featuredImage}`} alt={item.title} class="h-full w-full object-cover" />
+		<img
+			src={fileUrl(item.featuredImage, 1280)}
+			srcset={fileSrcset(item.featuredImage)}
+			sizes="100vw"
+			alt={item.title}
+			fetchpriority="high"
+			class="h-full w-full object-cover"
+		/>
 		<div
 			class="absolute inset-0 bg-linear-to-t from-background via-background/30 to-transparent"
 		></div>
@@ -87,7 +95,7 @@
 								<CalendarIcon class="size-4" />
 							</div>
 							<div>
-								<p class="text-[10px] font-bold tracking-wider text-muted-foreground/60 uppercase">
+								<p class="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
 									Published
 								</p>
 								<p class="text-sm font-semibold text-foreground">{formattedDate}</p>

@@ -81,7 +81,7 @@
 			</a>
 		{:else}
 			<a href="/shop/single/{productId}">
-				<div class="flex h-full w-full items-center justify-center text-muted-foreground/40">
+				<div class="flex h-full w-full items-center justify-center text-muted-foreground">
 					<ShoppingCartIcon class="size-12" />
 				</div>
 			</a>
@@ -95,7 +95,7 @@
 			{/if}
 
 			{#if quantityInCart > 0}
-				<Badge variant="default" class="animate-in zoom-in-50 duration-200">
+				<Badge variant="default" class="animate-in duration-200 zoom-in-50">
 					{quantityInCart} in cart
 				</Badge>
 			{/if}
@@ -113,7 +113,7 @@
 		</div>
 
 		<div class="space-y-3">
-			<label class="flex items-center gap-2 text-sm font-semibold text-foreground/80">
+			<label class="flex items-center gap-2 text-sm font-semibold text-foreground">
 				<PackageIcon class="size-4" />
 				Package Options
 			</label>
@@ -130,7 +130,7 @@
 							</div>
 							<div class="max-w-full text-left leading-tight">
 								<div class="truncate font-semibold wrap-break-word text-foreground">{amount}</div>
-								<div class="text-[12px] text-foreground/60">ETB {price}</div>
+								<div class="text-[12px] text-foreground">ETB {price}</div>
 							</div>
 						</div>
 
@@ -153,7 +153,7 @@
 									</div>
 									<div class="text-left">
 										<div class="font-semibold">{newprice.amount}</div>
-										<div class="text-xs text-foreground/60">Standard pack</div>
+										<div class="text-xs text-foreground">Standard pack</div>
 									</div>
 								</div>
 								<div class="text-right">
