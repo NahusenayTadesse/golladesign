@@ -6,8 +6,9 @@ import {
 	blogVideos
 } from '$lib/server/db/schema';
 import { eq, getTableColumns } from 'drizzle-orm';
+import { error } from '@sveltejs/kit';
 
-import type { PageServerLoad } from '../$types';
+import type { PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ params }) => {
 	const { id } = params;
 	// First, get products
@@ -17,10 +18,14 @@ export const load: PageServerLoad = async ({ params }) => {
 			category: blogCategories.name
 		})
 		.from(portfolio)
-		.innerJoin(blogCategories, eq(portfolio.categoryId, blogCategories.id))
+		.leftJoin(blogCategories, eq(portfolio.categoryId, blogCategories.id))
 		.where(eq(portfolio.slug, id))
 		.limit(1)
 		.then((res) => res[0]);
+
+	if (!portfolioItems) {
+		error(404, 'Blog post not found');
+	}
 
 	const result = await db
 		.select({

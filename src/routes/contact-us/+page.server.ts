@@ -29,19 +29,27 @@ export const actions: Actions = {
 		try {
 			await db
 				.insert(contactMessages)
-				.values({ name, phone: phoneNumber, email, subject, message: contactMessage });
+				.values({ name, phone: phoneNumber, email, subject, message: contactMessage ?? '' });
 
 			const adminMail = adminContactTemplate(form.data);
-			sendEmail(USER, adminMail.subject, adminMail.html);
-
 			const userMail = customerContactTemplate(name, subject);
-			sendEmail(email, userMail.subject, userMail.html);
+
+			// The message is already saved, so a mail failure must not fail the request.
+			// An unawaited rejection here would crash the Node process.
+			const results = await Promise.allSettled([
+				sendEmail(USER, adminMail.subject, adminMail.html),
+				sendEmail(email, userMail.subject, userMail.html)
+			]);
+			for (const result of results) {
+				if (result.status === 'rejected') console.error('Contact email failed:', result.reason);
+			}
 
 			return message(form, { type: 'success', text: 'Message Successfully Sent!' });
 		} catch (err) {
+			console.error('Error saving contact message:', err);
 			return message(form, {
 				type: 'error',
-				text: 'Error Adding Messages: ' + err?.message
+				text: 'Something went wrong, please try again.'
 			});
 		}
 	}

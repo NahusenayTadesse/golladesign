@@ -17,6 +17,15 @@ const transporter = nodemailer.createTransport({
 	}
 });
 
+// Visitor input is interpolated into HTML emails, so it must be escaped.
+const esc = (value: string) =>
+	value
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;');
+
 export const sendEmail = async (to: string, subject: string, html: string) => {
 	await transporter.sendMail({
 		from: USER,
@@ -48,31 +57,31 @@ export const adminContactTemplate = (data: {
                 <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
                     <tr style="border-b: 1px solid #f0f0f0;">
                         <td style="padding: 10px 0; color: #566557; width: 120px; font-weight: 500;">Client Entity:</td>
-                        <td style="padding: 10px 0; color: #171717; font-weight: 700;">${data.name}</td>
+                        <td style="padding: 10px 0; color: #171717; font-weight: 700;">${esc(data.name)}</td>
                     </tr>
                     <tr style="border-b: 1px solid #f0f0f0;">
                         <td style="padding: 10px 0; color: #566557; font-weight: 500;">Email Address:</td>
-                        <td style="padding: 10px 0; color: #171717; font-weight: 700;"><a href="mailto:${data.email}" style="color: #171717; text-decoration: underline;">${data.email}</a></td>
+                        <td style="padding: 10px 0; color: #171717; font-weight: 700;"><a href="mailto:${esc(data.email)}" style="color: #171717; text-decoration: underline;">${esc(data.email)}</a></td>
                     </tr>
                     <tr style="border-b: 1px solid #f0f0f0;">
                         <td style="padding: 10px 0; color: #566557; font-weight: 500;">Phone Line:</td>
-                        <td style="padding: 10px 0; color: #171717; font-weight: 700;">${data.phoneNumber}</td>
+                        <td style="padding: 10px 0; color: #171717; font-weight: 700;">${esc(data.phoneNumber)}</td>
                     </tr>
                     <tr>
                         <td style="padding: 10px 0; color: #566557; font-weight: 500;">Project Scope:</td>
-                        <td style="padding: 10px 0; color: #171717; font-weight: 700; text-transform: uppercase; font-size: 13px; tracking-wide: 0.05em;">${data.subject}</td>
+                        <td style="padding: 10px 0; color: #171717; font-weight: 700; text-transform: uppercase; font-size: 13px; tracking-wide: 0.05em;">${esc(data.subject)}</td>
                     </tr>
                 </table>
 
                 <div style="margin-top: 25px; border-top: 1px solid #e5e5e5; padding-top: 25px;">
                     <strong style="color: #171717; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 10px;">Design Brief Details:</strong>
                     <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; border-left: 4px solid #171717; line-height: 1.6; font-size: 14px; color: #404040;">
-                        ${data.contactMessage || '<i>No specific brief criteria or text submitted.</i>'}
+                        ${data.contactMessage ? esc(data.contactMessage).replace(/\n/g, '<br>') : '<i>No specific brief criteria or text submitted.</i>'}
                     </div>
                 </div>
 
                 <div style="margin-top: 35px; text-align: center;">
-                    <a href="mailto:${data.email}"
+                    <a href="mailto:${esc(data.email)}"
                        style="background: #171717; color: #ffffff; padding: 14px 30px; text-decoration: none; border-radius: 8px; font-size: 12px; font-weight: 900; uppercase; letter-spacing: 1px; display: inline-block; text-transform: uppercase;">
                         Open Correspondence Channel
                     </a>
@@ -94,7 +103,7 @@ export const customerContactTemplate = (name: string, subject: string) => ({
         <div style="max-width: 600px; margin: auto; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; border: 1px solid #e5e5e5; border-radius: 12px; overflow: hidden; background-color: #ffffff;">
             <!-- Header -->
             <div style="background-color: #ffffff; padding: 40px 30px 20px 30px; text-align: left; border-b: 1px solid #f5f5f5;">
-                <img src="https://golladesign.com/logo.png"
+                <img src="https://golladesigns.com/logo.jpg"
                      alt="Golla Design Group"
                      width="160"
                      style="display: block; margin-bottom: 20px; filter: grayscale(100%);">
@@ -106,14 +115,14 @@ export const customerContactTemplate = (name: string, subject: string) => ({
 
             <!-- Body -->
             <div style="padding: 20px 30px 40px 30px; color: #404040; background-color: #ffffff; line-height: 1.6; font-size: 15px;">
-                <p>Hello <strong>${name}</strong>,</p>
+                <p>Hello <strong>${esc(name)}</strong>,</p>
 
                 <p>
                     Thank you for contacting the design studio at <strong>Golla Design Group</strong>. We have successfully cataloged your project blueprint consultation request for the following design track:
                 </p>
 
                 <p style="font-weight: 800; color: #171717; margin: 20px 0; padding: 15px; background: #f5f5f5; border-radius: 8px; text-align: center; border: 1px solid #e5e5e5; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">
-                    "${subject}"
+                    "${esc(subject)}"
                 </p>
 
                 <p>

@@ -66,7 +66,10 @@ export const actions: Actions = {
 		const { id, name, description } = form.data;
 
 		try {
-			await db.update(paymentMethods).set({ name, description }).where(eq(paymentMethods.id, id));
+			await db
+				.update(paymentMethods)
+				.set({ name, description })
+				.where(eq(paymentMethods.id, Number(id)));
 			return message(form, { type: 'success', text: 'Category Successfully Updated' });
 		} catch (err: any) {
 			if (err.code === 'ER_DUP_ENTRY') return setError(form, 'name', 'Category already exists.');
@@ -89,7 +92,7 @@ export const actions: Actions = {
 		const { id } = form.data;
 
 		try {
-			await db.delete(paymentMethods).where(eq(paymentMethods.id, id));
+			await db.delete(paymentMethods).where(eq(paymentMethods.id, Number(id)));
 			return message(form, { type: 'success', text: 'Category Successfully Deleted' });
 		} catch (err: any) {
 			return message(

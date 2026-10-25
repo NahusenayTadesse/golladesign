@@ -17,7 +17,7 @@ export const load: PageServerLoad = async () => {
 	return { form, gallery: imagesList };
 };
 
-import { saveUploadedFile } from '$lib/server/upload';
+import { saveUploadedFile, uploadGallery } from '$lib/server/upload';
 
 export const actions: Actions = {
 	editGallery: async ({ request }) => {
@@ -65,25 +65,5 @@ export const actions: Actions = {
 				{ status: 500 }
 			);
 		}
-	}
-};
-
-const uploadGallery = async (gallery: File[] | undefined) => {
-	try {
-		// 1. Map each file to the upload promise
-		const uploadPromises = gallery.map(async (file) => {
-			const address = await saveUploadedFile(file);
-			return address; // This is the string returned by your function
-		});
-
-		// 2. Wait for all uploads to complete and store results in an array
-		const uploadedAddresses: string[] = await Promise.all(uploadPromises);
-
-		console.log('All files uploaded:', uploadedAddresses);
-
-		return uploadedAddresses;
-	} catch (error) {
-		console.error('Error uploading gallery:', error);
-		throw error;
 	}
 };

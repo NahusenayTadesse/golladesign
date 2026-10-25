@@ -15,10 +15,7 @@ import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async () => {
 	// First, get products
-	const portfolioItems = await db
-		.select()
-		.from(portfolio)
-		.where(eq(portfolio.isFeaturedOnHome, true));
+	const portfolioItems = await db.select().from(portfolio).where(eq(portfolio.isFeaturedOnHome, 1));
 	const testimonialList = await db
 		.select({
 			name: testimonials.name,

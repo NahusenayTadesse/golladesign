@@ -85,10 +85,9 @@ export const actions: Actions = {
 					isFeatured,
 					location,
 					blueprintUrl,
-					completedAt: new Date(date),
-					createdBy: locals?.user?.id
+					completedAt: new Date(date)
 				})
-				.returning();
+				.$returningId();
 
 			const newProductId = product.id;
 

@@ -43,7 +43,6 @@ export const actions: Actions = {
 		const featuredImage = await saveUploadedFile(image);
 		const galleryImages = await uploadGallery(gallery);
 		const result = await db.transaction(async (tx) => {
-
 			let newSlug: string;
 
 			const existingSlug = await tx
@@ -65,14 +64,13 @@ export const actions: Actions = {
 					title,
 					slug: newSlug,
 					categoryId: category,
-					gallery,
 					content,
 					excerpt,
 					featuredImage,
 					createdAt: new Date(date),
 					createdBy: locals?.user?.id
 				})
-				.returning();
+				.$returningId();
 
 			const newProductId = product.id;
 

@@ -11,6 +11,7 @@ import {
 	blogVideos
 } from '$lib/server/db/schema';
 import { eq, sql, getTableColumns } from 'drizzle-orm';
+import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ params }) => {
@@ -45,6 +46,8 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.where(eq(event.id, Number(id)))
 		.limit(1)
 		.then((rows) => rows[0]);
+
+	if (!product) error(404, 'Blog not found');
 
 	const form = await superValidate(
 		{ ...product, date: new Date(product.createdAt).toLocaleDateString('en-CA') },

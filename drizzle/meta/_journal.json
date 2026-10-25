@@ -1,19 +1,12 @@
 {
   "version": "7",
-  "dialect": "sqlite",
+  "dialect": "mysql",
   "entries": [
     {
       "idx": 0,
-      "version": "6",
-      "when": 1782410630167,
-      "tag": "0000_confused_landau",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1782414192987,
-      "tag": "0001_striped_timeslip",
+      "version": "5",
+      "when": 1792958750242,
+      "tag": "0000_init_mysql",
       "breakpoints": true
     }
   ]

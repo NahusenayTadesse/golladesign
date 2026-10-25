@@ -18,7 +18,6 @@ export const load: PageServerLoad = async () => {
 
 import { saveUploadedFile, uploadGallery } from '$lib/server/upload.js';
 
-
 export const actions: Actions = {
 	addService: async ({ request, cookies, locals }) => {
 		const form = await superValidate(request, zod4(add));
@@ -46,7 +45,7 @@ export const actions: Actions = {
 					featuredImage,
 					createdBy: locals?.user?.id
 				})
-				.returning();
+				.$returningId();
 
 			const newProductId = product.id;
 

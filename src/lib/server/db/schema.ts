@@ -1,15 +1,26 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import {
+	mysqlTable,
+	mysqlEnum,
+	varchar,
+	text,
+	int,
+	boolean,
+	datetime
+} from 'drizzle-orm/mysql-core';
 
 // ---------------------------------------------------------------------------
 // Shared field helpers
 // ---------------------------------------------------------------------------
 
-/** createdAt + updatedAt mapped to JS Date objects via integer({ mode: 'timestamp' }). */
+/** DATETIME columns mapped to JS Date objects. */
+const date = (name: string) => datetime(name, { mode: 'date', fsp: 3 });
+
+/** createdAt + updatedAt mapped to JS Date objects. */
 const timestamps = () => ({
-	createdAt: integer('created_at', { mode: 'timestamp' })
+	createdAt: date('created_at')
 		.$defaultFn(() => new Date())
 		.notNull(),
-	updatedAt: integer('updated_at', { mode: 'timestamp' })
+	updatedAt: date('updated_at')
 		.$defaultFn(() => new Date())
 		.$onUpdateFn(() => new Date())
 		.notNull()
@@ -17,286 +28,288 @@ const timestamps = () => ({
 
 /** Soft-delete fields. */
 const softDelete = () => ({
-	deletedAt: integer('deleted_at', { mode: 'timestamp' }),
-	deletedBy: text('deleted_by', { length: 255 })
+	deletedAt: date('deleted_at'),
+	deletedBy: varchar('deleted_by', { length: 255 })
 });
 
 /** Audit (created/updated by) fields. */
 const auditFields = () => ({
-	createdBy: text('created_by', { length: 255 }),
-	updatedBy: text('updated_by', { length: 255 })
+	createdBy: varchar('created_by', { length: 255 }),
+	updatedBy: varchar('updated_by', { length: 255 })
 });
+
+/** Auto-increment integer primary key. */
+const id = () => int().autoincrement().primaryKey();
 
 // ---------------------------------------------------------------------------
 // Tables
 // ---------------------------------------------------------------------------
 
-export const account = sqliteTable('account', {
-	id: text({ length: 36 }).primaryKey(),
+export const account = mysqlTable('account', {
+	id: varchar({ length: 36 }).primaryKey(),
 	accountId: text('account_id').notNull(),
 	providerId: text('provider_id').notNull(),
-	userId: text('user_id', { length: 36 }).notNull(),
+	userId: varchar('user_id', { length: 36 }).notNull(),
 	accessToken: text('access_token'),
 	refreshToken: text('refresh_token'),
 	idToken: text('id_token'),
-	accessTokenExpiresAt: integer('access_token_expires_at', { mode: 'timestamp' }),
-	refreshTokenExpiresAt: integer('refresh_token_expires_at', { mode: 'timestamp' }),
+	accessTokenExpiresAt: date('access_token_expires_at'),
+	refreshTokenExpiresAt: date('refresh_token_expires_at'),
 	scope: text(),
 	password: text(),
 	...timestamps()
 });
 
-export const blog = sqliteTable('blog', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	title: text({ length: 255 }).notNull(),
-	categoryId: integer('category_id').notNull(),
-	slug: text({ length: 255 }).notNull(),
+export const blog = mysqlTable('blog', {
+	id: id(),
+	title: varchar({ length: 255 }).notNull(),
+	categoryId: int('category_id').notNull(),
+	slug: varchar({ length: 255 }).notNull(),
 	excerpt: text(),
 	content: text(),
-	isFeaturedOnHome: integer('is_featured_on_home').default(0),
-	featuredImage: text('featured_image', { length: 255 }),
-	isActive: integer('is_active').default(1).notNull(),
+	isFeaturedOnHome: int('is_featured_on_home').default(0),
+	featuredImage: varchar('featured_image', { length: 255 }),
+	isActive: int('is_active').default(1).notNull(),
 	...auditFields(),
 	...timestamps(),
 	...softDelete()
 });
 
-export const blogCategories = sqliteTable('blog_categories', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	name: text({ length: 255 }).notNull(),
-	description: text({ length: 255 }).notNull()
+export const blogCategories = mysqlTable('blog_categories', {
+	id: id(),
+	name: varchar({ length: 255 }).notNull(),
+	description: varchar({ length: 255 }).notNull()
 });
 
-export const blogGallery = sqliteTable('blog_gallery', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	blogId: integer('blog_id').notNull(),
-	imageUrl: text('image_url', { length: 255 })
+export const blogGallery = mysqlTable('blog_gallery', {
+	id: id(),
+	blogId: int('blog_id').notNull(),
+	imageUrl: varchar('image_url', { length: 255 })
 });
 
-export const blogVideos = sqliteTable('blog_videos', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	blogId: integer('blog_id').notNull(),
-	videoUrl: text('video_url', { length: 255 }).notNull(),
-	isActive: integer('is_active').default(1).notNull(),
+export const blogVideos = mysqlTable('blog_videos', {
+	id: id(),
+	blogId: int('blog_id').notNull(),
+	videoUrl: varchar('video_url', { length: 255 }).notNull(),
+	isActive: int('is_active').default(1).notNull(),
 	...auditFields(),
 	...timestamps(),
 	...softDelete()
 });
 
-export const contactMessages = sqliteTable('contact_messages', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	name: text({ length: 255 }).notNull(),
-	email: text({ length: 100 }).notNull(),
-	phone: text({ length: 20 }),
-	subject: text({ length: 255 }).notNull(),
+export const contactMessages = mysqlTable('contact_messages', {
+	id: id(),
+	name: varchar({ length: 255 }).notNull(),
+	email: varchar({ length: 100 }).notNull(),
+	phone: varchar({ length: 20 }),
+	subject: varchar({ length: 255 }).notNull(),
 	message: text().notNull(),
-	address: text({ length: 255 }),
-	seen: integer().default(0),
+	address: varchar({ length: 255 }),
+	seen: int().default(0),
 	...timestamps()
 });
 
-export const gallery = sqliteTable('gallery', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	imageUrl: text('image_url', { length: 255 })
+export const gallery = mysqlTable('gallery', {
+	id: id(),
+	imageUrl: varchar('image_url', { length: 255 })
 });
 
-export const permissions = sqliteTable('permissions', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	name: text({ length: 50 }).notNull(),
-	description: text({ length: 255 })
+export const permissions = mysqlTable('permissions', {
+	id: id(),
+	name: varchar({ length: 50 }).notNull(),
+	description: varchar({ length: 255 })
 });
 
-export const portfolio = sqliteTable('portfolio', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	title: text({ length: 255 }).notNull(),
-	slug: text({ length: 255 }).notNull(),
+export const portfolio = mysqlTable('portfolio', {
+	id: id(),
+	title: varchar({ length: 255 }).notNull(),
+	slug: varchar({ length: 255 }).notNull(),
 	description: text(),
-	featuredImage: text({ length: 255 }),
-	eventType: text({ length: 255 }),
-	date: integer({ mode: 'timestamp' }),
-	client: text({ length: 255 }),
-	location: text({ length: 255 }),
-	isFeaturedOnHome: integer('is_featured_on_home').default(0),
-	isActive: integer('is_active').default(1).notNull(),
+	featuredImage: varchar({ length: 255 }),
+	eventType: varchar({ length: 255 }),
+	date: date('date'),
+	client: varchar({ length: 255 }),
+	location: varchar({ length: 255 }),
+	isFeaturedOnHome: int('is_featured_on_home').default(0),
+	isActive: int('is_active').default(1).notNull(),
 	...auditFields(),
 	...timestamps(),
 	...softDelete()
 });
 
-export const portfolioGallery = sqliteTable('portfolio_gallery', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	portfolioId: integer('portfolio_id').notNull(),
-	imageUrl: text('image_url', { length: 255 })
+export const portfolioGallery = mysqlTable('portfolio_gallery', {
+	id: id(),
+	portfolioId: int('portfolio_id').notNull(),
+	imageUrl: varchar('image_url', { length: 255 })
 });
 
-export const quotes = sqliteTable('quotes', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	serviceType: text('service_type', { length: 100 }).notNull(),
-	name: text({ length: 255 }).notNull(),
-	email: text({ length: 255 }).notNull(),
-	phone: text({ length: 50 }),
-	eventDate: integer('event_date', { mode: 'timestamp' }),
-	eventLocation: text('event_location', { length: 255 }),
-	budgetRange: text('budget_range', { length: 100 }),
-	guestCount: integer('guest_count'),
+export const quotes = mysqlTable('quotes', {
+	id: id(),
+	serviceType: varchar('service_type', { length: 100 }).notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	email: varchar({ length: 255 }).notNull(),
+	phone: varchar({ length: 50 }),
+	eventDate: date('event_date'),
+	eventLocation: varchar('event_location', { length: 255 }),
+	budgetRange: varchar('budget_range', { length: 100 }),
+	guestCount: int('guest_count'),
 	description: text(),
-	status: text({ length: 50 }).default('pending'),
+	status: varchar({ length: 50 }).default('pending'),
 	...timestamps()
 });
 
-export const roles = sqliteTable('roles', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	name: text({ length: 32 }).notNull(),
-	description: text({ length: 255 }),
-	isActive: integer('is_active').default(1).notNull()
+export const roles = mysqlTable('roles', {
+	id: id(),
+	name: varchar({ length: 32 }).notNull(),
+	description: varchar({ length: 255 }),
+	isActive: int('is_active').default(1).notNull()
 });
 
-export const rolePermissions = sqliteTable('role_permissions', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	roleId: integer('role_id').notNull(),
-	permissionId: integer('permission_id').notNull(),
-	isActive: integer('is_active').default(1).notNull(),
+export const rolePermissions = mysqlTable('role_permissions', {
+	id: id(),
+	roleId: int('role_id').notNull(),
+	permissionId: int('permission_id').notNull(),
+	isActive: int('is_active').default(1).notNull(),
 	...auditFields(),
 	...timestamps(),
 	...softDelete()
 });
 
-export const services = sqliteTable('services', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	name: text({ length: 255 }).notNull(),
+export const services = mysqlTable('services', {
+	id: id(),
+	name: varchar({ length: 255 }).notNull(),
 	description: text(),
 	longDescription: text('long_description'),
-	featuredImage: text('featured_image', { length: 255 }),
-	isActive: integer('is_active').default(1).notNull(),
+	featuredImage: varchar('featured_image', { length: 255 }),
+	isActive: int('is_active').default(1).notNull(),
 	...auditFields(),
 	...timestamps(),
 	...softDelete()
 });
 
-export const serviceGallery = sqliteTable('service_gallery', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	serviceId: integer('service_id').notNull(),
-	imageUrl: text('image_url', { length: 255 })
+export const serviceGallery = mysqlTable('service_gallery', {
+	id: id(),
+	serviceId: int('service_id').notNull(),
+	imageUrl: varchar('image_url', { length: 255 })
 });
 
-export const session = sqliteTable('session', {
-	id: text({ length: 36 }).primaryKey(),
-	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
-	token: text({ length: 255 }).notNull(),
+export const session = mysqlTable('session', {
+	id: varchar({ length: 36 }).primaryKey(),
+	expiresAt: date('expires_at').notNull(),
+	token: varchar({ length: 255 }).notNull().unique(),
 	ipAddress: text('ip_address'),
 	userAgent: text('user_agent'),
-	userId: text('user_id', { length: 36 }).notNull(),
+	userId: varchar('user_id', { length: 36 }).notNull(),
 	impersonatedBy: text('impersonated_by'),
 	...timestamps()
 });
 
-export const specialPermissions = sqliteTable('special_permissions', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	userId: text('user_id', { length: 255 }).notNull(),
-	permissionId: integer('permission_id').notNull(),
-	isActive: integer('is_active').default(1).notNull(),
+export const specialPermissions = mysqlTable('special_permissions', {
+	id: id(),
+	userId: varchar('user_id', { length: 255 }).notNull(),
+	permissionId: int('permission_id').notNull(),
+	isActive: int('is_active').default(1).notNull(),
 	...auditFields(),
 	...timestamps(),
 	...softDelete()
 });
 
-export const testimonials = sqliteTable('testimonials', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	name: text({ length: 255 }).notNull(),
-	position: text({ length: 255 }),
+export const testimonials = mysqlTable('testimonials', {
+	id: id(),
+	name: varchar({ length: 255 }).notNull(),
+	position: varchar({ length: 255 }),
 	message: text().notNull(),
-	avatar: text({ length: 255 }),
-	isActive: integer('is_active').default(1).notNull(),
+	avatar: varchar({ length: 255 }),
+	isActive: int('is_active').default(1).notNull(),
 	...auditFields(),
 	...timestamps(),
 	...softDelete()
 });
 
-export const user = sqliteTable('user', {
-	id: text({ length: 36 }).primaryKey(),
-	name: text({ length: 255 }).notNull(),
-	email: text({ length: 255 }).notNull(),
-	emailVerified: integer('email_verified').default(0).notNull(),
+export const user = mysqlTable('user', {
+	id: varchar({ length: 36 }).primaryKey(),
+	name: varchar({ length: 255 }).notNull(),
+	email: varchar({ length: 255 }).notNull().unique(),
+	emailVerified: int('email_verified').default(0).notNull(),
 	image: text(),
 	role: text(),
-	banned: integer(),
+	banned: int(),
 	banReason: text('ban_reason'),
-	banExpires: integer('ban_expires', { mode: 'timestamp' }),
-	roleId: integer('role_id'),
+	banExpires: date('ban_expires'),
+	roleId: int('role_id'),
 	...timestamps()
 });
 
-export const venueVideos = sqliteTable('venue_videos', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	venueId: integer('venue_id').notNull(),
-	videoUrl: text('video_url', { length: 255 }).notNull(),
-	isActive: integer('is_active').default(1).notNull(),
+export const venueVideos = mysqlTable('venue_videos', {
+	id: id(),
+	venueId: int('venue_id').notNull(),
+	videoUrl: varchar('video_url', { length: 255 }).notNull(),
+	isActive: int('is_active').default(1).notNull(),
 	...auditFields(),
 	...timestamps(),
 	...softDelete()
 });
 
-export const verification = sqliteTable('verification', {
-	id: text({ length: 36 }).primaryKey(),
-	identifier: text({ length: 255 }).notNull(),
+export const verification = mysqlTable('verification', {
+	id: varchar({ length: 36 }).primaryKey(),
+	identifier: varchar({ length: 255 }).notNull(),
 	value: text().notNull(),
-	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+	expiresAt: date('expires_at').notNull(),
 	...timestamps()
 });
 
-export const teamMembers = sqliteTable('teamMembers', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	name: text({ length: 255 }).notNull(),
-	position: text({ length: 255 }),
+export const teamMembers = mysqlTable('teamMembers', {
+	id: id(),
+	name: varchar({ length: 255 }).notNull(),
+	position: varchar({ length: 255 }),
 	message: text().notNull(),
-	avatar: text({ length: 255 }),
-	isActive: integer('is_active').default(1).notNull(),
+	avatar: varchar({ length: 255 }),
+	isActive: int('is_active').default(1).notNull(),
 	...auditFields(),
 	...timestamps(),
 	...softDelete()
 });
 
-export const projectCategories = sqliteTable('project_categories', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	name: text('name').notNull().unique(),
+export const projectCategories = mysqlTable('project_categories', {
+	id: id(),
+	name: varchar('name', { length: 255 }).notNull().unique(),
 	description: text('description')
 });
-export const projects = sqliteTable('projects', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	title: text('title').notNull(),
-	slug: text('slug').notNull().unique(),
-	categoryId: integer('category_id').references(() => projectCategories.id, {
+
+export const projects = mysqlTable('projects', {
+	id: id(),
+	title: varchar('title', { length: 255 }).notNull(),
+	slug: varchar('slug', { length: 255 }).notNull().unique(),
+	categoryId: int('category_id').references(() => projectCategories.id, {
 		onDelete: 'set null'
 	}),
 	excerpt: text('excerpt').notNull(),
 	content: text('content').notNull(),
-	clientName: text('client_name'),
-	location: text('location'),
-	featuredImage: text('featured_image').notNull(),
-	blueprintUrl: text('blueprint_url'),
-	isFeatured: integer('is_featured', { mode: 'boolean' }).default(false).notNull(),
-	status: text('status', { enum: ['draft', 'published', 'archived'] })
-		.default('draft')
-		.notNull(),
-	completedAt: integer('completed_at', { mode: 'timestamp' })
+	clientName: varchar('client_name', { length: 255 }),
+	location: varchar('location', { length: 255 }),
+	featuredImage: varchar('featured_image', { length: 255 }).notNull(),
+	blueprintUrl: varchar('blueprint_url', { length: 255 }),
+	isFeatured: boolean('is_featured').default(false).notNull(),
+	status: mysqlEnum('status', ['draft', 'published', 'archived']).default('draft').notNull(),
+	completedAt: date('completed_at')
 });
 
-export const projectImages = sqliteTable('project_images', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	projectId: integer('project_id').notNull(),
-	imageUrl: text('image_url', { length: 255 }).notNull(),
-	isFeatured: integer('is_featured').default(0),
-	isActive: integer('is_active').default(1).notNull(),
+export const projectImages = mysqlTable('project_images', {
+	id: id(),
+	projectId: int('project_id').notNull(),
+	imageUrl: varchar('image_url', { length: 255 }).notNull(),
+	isFeatured: int('is_featured').default(0),
+	isActive: int('is_active').default(1).notNull(),
 	...auditFields(),
 	...timestamps(),
 	...softDelete()
 });
 
-export const projectVideos = sqliteTable('project_videos', {
-	id: integer().primaryKey({ autoIncrement: true }),
-	projectId: integer('project_id').notNull(),
-	videoUrl: text('video_url', { length: 255 }).notNull(),
-	isActive: integer('is_active').default(1).notNull(),
+export const projectVideos = mysqlTable('project_videos', {
+	id: id(),
+	projectId: int('project_id').notNull(),
+	videoUrl: varchar('video_url', { length: 255 }).notNull(),
+	isActive: int('is_active').default(1).notNull(),
 	...auditFields(),
 	...timestamps(),
 	...softDelete()

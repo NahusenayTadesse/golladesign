@@ -43,7 +43,7 @@ export const actions: Actions = {
 		const { id } = form.data;
 
 		try {
-			await db.update(paymentMethods).set({ seen: true }).where(eq(paymentMethods.id, id));
+			await db.update(paymentMethods).set({ seen: 1 }).where(eq(paymentMethods.id, id));
 			return message(form, { type: 'success', text: 'Message Successfully Marked as Read' });
 		} catch (err: any) {
 			return message(

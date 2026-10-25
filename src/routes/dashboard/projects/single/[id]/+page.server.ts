@@ -11,9 +11,9 @@ import {
 } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { fail, message } from 'sveltekit-superforms';
-import { setFlash } from 'sveltekit-flash-message/server';
+import { redirect, setFlash } from 'sveltekit-flash-message/server';
 
-import { saveUploadedFile } from '$lib/server/upload';
+import { saveUploadedFile, uploadGallery } from '$lib/server/upload';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
@@ -83,18 +83,27 @@ export const actions: Actions = {
 
 		try {
 			if (!id) {
-				setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+				setFlash({ type: 'error', message: 'Missing ID' }, cookies);
 				return fail(400);
 			}
 
-			await db.delete(products).where(eq(products.id, Number(id)));
-
-			setFlash({ type: 'success', message: 'Project Deleted Successfully!' }, cookies);
+			// Remove child rows too, otherwise they are left orphaned.
+			await db.transaction(async (tx) => {
+				await tx.delete(productImages).where(eq(productImages.projectId, Number(id)));
+				await tx.delete(venueVideos).where(eq(venueVideos.projectId, Number(id)));
+				await tx.delete(products).where(eq(products.id, Number(id)));
+			});
 		} catch (err) {
 			console.error('Error deleting Project:', err);
 			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
 			return fail(400);
 		}
+
+		redirect(
+			'/dashboard/projects',
+			{ type: 'success', message: 'Project Deleted Successfully!' },
+			cookies
+		);
 	},
 
 	editGallery: async ({ params, request }) => {
@@ -255,25 +264,5 @@ export const actions: Actions = {
 				{ status: 500 }
 			);
 		}
-	}
-};
-
-const uploadGallery = async (gallery: File[] | undefined) => {
-	try {
-		// 1. Map each file to the upload promise
-		const uploadPromises = gallery.map(async (file) => {
-			const address = await saveUploadedFile(file);
-			return address; // This is the string returned by your function
-		});
-
-		// 2. Wait for all uploads to complete and store results in an array
-		const uploadedAddresses: string[] = await Promise.all(uploadPromises);
-
-		console.log('All files uploaded:', uploadedAddresses);
-
-		return uploadedAddresses;
-	} catch (error) {
-		console.error('Error uploading gallery:', error);
-		throw error;
 	}
 };

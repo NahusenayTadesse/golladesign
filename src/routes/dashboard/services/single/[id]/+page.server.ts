@@ -7,9 +7,9 @@ import { db } from '$lib/server/db';
 import { services as products, serviceGallery as productImages } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { fail, message } from 'sveltekit-superforms';
-import { setFlash } from 'sveltekit-flash-message/server';
+import { redirect, setFlash } from 'sveltekit-flash-message/server';
 
-import { saveUploadedFile } from '$lib/server/upload';
+import { saveUploadedFile, uploadGallery } from '$lib/server/upload';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
@@ -66,18 +66,26 @@ export const actions: Actions = {
 
 		try {
 			if (!id) {
-				setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+				setFlash({ type: 'error', message: 'Missing ID' }, cookies);
 				return fail(400);
 			}
 
-			await db.delete(products).where(eq(products.id, Number(id)));
-
-			setFlash({ type: 'success', message: 'Service Deleted Successfully!' }, cookies);
+			// Remove child rows too, otherwise they are left orphaned.
+			await db.transaction(async (tx) => {
+				await tx.delete(productImages).where(eq(productImages.serviceId, Number(id)));
+				await tx.delete(products).where(eq(products.id, Number(id)));
+			});
 		} catch (err) {
 			console.error('Error deleting Service:', err);
 			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
 			return fail(400);
 		}
+
+		redirect(
+			'/dashboard/services',
+			{ type: 'success', message: 'Service Deleted Successfully!' },
+			cookies
+		);
 	},
 
 	editGallery: async ({ params, request }) => {
@@ -135,94 +143,5 @@ export const actions: Actions = {
 				{ status: 500 }
 			);
 		}
-	},
-	editPrice: async ({ request }) => {
-		const form = await superValidate(request, zod4(editPrice));
-
-		if (!form.valid) {
-			return message(form, { type: 'error', text: 'Invalid form data' });
-		}
-
-		const { id, price, amount } = form.data;
-
-		try {
-			await db
-				.update(priceList)
-				.set({
-					id,
-					price: String(price),
-					amount
-				})
-				.where(eq(priceList.id, id));
-
-			return message(form, { type: 'success', text: 'Product Price updated Successfully!' });
-		} catch (err) {
-			console.error('Error editing product price:', err);
-			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
-		}
-	},
-	addPrice: async ({ request, params }) => {
-		const form = await superValidate(request, zod4(addPrice));
-		const { id } = params;
-
-		if (!form.valid) {
-			return message(form, { type: 'error', text: 'Invalid form data' });
-		}
-
-		const { price, amount } = form.data;
-
-		try {
-			await db.insert(priceList).values({
-				productId: Number(id),
-				price: String(price),
-				amount
-			});
-
-			return message(form, { type: 'success', text: 'Product Price added Successfully!' });
-		} catch (err) {
-			console.error('Error adding product price:', err);
-			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
-		}
-	},
-	deletePrice: async ({ request }) => {
-		const form = await superValidate(request, zod4(editPrice));
-
-		if (!form.valid) {
-			return message(form, { type: 'error', text: 'Invalid form data' });
-		}
-
-		const { id, price, amount } = form.data;
-
-		try {
-			await db.delete(priceList).where(eq(priceList.id, id));
-
-			return message(form, {
-				type: 'success',
-				text: `Variant ${amount} with ${price} price deleted Successfully!`
-			});
-		} catch (err) {
-			console.error('Error deleting Variant price:', err);
-			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
-		}
-	}
-};
-
-const uploadGallery = async (gallery: File[] | undefined) => {
-	try {
-		// 1. Map each file to the upload promise
-		const uploadPromises = gallery.map(async (file) => {
-			const address = await saveUploadedFile(file);
-			return address; // This is the string returned by your function
-		});
-
-		// 2. Wait for all uploads to complete and store results in an array
-		const uploadedAddresses: string[] = await Promise.all(uploadPromises);
-
-		console.log('All files uploaded:', uploadedAddresses);
-
-		return uploadedAddresses;
-	} catch (error) {
-		console.error('Error uploading gallery:', error);
-		throw error;
 	}
 };

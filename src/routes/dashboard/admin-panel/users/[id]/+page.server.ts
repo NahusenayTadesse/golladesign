@@ -1,9 +1,9 @@
-import { message, superValidate } from 'sveltekit-superforms';
+import { message, setError, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { editUserSchema as schema } from './schema';
 
 import { db } from '$lib/server/db';
-import { roles, user, permissions, rolePermissions, session } from '$lib/server/db/schema';
+import { roles, user, permissions, rolePermissions, session, account } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 import { fail } from 'sveltekit-superforms';
@@ -49,7 +49,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		})
 		.from(permissions)
 		.innerJoin(rolePermissions, eq(permissions.id, rolePermissions.permissionId))
-		.where(eq(rolePermissions.roleId, singleUser.roleId));
+		.where(eq(rolePermissions.roleId, singleUser.roleId ?? 0));
 
 	return {
 		singleUser,
@@ -115,22 +115,31 @@ export const actions: Actions = {
 			return message(form, { type: 'error', text: 'User Update Failed ' + err?.message });
 		}
 	},
-	delete: async ({ cookies, params }) => {
+	delete: async ({ cookies, params, locals }) => {
 		const { id } = params;
 
 		try {
 			if (!id) {
-				setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+				setFlash({ type: 'error', message: 'Missing user ID' }, cookies);
+				return fail(400);
+			}
+			if (id === locals.user?.id) {
+				setFlash({ type: 'error', message: 'You cannot delete your own account.' }, cookies);
 				return fail(400);
 			}
 
-			await db.delete(user).where(eq(user.id, id));
+			// Remove the login and sessions too, so nothing is left pointing at a deleted user.
+			await db.transaction(async (tx) => {
+				await tx.delete(session).where(eq(session.userId, id));
+				await tx.delete(account).where(eq(account.userId, id));
+				await tx.delete(user).where(eq(user.id, id));
+			});
 
 			setFlash({ type: 'success', message: 'User Deleted Successfully!' }, cookies);
 		} catch (err) {
 			console.error('Error deleting user:', err);
 			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
-			return message(form, { type: 'error', text: 'Unexpected Error: ' + err?.message });
+			return fail(500);
 		}
 	}
 };

@@ -5,6 +5,7 @@ import { edit, editGallery } from './schema';
 import { db } from '$lib/server/db';
 import { services as event, serviceGallery as productImages, user } from '$lib/server/db/schema';
 import { eq, sql, getTableColumns } from 'drizzle-orm';
+import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ params }) => {
@@ -29,6 +30,8 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.where(eq(event.id, Number(id)))
 		.limit(1)
 		.then((rows) => rows[0]);
+
+	if (!product) error(404, 'Service not found');
 
 	const form = await superValidate(product, zod4(edit));
 	const galleryEdit = await superValidate(zod4(editGallery));
